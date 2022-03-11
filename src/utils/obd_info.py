@@ -1,13 +1,22 @@
 # Tested with the ELM27-emulator package: https://github.com/Ircama/ELM327-emulator
 
+import logging
+import os
+import threading
+import time
 import obd
 from pint import UnitRegistry
 
 class CarInfo:
     def __init__(self, port):
-        self.connection = obd.OBD(port)
-        self.check_connection()
-        # TODO: Potentially add a thread to continously check the connection if it isn't made?
+
+        # Set logger
+        self.log = logging.getLogger()
+
+        # Initial vars
+        self.port = port
+        self.connected = False
+
 
     def get_command(self, command):
         self.check_connection()
@@ -38,6 +47,28 @@ class CarInfo:
     def check_connection(self):
         self.connected = (self.connection.status() == obd.OBDStatus.CAR_CONNECTED)
         return self.connected
+
+    # Connection management loop for the OBDII functionality
+    def obd_manager(self):
+        path_warned = False
+        while True:
+            while not self.connected:
+                if os.path.exists(self.port):
+                    self.connection = obd.OBD(self.port)
+                    time.sleep(0.2)
+                    self.check_connection()
+                else:
+                    if not path_warned:
+                        self.log.warn("ODBII path: " + self.port + " does not exist.")
+                        path_warned = True
+                    time.sleep(0.2)
+
+            path_warned = False
+            time.sleep(1)
+
+    def run(self):
+        obd_thread = threading.Thread(target=self.obd_manager, name = 'obd_manager', daemon=True)
+        obd_thread.start()
 
 if __name__ == "__main__":
     carInfo = CarInfo("/dev/pts/2")
