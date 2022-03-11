@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!-- TODO: Get rid of all the divs! -->
+<html>
+  <head>
+    <title>PILOT UI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pilot_style.css') }}">
+  </head>
+  <body>
+
+    <!-- Top "Info" Bar -->
+
+    <section class="top-cols">
+      <div id="connected-name"></div>
+      <div>
+        <div id="top-time">
+          <div class="time-result"></div>
+        </div>
+      </div>
+      <div id="cpu-result"></div>
+    </section>
+
+    <!-- Tab Menu-->
+    <div id="main-content">
+      <!-- Car Media Tab -->
+        <section id="Media" class="tab-content">
+          <div id="mus-info">
+            <div id="wait-connect">
+              <div class="time-result" id="wait-time"></div>
+              <div id="wait-msg"></div>
+            </div>
+            <div id="track-info">
+              <div id="title"></div>
+              <div id="artist"></div>
+              <div id="album"></div>
+              <div class="controls">
+                <button class="music-btn" id="prev-button" onclick="prevTrack()">
+                    <img id="prev-img" src="{{ url_for('static', filename='icons/prev_button.png') }}" width="50" height="50" />
+                </button>
+                <button class="music-btn" id="status-button" onclick=changePlayback()>
+                    <img id="status-img" src="{{ url_for('static', filename='icons/play_button.png') }}" width="50" height="50" />
+                </button>
+                <button class="music-btn" id="next-button" onclick="nextTrack()">
+                    <img id="next-img" src="{{ url_for('static', filename='icons/next_button.png') }}" width="50" height="50" />
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Car Info Tab -->
+        <section id="Car", class="tab-content">
+          <div class="car-info">
+            <div class="speed">
+              <h4>Speed</h4>
+              <p id="speed-info"></p>
+            </div>
+            <div class="fuel">
+              <h4>Fuel</h4>
+              <p id="fuel-info"></p>
+            </div>
+            <div class="voltage">
+              <h4>Voltage</h4>
+              <p id="voltage-info"></p>
+            </div>
+            <div class="rpm">
+              <h4>RPM</h4>
+              <p id="rpm-info"></p>
+            </div>
+            <div class="load">
+              <h4>Engine Load</h4>
+              <p id="load-info"></p>
+            </div>
+            <div class="dtc">
+              <h4>DTC</h4>
+              <p id="dtc-info"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Phone Info Tab -->  
+        <section id="Android", class="tab-content">
+          <h1>Phone Info...</h1>
+        </section>
+        <section id="Settings", class="tab-content">
+          <div class="unit-settings">
+            <h3>Units</h3>
+            <button id="metric-btn" onclick="changeUnits(this.id)">Metric</button>
+            <button id="imperial-btn" onclick="changeUnits(this.id)">Imperial</button>
+          </div>
+          <div class="time-settings">
+            <h3>Time Format</h3>
+            <button id="twelve-btn" onclick="changeTimeFrmt(this.id)">12 Hour</button>
+            <button id="twentyfour-btn" onclick="changeTimeFrmt(this.id)">24 Hour</button>
+          </div>
+        </section>
+
+      <section class="tab">
+        <button class="tab-links" onclick="openTab(event, 'Media')" id="default-tab">
+          <img id="home-btn" src="{{ url_for('static', filename='icons/home_button.png') }}" width="100" height="100"/>
+        </button>
+        <button class="tab-links" onclick="openTab(event, 'Car')">
+          <img id="car-btn" src="{{ url_for('static', filename='icons/car_button.png') }}" width="100" height="100"/>
+        </button>
+        <button class="tab-links" onclick="openTab(event, 'Android')">
+          <img id="adb-btn" src="{{ url_for('static', filename='icons/adb_button.png') }}" width="100" height="100"/>
+        </button>
+        <button class="tab-links" onclick="openTab(event, 'Settings')">
+          <img id="settings-btn" src="{{ url_for('static', filename='icons/settings_button.png') }}" width="100" height="100"/>
+        </button>
+      </section>
+    </div>
+    <script src="{{ url_for('static', filename='js/pilot-auto_script.js') }}"> </script>
+  </body>
+
+  <!-- Initialize functions and set intervals for getters-->
+  <script>
+    // Initialize the home tab
+    selectDefault()
+
+    // To get info upon website opening
+    getHostname();
+    getBluetoothInfo();
+    getCPULoad();
+
+    getTime();
+
+    // Set intervals for functions to run
+    setInterval(getBluetoothInfo, 1000);
+    setInterval(getTime, 3000);
+    setInterval(getCPULoad, 3000);
+    setInterval(getVehicleInfo, 1000);
+  </script>
+</html>

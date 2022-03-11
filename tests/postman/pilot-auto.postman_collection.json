@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "e3d5608c-c343-4ed7-b128-96fb7ca4b554",
+		"name": "Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Bluetooth",
+			"item": [
+				{
+					"name": "Get Track Info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/track-info",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"track-info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bluetooth Device Name",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-device-name",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"bt-device-name"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Play/Pause Playback",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/playback-change",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"playback-change"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Previous Track",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/prev-track",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"bt-ctl",
+								"prev-track"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Next Track",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/next-track",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"bt-ctl",
+								"next-track"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "These are all tests that will test the endpoints having to do with bluetooth tracks, such as:\n+ Getting track info (title, artist, album, etc.)\n+ Getting bluetooth device name\n+ Pause/Play the current track\n+ Skipping/Going to previous tracks"
+		},
+		{
+			"name": "System",
+			"item": [
+				{
+					"name": "Get System Time",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/get-time",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"get-time"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This will test all the system functions, such as:\n+ Getting the time\n+ Getting the CPU Load"
+		},
+		{
+			"name": "Car",
+			"item": [],
+			"description": "This tests all car information endpoints. [If OBDII connection is available] Will get things like:\n+ Fuel Level\n+ Speed\n+ DTC codes\n+ RPM\n+ Control module voltage"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "pilotAutoIP",
+			"value": "localhost"
+		},
+		{
+			"key": "pilotAutoPort",
+			"value": "5000"
+		}
+	]
+}
