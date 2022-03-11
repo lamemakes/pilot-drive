@@ -93,12 +93,16 @@ body {
   height: 100%;
 }
 
-.wait-time{
+#wait-time{
   font-size: 70px;
 }
 
-.wait-msg {
-  font-size: 15px;
+#wait-msg {
+  font-size: 20px;
+}
+
+.highlight {
+  color: gold;
 }
 
 .car-info {

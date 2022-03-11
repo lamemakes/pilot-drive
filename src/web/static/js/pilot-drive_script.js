@@ -203,7 +203,7 @@ function updateTrackInfo(track) {
 
         waitMsg = document.getElementById("wait-msg");
         if (waitMsg.innerHTML == "") {
-            waitMsg.innerHTML = "To connect, look for " + window.hostname + " in your bluetooth settings.";
+            waitMsg.innerHTML = 'To connect, look for  <span class="highlight">' + window.hostname + "</span> in your bluetooth settings.";
         }
 
     }
