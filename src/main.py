@@ -25,7 +25,8 @@ bt_man.run()
 
 # Initialize the OBDII controller
 # TODO: Make this address dynamic so emmulation can be easy/OBDII dongle can be auto-detected.
-car_man = obd_info.CarInfo("/dev/pts/2")
+car_man = obd_info.CarInfo("/dev/pts/3")
+car_man.run()
 
 # Initialize the app object and set the static/templates folders
 # TODO: Make this class based
@@ -117,17 +118,6 @@ def music_info():
     return jsonify({"btInfo" : {"connected" : bt_man.connected}})
 
 
-# # Gets the device name of the connected bluetooth device
-# @app.route("/bt-info/bt-device-name", methods=["POST"])
-# def get_bt_device():
-#     if bt_man.connected:
-        
-#         device = bt_man.device_name
-#         return jsonify({"btDevice" : device})
-    
-#     # If conditionals are False, return a null value
-#     return jsonify({"btDevice" : None})
-
 # Deals with track control. Valid commands are "prev", "next", or "playback-change"
 # TODO: Remove returns
 @app.route("/bt-ctl/track-ctl/<command>", methods=["POST"])
@@ -165,7 +155,7 @@ Vehicle methods
 # TODO: Should this have individual endpoints? Seems convoluted
 @app.route("/vehicle-info", methods=["POST"])
 def car_command():
-    if car_man.check_connection():
+    if car_man.connected:
 
         try:
             # Conditionals to check what command was used 
@@ -181,7 +171,7 @@ def car_command():
         except TypeError:
             return jsonify({"vehicleInfo" : None})
 
-        return jsonify({"vehicleInfo" : {"connection" : car_man.check_connection(),
+        return jsonify({"vehicleInfo" : {"connection" : car_man.connected,
                                         "speed" : speed, 
                                         "fuelLevel" : fuel_level, 
                                         "voltage" : voltage, 
@@ -189,7 +179,7 @@ def car_command():
                                         "engLoad" : eng_load,
                                         "dtc" : dtc}})
 
-    return jsonify({"vehicleInfo" : {"connection" : car_man.check_connection()}})
+    return jsonify({"vehicleInfo" : {"connection" : car_man.connected}})
 
 """ 
 ==================
