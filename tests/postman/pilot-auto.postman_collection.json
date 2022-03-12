@@ -14,33 +14,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/track-info",
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-info",
 							"protocol": "http",
 							"host": [
 								"{{pilotAutoIP}}"
 							],
 							"port": "{{pilotAutoPort}}",
 							"path": [
-								"track-info"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Bluetooth Device Name",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-device-name",
-							"protocol": "http",
-							"host": [
-								"{{pilotAutoIP}}"
-							],
-							"port": "{{pilotAutoPort}}",
-							"path": [
-								"bt-device-name"
+								"bt-info"
 							]
 						}
 					},
@@ -52,13 +33,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/playback-change",
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/track-ctl/playback-change",
 							"protocol": "http",
 							"host": [
 								"{{pilotAutoIP}}"
 							],
 							"port": "{{pilotAutoPort}}",
 							"path": [
+								"bt-ctl",
+								"track-ctl",
 								"playback-change"
 							]
 						}
@@ -71,7 +54,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/prev-track",
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/track-ctl/prev",
 							"protocol": "http",
 							"host": [
 								"{{pilotAutoIP}}"
@@ -79,7 +62,8 @@
 							"port": "{{pilotAutoPort}}",
 							"path": [
 								"bt-ctl",
-								"prev-track"
+								"track-ctl",
+								"prev"
 							]
 						}
 					},
@@ -91,7 +75,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/next-track",
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/bt-ctl/track-ctl/next",
 							"protocol": "http",
 							"host": [
 								"{{pilotAutoIP}}"
@@ -99,7 +83,8 @@
 							"port": "{{pilotAutoPort}}",
 							"path": [
 								"bt-ctl",
-								"next-track"
+								"track-ctl",
+								"next"
 							]
 						}
 					},
@@ -112,19 +97,38 @@
 			"name": "System",
 			"item": [
 				{
-					"name": "Get System Time",
+					"name": "Get CPU Load",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/get-time",
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/get-cpuload",
 							"protocol": "http",
 							"host": [
 								"{{pilotAutoIP}}"
 							],
 							"port": "{{pilotAutoPort}}",
 							"path": [
-								"get-time"
+								"get-cpuload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Hostname",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/get-hostname",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"get-hostname"
 							]
 						}
 					},
@@ -135,7 +139,52 @@
 		},
 		{
 			"name": "Car",
-			"item": [],
+			"item": [
+				{
+					"name": "Get Car Info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/vehicle-info",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"vehicle-info"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This tests all car information endpoints. [If OBDII connection is available] Will get things like:\n+ Fuel Level\n+ Speed\n+ DTC codes\n+ RPM\n+ Control module voltage"
+		},
+		{
+			"name": "ADB",
+			"item": [
+				{
+					"name": "Get ADB Info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://{{pilotAutoIP}}:{{pilotAutoPort}}/adb-info",
+							"protocol": "http",
+							"host": [
+								"{{pilotAutoIP}}"
+							],
+							"port": "{{pilotAutoPort}}",
+							"path": [
+								"adb-info"
+							]
+						}
+					},
+					"response": []
+				}
+			],
 			"description": "This tests all car information endpoints. [If OBDII connection is available] Will get things like:\n+ Fuel Level\n+ Speed\n+ DTC codes\n+ RPM\n+ Control module voltage"
 		}
 	],
