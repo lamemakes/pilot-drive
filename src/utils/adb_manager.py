@@ -52,18 +52,23 @@ class AndroidManager:
             if key:
                 self.notifications.append(new_notification.attributes)
         
+        # Sort notifications by priority. The highest priority will appear at the top of the JSON.
+        self.notifications.sort(reverse=True, key=self.sort_by_priority)
+        
         return self.notifications
 
+
+    # Method to get the battery level of the connected device
     def get_battery_level(self):
         dump_battery_cmd = "adb shell dumpsys battery"
 
         battery_dump = subprocess.getoutput(dump_battery_cmd)
-
         self.battery_level = int(re.search("level: (.*)\n", battery_dump).group(1))
 
         return self.battery_level
     
 
+    # Pull hostname and mac address to compare in the web interface
     def get_bt_info(self):
         device_name_cmd = "adb shell settings get secure bluetooth_name"
         mac_addr_cmd = "adb shell settings get secure bluetooth_address"
@@ -74,12 +79,19 @@ class AndroidManager:
         return [self.device_name, self.bt_addr]
 
 
+    # Method to sort the notifications by priority
+    def sort_by_priority(self, notification):
+        return (notification.get("pri"))
+
+
+    # Method to constantly check the state of the ADB connection
     def check_connection(self):
         check_connection_cmd = "adb get-state"
         self.connected = ("device" in subprocess.getoutput(check_connection_cmd))
         return self.connected
 
 
+    # Manages the ADB connection, listens for a new connection
     def android_manager(self):
         self.log.debug("ADB Manager Started.")
         while True:
@@ -94,20 +106,9 @@ class AndroidManager:
             time.sleep(0.5)
 
 
+    # Starts the manager thread to monitor the connection
     def run(self):
         adb_thread = threading.Thread(target=self.android_manager, name = 'adb_manager', daemon=True)
         adb_thread.start()
-        
-
-if __name__ == "__main__":
-    adb_test = AndroidManager()
-    print("=" * 32)
-    for id in adb_test.notifications:
-        for key in adb_test.notifications.get(id).notification_keys:
-            print(key + " : " + str(adb_test.notifications.get(id).attributes.get(key)))
-        print("Icon Path : " + str(adb_test.notifications.get(id).icon_path))
-        
-        print("=" * 32)
-    print("Battery Level : " + str(adb_test.battery_level) + "%")
 
 
