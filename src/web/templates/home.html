@@ -80,7 +80,7 @@
 
         <!-- Phone Info Tab -->  
         <section id="Android", class="tab-content">
-          <h1>Phone Info...</h1>
+          <div id="adb-notifs"></div>
         </section>
         <section id="Settings", class="tab-content">
           <div class="unit-settings">
@@ -122,6 +122,7 @@
     getHostname();
     getBluetoothInfo();
     getCPULoad();
+    getAdbInfo();
 
     getTime();
 
@@ -130,5 +131,6 @@
     setInterval(getTime, 3000);
     setInterval(getCPULoad, 3000);
     setInterval(getVehicleInfo, 1000);
+    setInterval(getAdbInfo, 3000);
   </script>
 </html>

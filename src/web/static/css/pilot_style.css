@@ -179,3 +179,32 @@ body {
   transition: 0.3s;
 }
 
+.notification {
+  display: grid;
+  grid-template-columns: 14% 86%;
+  width: 100%;
+  height: fit-content;
+  min-height: 40px;
+  border: solid;
+  border-radius: 15px;
+  border-color: white;
+  margin-top: 10px;
+}
+
+.notification-img {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.notification-img > img {
+  max-width: 30px;
+  max-height: 30px;
+}
+
+.notification-text > h3, .notification-text > p {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
