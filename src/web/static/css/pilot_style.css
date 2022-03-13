@@ -125,7 +125,11 @@ body {
   justify-items: center;
 }
 
-/* Style the buttons that are used to open the tab content */
+
+/* =============
+ Tab Buttons/Tab formatting
+============= */
+
 .tab {
   display: flex;
   justify-items: center;
@@ -154,10 +158,12 @@ body {
 }
 
 /* Style the tab content */
-.tabContent {
+.tab-content {
   display: none;
   padding: 6px 12px;
   border-top: none;
+  justify-content: center;
+  width: 75%;
 } 
 
 /* =============
@@ -179,24 +185,41 @@ body {
   transition: 0.3s;
 }
 
+/* =============
+ ADB Info
+============= */
+
+/* Hide scrollbar on Chrome, Safari and Opera */
+#adb-notifs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+#adb-notifs {
+  height: 425px;
+  overflow-y: auto;
+  scrollbar-width: none; 
+  width: 90%;
+}
+
 .notification {
   display: grid;
   grid-template-columns: 14% 86%;
-  width: 100%;
+  width: 90%;
   height: fit-content;
   min-height: 40px;
   border: solid;
   border-radius: 15px;
   border-color: white;
+  margin: 0 auto;
   margin-top: 10px;
 }
 
 .notification-img {
   display: flex;
+  justify-content: center;
   align-items: center;
   height: 100%;
-  padding-right: 10px;
-  padding-left: 10px;
 }
 
 .notification-img > img {

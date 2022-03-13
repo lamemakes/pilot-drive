@@ -380,33 +380,10 @@ function openTab(evt, TabName) {
     }
   
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(TabName).style.display = "block";
+    document.getElementById(TabName).style.display = "flex";
     evt.currentTarget.className += " active";
   } 
 
-function selectDefault() {
-    // For default tab
-    document.getElementById("default-tab").click();
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(TabName).style.display = "block";
-    evt.currentTarget.className += " active";
-    
-
-    // For settings (probably better ways to do this)
-    if (window.units === "metric") {
-        document.getElementById("metric-btn").click();
-    } else if (window.units === "imperial") {
-        document.getElementById("imperial-btn").click();
-    }
-
-    if (window.timeFrmt === 12) {
-        document.getElementById("twelve-btn").click();
-    } else if (window.timeFrmt === 24) {
-        document.getElementById("twentyfourl-btn").click();
-    }
-
-  } 
 
 function selectDefault() {
     // For default tab

@@ -44,12 +44,6 @@ UI HTML Page
 ================== 
 """
 
-""" 
-==================
-UI HTML Page
-================== 
-"""
-
 # Returns the main landing page of PILOT
 @app.route("/", methods=["GET"])
 def home():
