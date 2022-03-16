@@ -2,6 +2,7 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
+from utils import adb_manager
 from utils import bt_ctl, sys_utils, obd_info
 from time import sleep
 import logging
@@ -28,16 +29,14 @@ bt_man.run()
 car_man = obd_info.CarInfo("/dev/pts/3")
 car_man.run()
 
+# Initialize the android debug bus controller
+adb_man = adb_manager.AndroidManager()
+adb_man.run()
+
 # Initialize the app object and set the static/templates folders
 # TODO: Make this class based
 app = Flask(__name__, static_folder="web/static", template_folder="web/templates")
 
-
-""" 
-==================
-UI HTML Page
-================== 
-"""
 
 """ 
 ==================
@@ -75,16 +74,6 @@ def get_hostname():
 Bluetooth methods
 ================== 
 """
-
-# TODO: Consolidate the bluetooth endpoints. Don't make 5 requests for something that can be returned in one json post, update javascript vars accordingly
-
-"""
-==================
-Bluetooth methods
-================== 
-"""
-
-# TODO: Consolidate the bluetooth endpoints. Don't make 5 requests for something that can be returned in one json post, update javascript vars accordingly
 
 # Gets the track information, returns track metadata and status in a JSON string.
 @app.route("/bt-info", methods=["POST"])
@@ -186,8 +175,20 @@ def car_command():
 ADB methods
 ================== 
 """
-# @app.route("/adb-info", methods=["POST"])
-# def get_adb():
+@app.route("/adb-info", methods=["POST"])
+def get_adb():
+    if adb_man.connected:
+        return jsonify ({"android" : {
+                            "connection" : adb_man.connected,
+                            "notifications" : adb_man.get_notifications(), 
+                            "battery" : adb_man.get_battery_level(),
+                            "hostname" : adb_man.device_name,
+                            "macAddr" : adb_man.bt_addr}})
+    
+    return jsonify({"android" : {
+                        "connection" : adb_man.connected}})
+
+
     
 
 # Run the Application

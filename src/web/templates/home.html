@@ -79,10 +79,10 @@
         </section>
 
         <!-- Phone Info Tab -->  
-        <section id="Android", class="tab-content">
-          <h1>Phone Info...</h1>
+        <section id="Android" class="tab-content">
+          <div id="adb-notifs"></div>
         </section>
-        <section id="Settings", class="tab-content">
+        <section id="Settings" class="tab-content">
           <div class="unit-settings">
             <h3>Units</h3>
             <button id="metric-btn" onclick="changeUnits(this.id)">Metric</button>
@@ -122,6 +122,7 @@
     getHostname();
     getBluetoothInfo();
     getCPULoad();
+    getAdbInfo();
 
     getTime();
 
@@ -130,5 +131,6 @@
     setInterval(getTime, 3000);
     setInterval(getCPULoad, 3000);
     setInterval(getVehicleInfo, 1000);
+    setInterval(getAdbInfo, 3000);
   </script>
 </html>

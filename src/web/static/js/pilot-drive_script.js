@@ -291,6 +291,78 @@ function getVehicleInfo() {
     req.send();
 }
 
+function getAdbInfo() {
+    var adbInfoEndpoint = "/adb-info";
+
+    var req = new XMLHttpRequest();
+
+    req.onreadystatechange = function()
+    {
+        if(this.readyState == 4 && this.status == 200) {
+            var adbInfo = JSON.parse(this.responseText);
+            if (adbInfo != window.adbInfo){
+                document.getElementById("adb-notifs").innerHTML = "";
+                if (adbInfo["android"]["connection"]){
+                    if (adbInfo["android"]["notifications"] != null){
+                        for (var i = 0; i < adbInfo["android"]["notifications"].length; i++){
+                            createAdbNotification(adbInfo["android"]["notifications"][i]);
+                        }
+                        console.log("Full iter!")
+                    }
+                }
+
+                window.adbInfo = adbInfo;
+            }
+        }
+    }
+
+    req.open('POST', adbInfoEndpoint, true);
+    req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+    req.send();
+}
+
+function createAdbNotification(notification){
+    var adbNotifs = document.getElementById("adb-notifs");
+
+    var notificationDiv = document.createElement("div");
+    notificationDiv.classList.add('notification');
+
+    var notificationTextDiv = document.createElement("div");
+    notificationTextDiv.classList.add("notification-text");
+
+    var notificationImgDiv = document.createElement("div");
+    var notificationImg = document.createElement("img");
+
+    if (notification["icon_path"] != null){
+        console.log(notification["icon_path"]);
+        notificationImg.src = notification["icon_path"]
+    }
+
+    notificationImgDiv.classList.add("notification-img");
+
+    notificationImgDiv.append(notificationImg);
+
+    if (notification["android.title"] != null) {
+
+        var notifTitle = document.createElement("h3");
+        notifTitle.innerHTML = notification["android.title"]
+        notificationTextDiv.append(notifTitle);
+
+        if (notification["tickerText"] != null){
+            var tickerText = document.createElement("p");
+            tickerText.innerHTML = notification["tickerText"];
+            notificationTextDiv.append(tickerText);
+        }
+    }
+
+
+    notificationDiv.append(notificationImgDiv);
+    notificationDiv.append(notificationTextDiv);
+
+    adbNotifs.append(notificationDiv);
+
+}
+
 function openTab(evt, TabName) {
     // Declare all variables
     var i, tabContent, tabLinks;
@@ -308,33 +380,10 @@ function openTab(evt, TabName) {
     }
   
     // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(TabName).style.display = "block";
+    document.getElementById(TabName).style.display = "flex";
     evt.currentTarget.className += " active";
   } 
 
-function selectDefault() {
-    // For default tab
-    document.getElementById("default-tab").click();
-
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(TabName).style.display = "block";
-    evt.currentTarget.className += " active";
-    
-
-    // For settings (probably better ways to do this)
-    if (window.units === "metric") {
-        document.getElementById("metric-btn").click();
-    } else if (window.units === "imperial") {
-        document.getElementById("imperial-btn").click();
-    }
-
-    if (window.timeFrmt === 12) {
-        document.getElementById("twelve-btn").click();
-    } else if (window.timeFrmt === 24) {
-        document.getElementById("twentyfourl-btn").click();
-    }
-
-  } 
 
 function selectDefault() {
     // For default tab
@@ -388,3 +437,4 @@ function changeTimeFrmt(timeFrmtId) {
         twelveBtn.style.backgroundColor = "white";
     }
 }
+

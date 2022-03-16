@@ -1,6 +1,6 @@
 # A class to manage notifications
 import re
-import src.utils.adb_read__icon_db as adb_read__icon_db
+import utils.adb_read_icon_db as adb_read_icon_db
 
 
 class Notificaton:
@@ -22,7 +22,7 @@ class Notificaton:
 
         self.attributes = {}
 
-        self.icon_path = None
+        self.icon_path = "adb_icons/"
 
         self.parse_notification(raw_notification)
 
@@ -34,7 +34,7 @@ class Notificaton:
         return None
 
     def get_icon(self, pkg, icon_db_path):
-        return adb_read__icon_db.readBlobData(pkg, icon_db_path)
+        return adb_read_icon_db.readBlobData(pkg, icon_db_path)
 
     def get_notification_value(self, line):
         if "=" in line:
@@ -46,7 +46,11 @@ class Notificaton:
 
                 # Toss out any typing
                 if "String (" in value or "SpannableString (" in value or "Icon(" in value:
-                    value = re.search('\((.*)\)', value).group(1)   
+                    value = re.search('\((.*)\)', value).group(1)
+                    
+                    if "&^&" in value:
+                        value = value.replace("&^&", "\n")
+                   
 
                 # Give a null check & send it off!
                 return self.check_null(value)       
@@ -59,41 +63,30 @@ class Notificaton:
             attribute = attribute.strip()
 
             for key in self.notification_keys:
-                if key == "android.bigText":
-                    # Big text is two lined from what's been seen
-                    # attribute = attribute + all_attributes[iter + 1]
-                    pass
 
+                # Iterate through keys and put values...
                 if attribute.startswith(key):
-                    if "." in key:
-                        key = key.split(".")[1]
+                    if key == "android.bigText":
+                        # Big text is multi-lined
+                        line_count = 1
+                        for line in all_attributes[iter:]:
+                            if line[-1] == ")":
+                                break
+                            line_count += 1
+                        
+                        # Uses " &&" as a newline sequence because the newline char is filtered out later. 
+                        attribute = "" + "&^&".join(all_attributes[iter:iter + line_count])
+
+                        iter += line_count
+
                     
+                    # and keep all notification attributes in a dictionary
                     self.attributes.update({key : self.get_notification_value(attribute)})
-
-        print(self.attributes)
-        if self.attributes.get("icon"):
-            self.icon_path = self.get_icon(self.attributes.get("opPkg"), "app_icons.db")
-
-
-            # # UGLY conditionals to parse out the notification, no clue how to clean this up and set class attrs at the same time.
-            # if attribute.startswith("key"):
-            #     self.key = self.get_notification_value(attribute)
-            # elif attribute.startswith("pri"):
-            #     self.pri = self.get_notification_value(attribute)
-            # elif attribute.startswith("opPkg"):
-            #     self.opPkg = self.get_notification_value(attribute)
-            # elif attribute.startswith("when"):
-            #     self.when = self.get_notification_value(attribute)
-            # elif attribute.startswith("tickerText"):
-            #     self.tickerText = self.get_notification_value(attribute)
-            # elif attribute.startswith("android.title"):
-            #     self.title = self.get_notification_value(attribute)
-            # elif attribute.startswith("android.subText"):
-            #     self.subText = self.get_notification_value(attribute)
-            # elif attribute.startswith("android.bigText"):
-            #     attribute = attribute + all_attributes[iter + 1]
-            #     self.bigText = self.get_notification_value(attribute)
             
             iter += 1
+
+        if self.attributes.get("icon"):
+            self.attributes.update({"icon_path" : self.get_icon(self.attributes.get("opPkg"), "app_icons.db")})
+            
             
 
