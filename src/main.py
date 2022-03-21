@@ -6,15 +6,7 @@ from utils import adb_manager
 from utils import bt_ctl, sys_utils, obd_info
 from time import sleep
 import logging
-import os
 
-# General variables
-# TODO: Set this with a config
-units = "imperial"
-
-# General variables
-# TODO: Set this with a config
-units = "imperial"
 
 # TODO: Make logging level dynamic and cleaner
 logging.basicConfig(level=logging.DEBUG)
@@ -25,8 +17,8 @@ bt_man = bt_ctl.BluetoothManager()
 bt_man.run()    
 
 # Initialize the OBDII controller
-# TODO: Make this address dynamic so emmulation can be easy/OBDII dongle can be auto-detected.
-car_man = obd_info.CarInfo("/dev/pts/3")
+# TODO: Create config options to specify the port.
+car_man = obd_info.CarInfo()
 car_man.run()
 
 # Initialize the android debug bus controller
@@ -36,6 +28,7 @@ adb_man.run()
 # Initialize the app object and set the static/templates folders
 # TODO: Make this class based
 app = Flask(__name__, static_folder="web/static", template_folder="web/templates")
+app.logger.setLevel(logging.ERROR)
 
 
 """ 
@@ -92,12 +85,6 @@ def music_info():
             track_status = bt_man.status
         else:
             track_status = None
-            
-        # Get connected device name
-        if bt_man.device_name:
-            device = bt_man.device_name
-        else:
-            device = None
         
         return jsonify({"btInfo" : {"connected" : bt_man.connected,
                                     "connectedDevice" : {"name" : bt_man.device_name, "address" : bt_man.device_addr},
@@ -116,7 +103,7 @@ def prev_track(command):
             bt_man.bluetooth_ctl(command)
             
             # Delay and return full track info
-            sleep(1)
+            sleep(0.5)
 
         elif command == "playback-change":
             # A little logic to change the state to the opposite of what it currently is
