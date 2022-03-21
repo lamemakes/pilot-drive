@@ -12,7 +12,7 @@ class AndroidManager:
 
         # Initial var declarations
         self.log = logging.getLogger()
-        self.connected = False
+        self.connected = None
         self.device_name = None
         self.bt_mac = None
         self.notifications = []
@@ -66,7 +66,7 @@ class AndroidManager:
         self.battery_level = int(re.search("level: (.*)\n", battery_dump).group(1))
 
         return self.battery_level
-    
+        
 
     # Pull hostname and mac address to compare in the web interface
     def get_bt_info(self):
@@ -87,7 +87,14 @@ class AndroidManager:
     # Method to constantly check the state of the ADB connection
     def check_connection(self):
         check_connection_cmd = "adb get-state"
-        self.connected = ("device" in subprocess.getoutput(check_connection_cmd))
+        connection_status = subprocess.getoutput(check_connection_cmd)
+        if connection_status == "device":
+            self.connected = True
+        else:
+            if self.connected == None or self.connected:
+                self.log.error("ADB Device disconnected: " + subprocess.getoutput(check_connection_cmd))
+            self.connected = False
+
         return self.connected
 
 
@@ -103,6 +110,7 @@ class AndroidManager:
                 self.get_bt_info()
                 self.log.debug("ADB Device: " + self.device_name + " connected!")
             
+            self.check_connection()
             time.sleep(0.5)
 
 

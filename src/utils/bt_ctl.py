@@ -40,8 +40,6 @@ class BluetoothManager:
                     self.log.info("Bluetooth device: " + self.device_name + " connected with MAC address of " + self.device_addr + ".")
                     self.connected = True
 
-                    self.track = Track(self.mgr) 
-
 
     # Get the status of the current track (paused, playing)
     def get_track_status(self):
@@ -97,10 +95,12 @@ class BluetoothManager:
 
     def prop_changed(self, iface, changed, invalidated):
         # TODO: Sync volume control here, seems to be an update field.
-        self.track = Track(self.mgr)
-        if "org.bluez.MediaPlayer1" in str(iface):
-            self.log.debug("Props updated: " + str(changed.items()))
-            self.get_track_data()
+        if "Title" in str(changed.items()):
+            if "org.bluez.MediaPlayer1" in str(iface):
+                self.log.debug("Track properties updated: " + str(changed.items()))
+                self.track = Track(self.mgr) 
+                self.track.get_track(changed)
+                self.get_track_data()
 
 
 ########## Main Methods ########## 

@@ -131,7 +131,8 @@ body {
 ============= */
 
 .tab {
-  display: flex;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
   justify-items: center;
   padding-bottom: 18px;
   width: 50%;
