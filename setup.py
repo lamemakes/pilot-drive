@@ -1,11 +1,11 @@
-import setuptools
+from setuptools import setup, find_packages
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
-    name="pilot-auto-lamemakes",
-    version="0.1.0",
+setup(
+    name="pilot-drive",
+    version="0.9.0",
     author="Wesley Appler",
     author_email="wes@lamemakes.com",
     description="PILOT Auto is a modular vehicle head unit built in Python",
@@ -20,7 +20,9 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: Unix",
     ],
-    package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    install_requires=["flask", "obd"],
+    package_data={"pilot-drive": ["src/web/*", "tests/*"]},
+    packages=find_packages(include=["src", "src.*"]),
+    #entry_points={'console_scripts' : ["pilot-drive=pilot-drive.main:main"]},
     python_requires=">=3.6",
 )

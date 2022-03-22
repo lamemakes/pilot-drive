@@ -178,7 +178,10 @@ def get_adb():
 
     
 
-# Run the Application
-if __name__ == "__main__":
+def main():
     log.info("Starting Flask Application...")
     app.run(host="0.0.0.0", port=5000)
+
+# Run the Application
+if __name__ == "__main__":
+    main()
