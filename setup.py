@@ -5,15 +5,15 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pilot-drive",
-    version="0.10.0",
+    version="0.10.1",
     author="Wesley Appler",
     author_email="wes@lamemakes.com",
-    description="PILOT Auto is a modular vehicle head unit built in Python",
+    description="PILOT Drive is a modular vehicle head unit built in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/lamemakes/pilot-auto",
+    url="https://github.com/lamemakes/pilot-drive",
     project_urls={
-        "Bug Tracker": "https://github.com/lamemakes/pilot-auto/issues",
+        "Bug Tracker": "https://github.com/lamemakes/pilot-drive/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -21,8 +21,9 @@ setup(
         "Operating System :: Unix",
     ],
     install_requires=["flask", "obd"],
-    package_data={"pilot-drive": ["src/web/*", "tests/*"]},
-    packages=find_packages(include=["src", "src.*"]),
-    #entry_points={'console_scripts' : ["pilot-drive=pilot-drive.main:main"]},
+    packages=["pilot_drive", "pilot_drive.utils"],
+    include_package_data=True,
+    package_data={"pilot_drive": ["pilot_drive/web/*", "tests/*"]},
+    entry_points={'console_scripts' : ["pilot-drive=pilot_drive.main:main"]},
     python_requires=">=3.6",
 )

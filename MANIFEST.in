@@ -1,4 +1,4 @@
 include .gitignore
-recursive-include src/web/templates/ *
-recursive-include src/web/static/ *
-prune src/web/static/icons/adb_icons/ *
+graft pilot_drive/web/templates/
+graft pilot_drive/web/static/ 
+prune pilot_drive/web/static/icons/adb_icons/ 
