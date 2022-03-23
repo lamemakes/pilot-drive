@@ -2,8 +2,7 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from utils import adb_manager
-from utils import bt_ctl, sys_utils, obd_info
+from pilot_drive.utils import adb_manager, bt_ctl, sys_utils, obd_info
 from time import sleep
 import logging
 

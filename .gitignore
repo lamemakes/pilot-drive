@@ -177,7 +177,7 @@ cython_debug/
 # PILOT paths:
 
 # ADB icons
-src/web/static/icons/adb_icons
+pilot_drive/web/static/icons/adb_icons
 
 # PyPi
 .pypirc
