@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pilot-drive",
-    version="0.9.0",
+    version="0.10.0",
     author="Wesley Appler",
     author_email="wes@lamemakes.com",
     description="PILOT Auto is a modular vehicle head unit built in Python",

@@ -1,6 +1,6 @@
 # A class to manage notifications
 import re
-import utils.adb_read_icon_db as adb_read_icon_db
+import pilot_drive.utils.adb_read_icon_db as adb_read_icon_db
 
 
 class Notificaton:
