@@ -2,10 +2,11 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from utils import adb_manager, bt_ctl, sys_utils, obd_info
+from utils import adb_manager, update_manager, bt_ctl, sys_utils, obd_info
 from time import sleep
 import logging
 from config import pilot_cfg
+import config
 
 # TODO: Make logging level dynamic and cleaner
 logging.basicConfig(level=pilot_cfg["logging"]["logLevel"])
@@ -13,13 +14,15 @@ log = logging.getLogger()
 log.info("Starting PILOT Drive!") 
 log.info("Logging level set to: " + str(pilot_cfg["logging"]["logLevel"]))
 
+# Initalize the updater
+updater = update_manager.PilotUpdater(current_version=pilot_cfg["version"], pypi_url=pilot_cfg["updates"]["projectUrl"])
+
 # Initialize the bluetooth controller
 bt_man = bt_ctl.BluetoothManager()
 bt_man.run()
 
 # Initialize the OBDII controller
 # TODO: Create config options to specify the port.
-print(pilot_cfg)
 car_man = obd_info.CarInfo(port=pilot_cfg["obd"]["port"])
 car_man.run()
 
@@ -62,6 +65,29 @@ def get_cpuload():
 def get_hostname():
     return jsonify({"hostname" : sys_utils.get_hostname()})
 
+
+"""
+==================
+Auto-Updater methods
+==================
+"""
+
+# Check for updates
+@app.route("/check-updates/get-updates", methods=["POST"])
+def check_updates():
+    # A python dict is returned describing the status of the update (error or success)
+    status_message = updater.check_update()
+    return jsonify(status_message)
+
+@app.route("/check-updates/confirm-update", methods=["POST"])
+def install_updates():
+    # Re-write the config with the new version
+    pilot_cfg["version"] = updater.new_release_version
+    config.write_config(pilot_cfg)
+
+    # A python dict is returned describing the status of the update (error or success)
+    updater.update_pilot(release_info=updater.new_release_info, update_path=pilot_cfg["updates"]["downloadPath"])
+        
 
 """
 ==================
