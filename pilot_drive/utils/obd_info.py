@@ -73,6 +73,7 @@ class CarInfo:
                         self.connection = obd.OBD(self.port)
                         time.sleep(0.2)
                         self.check_connection()
+                        self.log.info("OBDII port set to \"" + self.port + "\"")
                     else:
                         if not path_warned:
                             self.log.warn("ODBII path: " + self.port + " does not exist.")

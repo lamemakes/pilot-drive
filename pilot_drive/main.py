@@ -2,22 +2,25 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from pilot_drive.utils import adb_manager, bt_ctl, sys_utils, obd_info
+from utils import adb_manager, bt_ctl, sys_utils, obd_info
 from time import sleep
 import logging
-
+from config import pilot_cfg
 
 # TODO: Make logging level dynamic and cleaner
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=pilot_cfg["logging"]["logLevel"])
 log = logging.getLogger()
+log.info("Starting PILOT Drive!") 
+log.info("Logging level set to: " + str(pilot_cfg["logging"]["logLevel"]))
 
 # Initialize the bluetooth controller
 bt_man = bt_ctl.BluetoothManager()
-bt_man.run()    
+bt_man.run()
 
 # Initialize the OBDII controller
 # TODO: Create config options to specify the port.
-car_man = obd_info.CarInfo()
+print(pilot_cfg)
+car_man = obd_info.CarInfo(port=pilot_cfg["obd"]["port"])
 car_man.run()
 
 # Initialize the android debug bus controller
@@ -27,7 +30,6 @@ adb_man.run()
 # Initialize the app object and set the static/templates folders
 # TODO: Make this class based
 app = Flask(__name__, static_folder="web/static", template_folder="web/templates")
-app.logger.setLevel(logging.ERROR)
 
 
 """ 

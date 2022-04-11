@@ -52,6 +52,8 @@ function getTime() {
         if (now.getHours() > 12) {
             hours = now.getHours() - 12;
             daytime = " PM";
+        } else if (now.getHours() == 0) {
+            hours = 12;
         } else {
             hours = now.getHours();
             daytime = " AM";
@@ -437,4 +439,3 @@ function changeTimeFrmt(timeFrmtId) {
         twelveBtn.style.backgroundColor = "white";
     }
 }
-

@@ -178,6 +178,8 @@ cython_debug/
 
 # ADB icons
 pilot_drive/web/static/icons/adb_icons
+config.json
+app_icons.db
 
 # PyPi
 .pypirc

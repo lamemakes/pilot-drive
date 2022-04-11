@@ -43,7 +43,7 @@ def readBlobData(pkg, db_path):
             for row in record:
                 name = row[6]
                 photo = row[4]
-                photo_dir_path = "src/web/static/icons/adb_icons/"
+                photo_dir_path = "pilot_drive/web/static/icons/adb_icons/"
                 photo_name =  name + ".png"
                 writeToFile(photo, photo_dir_path, photo_name)
 

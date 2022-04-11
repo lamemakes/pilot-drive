@@ -21,7 +21,7 @@ setup(
         "Operating System :: Unix",
     ],
     install_requires=["flask", "obd"],
-    packages=["pilot_drive", "pilot_drive.utils"],
+    packages=["pilot_drive", "utils"],
     include_package_data=True,
     package_data={"pilot_drive": ["pilot_drive/web/*", "tests/*"]},
     entry_points={'console_scripts' : ["pilot-drive=pilot_drive.main:main"]},

@@ -4,7 +4,7 @@ import subprocess
 import threading
 import time
 
-from pilot_drive.utils.adb_notification import Notificaton
+from utils.adb_notification import Notificaton
 
 
 class AndroidManager:
