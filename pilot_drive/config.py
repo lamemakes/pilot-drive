@@ -1,6 +1,7 @@
 import os
 import json
 import logging
+import re
 
 log = logging.getLogger()
 
@@ -17,9 +18,20 @@ config_file = "config.json"
 
 def generate_config():
     log.info("Attemping to create config file at: " + config_file)
+
+
+    # Get the version of the current PILOT Auto build
+    pilot_version = "0.0.0"
+    with open("../setup.py", "w") as setup_py:
+        for line in setup_py.readlines():
+            if "version=" in line:
+                pilot_version = re.search("version=\"(.*)\"", line).group(1)
+
     with open(config_file, "w") as cfg:
         # Populate the config with a skeleton of the config
         config_contents = {"pilot-drive" : {
+                                    "version" : pilot_version,
+                                    "updates" : {"projectUrl" : "https://pypi.org/pypi/pilot-drive/json", "downloadPath" : "/tmp/"},
                                     "obd" : {"enabled" : True, "port" : ""},
                                     "logging" : {"logLevel" : "INFO", "logToFile" : False, "logPath" : ""},
                                     "camera" : {"enabled" : False, "buttonPin" : 16}
