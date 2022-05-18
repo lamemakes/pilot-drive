@@ -21,7 +21,9 @@ def generate_config():
         # Populate the config with a skeleton of the config
         config_contents = {"pilot-drive" : {
                                     "obd" : {"enabled" : True, "port" : ""},
-                                    "logging" : {"logLevel" : "INFO", "logToFile" : False, "logPath" : ""}}}
+                                    "logging" : {"logLevel" : "INFO", "logToFile" : False, "logPath" : ""},
+                                    "camera" : {"enabled" : False, "buttonPin" : 16}
+                                    }}
         
         cfg.writelines(json.dumps(config_contents, indent=2))
 

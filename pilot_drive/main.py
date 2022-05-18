@@ -2,7 +2,7 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from utils import adb_manager, update_manager, bt_ctl, sys_utils, obd_info
+from utils import adb_manager, update_manager, bt_ctl, sys_utils, obd_info, camera_manager
 from time import sleep
 import logging
 from config import pilot_cfg
@@ -16,6 +16,10 @@ log.info("Logging level set to: " + str(pilot_cfg["logging"]["logLevel"]))
 
 # Initalize the updater
 updater = update_manager.PilotUpdater(current_version=pilot_cfg["version"], pypi_url=pilot_cfg["updates"]["projectUrl"])
+
+# Initalize the backup camera (if enabled)
+if pilot_cfg["camera"]["enabled"]:
+    backup_camera = camera_manager.CameraManager(pilot_cfg["camera"]["buttonPin"])
 
 # Initialize the bluetooth controller
 bt_man = bt_ctl.BluetoothManager()
