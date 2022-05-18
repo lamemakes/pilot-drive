@@ -27,8 +27,9 @@ bt_man.run()
 
 # Initialize the OBDII controller
 # TODO: Create config options to specify the port.
-car_man = obd_info.CarInfo(port=pilot_cfg["obd"]["port"])
-car_man.run()
+if pilot_cfg["obd"]["enabled"]:
+    car_man = obd_info.CarInfo(port=pilot_cfg["obd"]["port"])
+    car_man.run()
 
 # Initialize the android debug bus controller
 adb_man = adb_manager.AndroidManager()
@@ -162,31 +163,34 @@ Vehicle methods
 # TODO: Should this have individual endpoints? Seems convoluted
 @app.route("/vehicle-info", methods=["POST"])
 def car_command():
-    if car_man.connected:
+    if pilot_cfg["obd"]["enabled"]:
+        if car_man.connected:
 
-        try:
-            # Conditionals to check what command was used 
-            speed = round(car_man.get_command("speed"), 2)
-            # TODO: Fix this, temporary as emmulator doesn't support gas
-            # fuel_level = round(car_man.get_command("fuel_level"), 2)
-            fuel_level = 56
-            voltage = round(car_man.get_command("voltage"), 2)
-            rpm = car_man.get_command("rpm")
-            eng_load = car_man.get_command("eng_load")
-            dtc = car_man.get_command("dtc")
+            try:
+                # Conditionals to check what command was used 
+                speed = round(car_man.get_command("speed"), 2)
+                # TODO: Fix this, temporary as emmulator doesn't support gas
+                # fuel_level = round(car_man.get_command("fuel_level"), 2)
+                fuel_level = 56
+                voltage = round(car_man.get_command("voltage"), 2)
+                rpm = car_man.get_command("rpm")
+                eng_load = car_man.get_command("eng_load")
+                dtc = car_man.get_command("dtc")
 
-        except TypeError:
-            return jsonify({"vehicleInfo" : None})
+            except TypeError:
+                return jsonify({"vehicleInfo" : None})
 
-        return jsonify({"vehicleInfo" : {"connection" : car_man.connected,
-                                        "speed" : speed, 
-                                        "fuelLevel" : fuel_level, 
-                                        "voltage" : voltage, 
-                                        "rpm" : rpm, 
-                                        "engLoad" : eng_load,
-                                        "dtc" : dtc}})
-
-    return jsonify({"vehicleInfo" : {"connection" : car_man.connected}})
+            return jsonify({"vehicleInfo" : {"connection" : car_man.connected,
+                                            "speed" : speed, 
+                                            "fuelLevel" : fuel_level, 
+                                            "voltage" : voltage, 
+                                            "rpm" : rpm, 
+                                            "engLoad" : eng_load,
+                                            "dtc" : dtc}})
+        else:
+            return jsonify({"vehicleInfo" : {"connection" : car_man.connected}})
+    else:
+        return jsonify({"vehicleInfo" : {"connection" : False}})
 
 """ 
 ==================
