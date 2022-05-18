@@ -22,7 +22,7 @@ def generate_config():
 
     # Get the version of the current PILOT Auto build
     pilot_version = "0.0.0"
-    with open("../setup.py", "w") as setup_py:
+    with open("../setup.py", "r") as setup_py:
         for line in setup_py.readlines():
             if "version=" in line:
                 pilot_version = re.search("version=\"(.*)\"", line).group(1)
