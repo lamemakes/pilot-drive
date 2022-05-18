@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-from textwrap import indent
 
 log = logging.getLogger()
 
@@ -32,6 +31,12 @@ def read_config():
         pilot_cfg = json.loads(cfg.read())
     
     return pilot_cfg
+
+def write_config(pilot_cfg):
+    log.info("Attempting to write to config file: " + config_file)
+    full_config = {"pilot-drive" : pilot_cfg}
+    with open(config_file, "w") as cfg:
+        cfg.write(json.dumps(full_config, indent=2))
 
 if not os.path.isfile(config_file):
     generate_config()

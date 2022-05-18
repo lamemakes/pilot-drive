@@ -156,12 +156,17 @@ body {
  Settings
 ============= */
 
+#Settings {
+  flex-direction: column;
+}
+
 #Settings > div {
-  padding-top: 15px;
+  display: inline-block;
+  padding-top: 10px;
   text-align: center;
 }
 
-#Settings > div > button {
+.settings-switch {
   background-color: white;
   text-align: center;
   border: none;
@@ -169,6 +174,20 @@ body {
   width: 150px;
   padding: 14px 16px;
   transition: 0.3s;
+}
+
+.settings-button {
+  background-color: white;
+  text-align: center;
+  border: none;
+  outline: none;
+  width: 300px;
+  padding: 14px 16px;
+}
+
+.settings-button:active {
+  transition: 0.1s;
+  background-color: #a0a0a0;
 }
 
 /* =============

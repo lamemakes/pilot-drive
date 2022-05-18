@@ -439,3 +439,30 @@ function changeTimeFrmt(timeFrmtId) {
         twelveBtn.style.backgroundColor = "white";
     }
 }
+
+
+function checkForUpdate() {
+    update_endpoint = "/check-updates"
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function()
+    {
+        if(this.readyState == 4 && this.status == 200) {
+            var ajaxReturn = JSON.parse(this.responseText);
+            if (this.responseText.includes("error")){
+                alert("Error: " + ajaxReturn["error"])
+            } else {
+                var dialog = confirm(ajaxReturn["update"]);
+                if(dialog) {
+                    var conf = new XMLHttpRequest();
+                    conf.open('POST', update_endpoint + "/confirm-update", true);
+                    conf.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+                    conf.send();
+                }
+            }
+        }
+    }
+
+    req.open('POST', update_endpoint + "/get-updates", true);
+    req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+    req.send();
+}

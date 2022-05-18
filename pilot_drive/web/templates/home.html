@@ -85,13 +85,17 @@
         <section id="Settings" class="tab-content">
           <div class="unit-settings">
             <h3>Units</h3>
-            <button id="metric-btn" onclick="changeUnits(this.id)">Metric</button>
-            <button id="imperial-btn" onclick="changeUnits(this.id)">Imperial</button>
+            <button class="settings-switch" id="metric-btn" onclick="changeUnits(this.id)">Metric</button>
+            <button class="settings-switch" id="imperial-btn" onclick="changeUnits(this.id)">Imperial</button>
           </div>
           <div class="time-settings">
             <h3>Time Format</h3>
-            <button id="twelve-btn" onclick="changeTimeFrmt(this.id)">12 Hour</button>
-            <button id="twentyfour-btn" onclick="changeTimeFrmt(this.id)">24 Hour</button>
+            <button class="settings-switch" id="twelve-btn" onclick="changeTimeFrmt(this.id)">12 Hour</button>
+            <button class="settings-switch" id="twentyfour-btn" onclick="changeTimeFrmt(this.id)">24 Hour</button>
+          </div>
+          <div class="update-pilot">
+            <h3>About</h3>
+            <button class="settings-button" id="check-updates" onclick="checkForUpdate()">Check for Updates</button>
           </div>
         </section>
 
