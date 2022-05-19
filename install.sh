@@ -26,14 +26,14 @@ root_check () {
     fi
 }
 
-pi_check() {
-    if [[ ! "$(cat /proc/cpuinfo)" =~ "Model\t\t: Raspberry Pi" ]]
-    then 
-        echo -e "${red}PILOT Drive setup needs to be run on a Raspberry Pi!${endc}"
-        echo
-        exit
-    fi
-}
+# pi_check() {
+#     if [[ ! "$(cat /proc/cpuinfo)" =~ "Model\t\t: Raspberry Pi" ]]
+#     then 
+#         echo -e "${red}PILOT Drive setup needs to be run on a Raspberry Pi!${endc}"
+#         echo
+#         exit
+#     fi
+# }
 
 # prompt the user to input y or n, takes input of #1 display string, and #2 default value
 # returns true --> y, returns false --> n
@@ -64,7 +64,7 @@ prompt_yn () {
 
 # Confirm the script is being ran as sudo or root & on a RPi
 root_check
-pi_check
+#pi_check
 
 echo -e "${green}Starting ${bold}PILOT Drive${endc}${green} installer!${endc}"
 echo
