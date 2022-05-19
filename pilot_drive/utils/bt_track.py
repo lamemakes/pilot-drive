@@ -39,7 +39,7 @@ class Track:
             try:
                 if track.get("Title"):
                 # Title formatting, covering all my bases to make sure the title stays on one line (damn features!)
-                    if len(track.get("Title")) > 34 and ("feat" in track.get("Title").lower() or "ft" in track.get("Title").lower()):
+                    if len(track.get("Title")) > 34 and ("feat" in track.get("Title").lower() or "ft" in track.get("Title").lower() or "prod" in track.get("Title").lower()):
                         split_char = None
                         if "(" in track.get("Title"):
                             split_char = "("
