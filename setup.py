@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pilot-drive",
-    version="0.10.1",
+    version="1.0.1",
     author="Wesley Appler",
     author_email="wes@lamemakes.com",
     description="PILOT Drive is a modular vehicle head unit built in Python",
@@ -22,8 +22,7 @@ setup(
     ],
     install_requires=["flask", "obd"],
     packages=["pilot_drive", "utils"],
+    package_dir={'utils': 'pilot_drive/utils', 'pilot-drive': 'pilot_drive'},
     include_package_data=True,
-    package_data={"pilot_drive": ["pilot_drive/web/*", "tests/*"]},
-    entry_points={'console_scripts' : ["pilot-drive=pilot_drive.main:main"]},
     python_requires=">=3.6",
 )
