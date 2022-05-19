@@ -12,7 +12,7 @@ bold="\e[1m"
 # Initial vars
 enable_adb=0
 enable_cam=0
-btn_pin = 0
+btn_pin=0
 enable_obd=0
 obd_port=0
 
@@ -20,7 +20,17 @@ obd_port=0
 root_check () {
     if [ "$EUID" -ne 0 ]
     then 
-        log "${red}PILOT Drive setup requires root, please re-run as sudo!${endc}"
+        echo -e "${red}PILOT Drive setup requires root, please re-run as sudo!${endc}"
+        echo
+        exit
+    fi
+}
+
+pi_check() {
+    if [[ ! "$(cat /proc/cpuinfo)" =~ "Model\t\t: Raspberry Pi" ]]
+    then 
+        echo -e "${red}PILOT Drive setup needs to be run on a Raspberry Pi!${endc}"
+        echo
         exit
     fi
 }
@@ -35,7 +45,7 @@ prompt_yn () {
     read user_prompt
     while [ "${user_prompt,,}" != "y" ] && [ "${user_prompt,,}" != "" ] && [ "${user_prompt,,}" != "n" ] 
     do
-        log "${red}Invalid option, give a valid selection!${endc}";
+        echo -e "${red}Invalid option, give a valid selection!${endc}"
         read user_prompt;
     done
 
@@ -52,20 +62,21 @@ prompt_yn () {
     fi
 }
 
-# Confirm the script is being ran as sudo or root
+# Confirm the script is being ran as sudo or root & on a RPi
 root_check
+pi_check
 
-echo "${green}Starting ${bold}PILOT Drive${endc}${green} installer!${endc}"
+echo -e "${green}Starting ${bold}PILOT Drive${endc}${green} installer!${endc}"
 echo
 
-echo "${blue}Attemtping install of PILOT Drive..."
+echo -e "${blue}Attemtping install of PILOT Drive..."
 echo
 
 # Install PILOT Drive
 python3 -m pip install pilot-drive
 
 
-echo "${blue}Attemtping install of lukasjapan's bt-speaker from \"https://github.com/lukasjapan/bt-speaker\"...${endc}"
+echo -e "${blue}Attemtping install of lukasjapan's bt-speaker from \"https://github.com/lukasjapan/bt-speaker\"...${endc}"
 echo
 
 # Download, install, and configure lukasjapan's bt-speaker: https://github.com/lukasjapan/bt-speaker
@@ -74,7 +85,7 @@ bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/in
 # Handle ADB enabling
 prompt_yn "${blue}Setup Android notification support? [y/N]:${endc}" "n"
 if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
-    echo "${blue}Attemtping install of Android ADB...${endc}"
+    echo -e "${blue}Attemtping install of Android ADB...${endc}"
     echo
 
     apt install android-tools-adb
@@ -84,7 +95,7 @@ fi
 # Handle PiCamera enabling
 prompt_yn "${blue}Setup RPi Camera (backup camera) with PILOT Drive? [Y/n]:${endc}" "y"
 if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
-    echo "${blue}Enter camera trigger button GPIO pin (ie. if button is attached to pin 16, enter \"16\")${endc}"
+    echo -e "${blue}Enter camera trigger button GPIO pin (ie. if button is attached to pin 16, enter \"16\")${endc}"
     read user_prompt
     while [ "${user_prompt,,}" -eq "" ] || [ "${user_prompt,,}" -eq " " ] || ![[ $var =~ ^-?[0-9]{1,2}$ ]]
     do
@@ -99,7 +110,7 @@ fi
 # Handle OBDII enabling
 prompt_yn "${blue}Setup OBDII reader with PILOT Drive? [Y/n]:${endc}" "y"
 if [ "$?" -eq 1 ]; then # enable OBDII, prompt user for port
-    echo "${blue}Enter OBDII reader port (ie. /dev/ttyUSB0), or press enter to use port detection.${endc}"
+    echo -e "${blue}Enter OBDII reader port (ie. /dev/ttyUSB0), or press enter to use port detection.${endc}"
     read user_prompt
     while [ "${user_prompt,,}" -eq " " ]
     do
@@ -112,12 +123,12 @@ if [ "$?" -eq 1 ]; then # enable OBDII, prompt user for port
 fi
 
 # Install Firefox ESR (required for PILOT Drive)
-echo "${blue}Attemtping install of Firefox ESR...${endc}"
+echo -e "${blue}Attemtping install of Firefox ESR...${endc}"
 echo
 apt install firefox-esr
 
 # Config LDXE autostart & create pilot-drive service
-echo "${blue}Attempting to create required PILOT Drive services...${endc}"
+echo -e "${blue}Attempting to create required PILOT Drive services...${endc}"
 echo
 
 # Create the pilot-drive service
@@ -145,13 +156,13 @@ autostart_file="/etc/xdg/lxsession/LXDE/autostart"
 autostart_string="firefox -kiosk localhost:5000"
 
 if !(grep -q "$autostart_string" "$autostart_path"); then
-  echo "$autostart_string" >> $autostart_file
+  echo -e "$autostart_string" >> $autostart_file
 fi
 
 # Finally, iterface with the pilot config python module to generate the config
 python3 -m pilot_drive.config enable_cam btn_pin enable_adb enable_obd obd_port
 
-echo "${green}Done!${endc}"
+echo -e "${green}Done!${endc}"
 echo 
 
 # Handle reboot
