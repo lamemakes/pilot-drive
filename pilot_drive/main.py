@@ -2,11 +2,10 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from utils import adb_manager, update_manager, bt_ctl, sys_utils, obd_info, camera_manager
+from pilot_drive.utils import adb_manager, update_manager, bt_ctl, sys_utils
 from time import sleep
 import logging
-from config import pilot_cfg
-import config
+from pilot_drive.config import pilot_cfg
 
 # TODO: Make logging level dynamic and cleaner
 logging.basicConfig(level=pilot_cfg["logging"]["logLevel"])
@@ -19,21 +18,23 @@ updater = update_manager.PilotUpdater(current_version=pilot_cfg["version"], pypi
 
 # Initalize the backup camera (if enabled)
 if pilot_cfg["camera"]["enabled"]:
+    from pilot_drive.utils import camera_manager
     backup_camera = camera_manager.CameraManager(pilot_cfg["camera"]["buttonPin"])
+
+# Initialize the OBDII controller
+if pilot_cfg["obd"]["enabled"]:
+    from pilot_drive.utils import obd_manager
+    car_man = obd_manager.CarManager(port=pilot_cfg["obd"]["port"])
+    car_man.run()
+
+# Initialize the android debug bus controller
+if pilot_cfg["adb"]["enabled"]:
+    adb_man = adb_manager.AndroidManager()
+    adb_man.run()
 
 # Initialize the bluetooth controller
 bt_man = bt_ctl.BluetoothManager()
 bt_man.run()
-
-# Initialize the OBDII controller
-# TODO: Create config options to specify the port.
-if pilot_cfg["obd"]["enabled"]:
-    car_man = obd_info.CarInfo(port=pilot_cfg["obd"]["port"])
-    car_man.run()
-
-# Initialize the android debug bus controller
-adb_man = adb_manager.AndroidManager()
-adb_man.run()
 
 # Initialize the app object and set the static/templates folders
 # TODO: Make this class based
