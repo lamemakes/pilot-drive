@@ -3,7 +3,7 @@
 import requests
 import subprocess
 import sys
-import utils.sys_utils as sys_utils
+import pilot_drive.utils.sys_utils as sys_utils
 import json
 
 

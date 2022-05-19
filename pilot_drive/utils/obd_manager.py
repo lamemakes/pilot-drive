@@ -8,7 +8,7 @@ import time
 import obd
 from pint import UnitRegistry
 
-class CarInfo:
+class CarManager:
     def __init__(self, port=None):
 
         # Set logger
@@ -103,7 +103,7 @@ class CarInfo:
         obd_thread.start()
 
 if __name__ == "__main__":
-    carInfo = CarInfo("/dev/pts/2")
+    carInfo = CarManager("/dev/pts/2")
     if carInfo.connected:
         print("Connection to car established!")
         print("Speed:  \t", carInfo.get_command("speed"))
