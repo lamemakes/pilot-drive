@@ -2,7 +2,7 @@
 # RESTful naming conventions https://restfulapi.net/resource-naming/
 
 from flask import Flask, jsonify, render_template
-from pilot_drive.utils import adb_manager, update_manager, bt_ctl, sys_utils
+from utils import adb_manager, update_manager, bt_ctl, sys_utils
 from time import sleep
 import logging
 from pilot_drive.config import pilot_cfg
@@ -18,12 +18,12 @@ updater = update_manager.PilotUpdater(current_version=pilot_cfg["version"], pypi
 
 # Initalize the backup camera (if enabled)
 if pilot_cfg["camera"]["enabled"]:
-    from pilot_drive.utils import camera_manager
+    from utils import camera_manager
     backup_camera = camera_manager.CameraManager(pilot_cfg["camera"]["buttonPin"])
 
 # Initialize the OBDII controller
 if pilot_cfg["obd"]["enabled"]:
-    from pilot_drive.utils import obd_manager
+    from utils import obd_manager
     car_man = obd_manager.CarManager(port=pilot_cfg["obd"]["port"])
     car_man.run()
 
@@ -188,10 +188,8 @@ def car_command():
                                             "rpm" : rpm, 
                                             "engLoad" : eng_load,
                                             "dtc" : dtc}})
-        else:
-            return jsonify({"vehicleInfo" : {"connection" : car_man.connected}})
-    else:
-        return jsonify({"vehicleInfo" : {"connection" : False}})
+                                            
+    return jsonify({"vehicleInfo" : {"connection" : False}})
 
 """ 
 ==================
@@ -200,16 +198,17 @@ ADB methods
 """
 @app.route("/adb-info", methods=["POST"])
 def get_adb():
-    if adb_man.connected:
-        return jsonify ({"android" : {
-                            "connection" : adb_man.connected,
-                            "notifications" : adb_man.get_notifications(), 
-                            "battery" : adb_man.get_battery_level(),
-                            "hostname" : adb_man.device_name,
-                            "macAddr" : adb_man.bt_addr}})
-    
+    if pilot_cfg["adb"]["enabled"]:
+        if adb_man.connected:
+            return jsonify ({"android" : {
+                                "connection" : adb_man.connected,
+                                "notifications" : adb_man.get_notifications(), 
+                                "battery" : adb_man.get_battery_level(),
+                                "hostname" : adb_man.device_name,
+                                "macAddr" : adb_man.bt_addr}})
+        
     return jsonify({"android" : {
-                        "connection" : adb_man.connected}})
+                        "connection" : False}})
 
 
     

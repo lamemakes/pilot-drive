@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import re
+import pilot_drive.__init__
 
 log = logging.getLogger()
 
@@ -18,12 +19,9 @@ config_file = "config.json"
 
 def generate_config(enable_cam, btn_pin, enable_adb, enable_obd, obd_port):
 
-    # Get the version of the current PILOT Auto build
-    pilot_version = "0.0.0"
-    with open("setup.py", "r") as setup_py:
-        for line in setup_py.readlines():
-            if "version=" in line:
-                pilot_version = re.search("version=\"(.*)\"", line).group(1)
+    # Get the version of the current PILOT Drive build
+    pilot_version = pilot_drive.__init__.__version__
+    
 
     with open(config_file, "w") as cfg:
         # Populate the config with a skeleton of the config

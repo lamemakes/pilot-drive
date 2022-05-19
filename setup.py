@@ -1,11 +1,12 @@
-from setuptools import setup, find_packages
+from setuptools import setup
+import pilot_drive
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="pilot-drive",
-    version="1.0.1",
+    version=pilot_drive.__version__,
     author="Wesley Appler",
     author_email="wes@lamemakes.com",
     description="PILOT Drive is a modular vehicle head unit built in Python",
