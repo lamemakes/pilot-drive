@@ -72,7 +72,7 @@ else:
 
 if __name__ == "__main__":
     import sys
-    arguments = sys.argv
+    arguments = sys.argv[1:]
     for i in range(len(arguments)):
         if arguments[i] == "0":
             arguments[i] = False
