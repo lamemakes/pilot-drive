@@ -38,7 +38,7 @@ root_check () {
 # prompt the user to input y or n, takes input of #1 display string, and #2 default value
 # returns true --> y, returns false --> n
 prompt_yn () {
-    if $skip_yn; then
+    if [ $skip_yn -eq 1 ]; then
         return 1
     fi
     echo -e $1
@@ -69,7 +69,7 @@ root_check
 echo -e "${green}Starting ${bold}PILOT Drive${endc}${green} installer!${endc}"
 echo
 
-echo -e "${blue}Attemtping install of PILOT Drive..."
+echo -e "${blue}Attemtping install of PILOT Drive...${endc}"
 echo
 
 # Install PILOT Drive
@@ -136,7 +136,9 @@ cat << EOF > /etc/systemd/system/pilot-drive.service
 [Unit]
 Description=Pilot Drive service
 After=dbus-org.bluez.service
-StartLimitIntervalSec=0[Service]
+StartLimitIntervalSec=0
+
+[Service]
 Type=simple
 Restart=always
 RestartSec=1
