@@ -80,7 +80,7 @@ echo -e "${blue}Attemtping install of lukasjapan's bt-speaker from \"https://git
 echo
 
 # Download, install, and configure lukasjapan's bt-speaker: https://github.com/lukasjapan/bt-speaker
-bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh && return 0)
 
 # Handle ADB enabling
 prompt_yn "${blue}Setup Android notification support? [y/N]:${endc}" "n"
