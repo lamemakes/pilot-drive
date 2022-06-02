@@ -37,15 +37,16 @@ root_check () {
 # returns true --> y, returns false --> n
 prompt_yn () {
     if [[ $skip_yn -eq 1 ]]; then
-        return 1
+        user_prompt = $2
+    else
+        echo -e $1
+        read user_prompt
+        while [ "${user_prompt,,}" != "y" ] && [ "${user_prompt,,}" != "" ] && [ "${user_prompt,,}" != "n" ] 
+        do
+            echo -e "${red}Invalid option, give a valid selection!${endc}"
+            read user_prompt;
+        done
     fi
-    echo -e $1
-    read user_prompt
-    while [ "${user_prompt,,}" != "y" ] && [ "${user_prompt,,}" != "" ] && [ "${user_prompt,,}" != "n" ] 
-    do
-        echo -e "${red}Invalid option, give a valid selection!${endc}"
-        read user_prompt;
-    done
 
     if [ "$user_prompt" = "" ]; then
         if [ $2 = "y" ]; then
@@ -91,7 +92,7 @@ if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
 fi
 
 # Handle PiCamera enabling
-prompt_yn "${blue}Setup RPi Camera (backup camera) with PILOT Drive? [Y/n]:${endc}" "y"
+prompt_yn "${blue}Setup RPi Camera (backup camera) with PILOT Drive? [n/Y]:${endc}" "n"
 if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
     echo -e "${blue}Enter camera trigger button GPIO pin (ie. if button is attached to pin 16, enter \"16\")${endc}"
     read user_prompt
@@ -106,7 +107,7 @@ if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
 fi
 
 # Handle OBDII enabling
-prompt_yn "${blue}Setup OBDII reader with PILOT Drive? [Y/n]:${endc}" "y"
+prompt_yn "${blue}Setup OBDII reader with PILOT Drive? [y/N]:${endc}" "n"
 if [ "$?" -eq 1 ]; then # enable OBDII, prompt user for port
     echo -e "${blue}Enter OBDII reader port (ie. /dev/ttyUSB0), or press enter to use port detection.${endc}"
     read user_prompt
@@ -124,7 +125,9 @@ fi
 # Install Firefox ESR (required for PILOT Drive)
 echo -e "${blue}Attempting install of Firefox ESR...${endc}"
 echo
+
 apt install firefox-esr
+
 
 # Config LDXE autostart & create pilot-drive service
 echo -e "${blue}Attempting to create required PILOT Drive services...${endc}"
