@@ -96,9 +96,9 @@ prompt_yn "${blue}Setup RPi Camera (backup camera) with PILOT Drive? [n/Y]:${end
 if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
     echo -e "${blue}Enter camera trigger button GPIO pin (ie. if button is attached to pin 16, enter \"16\")${endc}"
     read user_prompt
-    while [ "${user_prompt,,}" == "" ] || [ "${user_prompt,,}" == " " ] || ! [[ $var =~ ^-?[0-9]{1,2}$ ]]
+    while [ "${user_prompt,,}" == "" ] || [ "${user_prompt,,}" == " " ] || ! [[ ${user_prompt,,} =~ ^-?[0-9]{1,2}$ ]]
     do
-        log "${red}Invalid option, give a valid selection!${endc}";
+        echo "${red}Invalid option, give a valid selection!${endc}";
         read user_prompt;
     done
 
