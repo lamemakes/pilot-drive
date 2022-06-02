@@ -79,7 +79,7 @@ echo -e "${blue}Attemtping install of lukasjapan's bt-speaker from \"https://git
 echo
 
 # Download, install, and configure lukasjapan's bt-speaker: https://github.com/lukasjapan/bt-speaker
-bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh && return 0)
+bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh)
 
 # Handle ADB enabling
 prompt_yn "${blue}Setup Android notification support? [y/N]:${endc}" "n"
@@ -96,7 +96,7 @@ prompt_yn "${blue}Setup RPi Camera (backup camera) with PILOT Drive? [n/Y]:${end
 if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
     echo -e "${blue}Enter camera trigger button GPIO pin (ie. if button is attached to pin 16, enter \"16\")${endc}"
     read user_prompt
-    while [ "${user_prompt,,}" == "" ] || [ "${user_prompt,,}" == " " ] || ![[ $var =~ ^-?[0-9]{1,2}$ ]]
+    while [ "${user_prompt,,}" == "" ] || [ "${user_prompt,,}" == " " ] || ! [[ $var =~ ^-?[0-9]{1,2}$ ]]
     do
         log "${red}Invalid option, give a valid selection!${endc}";
         read user_prompt;
@@ -160,7 +160,7 @@ autostart_path="/etc/xdg/lxsession/LXDE-pi/autostart"
 autostart_string="firefox -kiosk localhost:5000"
 
 if ! grep -q "$autostart_string" "$autostart_path"; then
-  echo -e "$autostart_string" >> $autostart_file
+  echo -e "$autostart_string" >> $autostart_path
 fi
 
 
