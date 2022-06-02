@@ -34,7 +34,7 @@ class CameraManager:
         else:
             self.camera.stop_preview()
     
-        time.sleep(1)
+        time.sleep(3)
 
 if __name__ == "__main__":
     backup_cam = CameraManager(16)

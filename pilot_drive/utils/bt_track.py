@@ -35,8 +35,13 @@ class Track:
 
         # Confirm the track is not empty (track == None)
         if track:
-            print("TRACK: " + str(track))
+            self.log.debug("Recieved bluetooth track: " + str(track))
             try:
+                # Set values as default to prevent previous values from leaching over if values aren't populated
+                self.title = ""
+                self.artist = ""
+                self.album = ""
+
                 if track.get("Title"):
                 # Title formatting, covering all my bases to make sure the title stays on one line (damn features!)
                     if len(track.get("Title")) > 34 and ("feat" in track.get("Title").lower() or "ft" in track.get("Title").lower() or "prod" in track.get("Title").lower()):
@@ -91,8 +96,12 @@ class Track:
                 else:
                     self.album = track.get("Album")
                     
+                # TODO: Implement duration
                 self.duration = track.get("Duration")
-                self.artist = track.get("Artist")
+
+                if track.get("Artist"):
+                    self.artist = track.get("Artist")
+                
                 self.active_track = True
             except KeyError as e:
                 self.log.error("Key Error returned from bt_track.py:", e)

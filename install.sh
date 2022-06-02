@@ -1,6 +1,4 @@
 #!/bin/bash +x
-# Halt script if error is detected
-set -e
 
 # Color vars
 red="\e[0;91m"
@@ -103,7 +101,7 @@ if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
         read user_prompt;
     done
 
-    raspi-config nonint do_camera 0 && return 0
+    raspi-config nonint do_camera 0
     enable_cam=1
 fi
 
@@ -122,8 +120,9 @@ if [ "$?" -eq 1 ]; then # enable OBDII, prompt user for port
     enable_obd=1
 fi
 
+
 # Install Firefox ESR (required for PILOT Drive)
-echo -e "${blue}Attemtping install of Firefox ESR...${endc}"
+echo -e "${blue}Attempting install of Firefox ESR...${endc}"
 echo
 apt install firefox-esr
 
@@ -154,15 +153,37 @@ systemctl enable pilot-drive
 
 
 # Configure the LXDE autostart
-autostart_file="/etc/xdg/lxsession/LXDE/autostart"
+autostart_path="/etc/xdg/lxsession/LXDE-pi/autostart"
 autostart_string="firefox -kiosk localhost:5000"
 
-if !(grep -q "$autostart_string" "$autostart_path"); then
+if ! grep -q "$autostart_string" "$autostart_path"; then
   echo -e "$autostart_string" >> $autostart_file
 fi
 
+
+# Disable RPi screen blanking
+echo -e "${blue}Disabling screen blanking...${endc}"
+echo
+
+raspi-config nonint do_blanking 0
+
+
+# Disable RPi overscan
+echo -e "${blue}Enabling overscan...${endc}"
+echo
+
+raspi-config nonint do_overscan 0
+
+
+# Remove RPi Setup Wizard so it doesn't appear on every boot
+echo -e "${blue}Disabling RPi setup wizard...${endc}"
+echo -e 
+
+rm /etc/xdg/autostart/piwiz.desktop
+
+
 # Finally, iterface with the pilot config python module to generate the config
-python3 -m pilot_drive.config enable_cam btn_pin enable_adb enable_obd obd_port
+python3 -m pilot_drive.config $enable_cam $btn_pin $enable_adb $enable_obd $obd_port
 
 echo -e "${green}Done!${endc}"
 echo 

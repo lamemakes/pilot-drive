@@ -4,13 +4,14 @@
 from flask import Flask, jsonify, render_template
 from utils import adb_manager, update_manager, bt_ctl, sys_utils
 from time import sleep
+from pilot_drive.config import PilotConfig
 import logging
-from pilot_drive.config import pilot_cfg
 
-# TODO: Make logging level dynamic and cleaner
-logging.basicConfig(level=pilot_cfg["logging"]["logLevel"])
 log = logging.getLogger()
-log.info("Starting PILOT Drive!") 
+
+config_man = PilotConfig(log)
+pilot_cfg = config_man.run()
+
 log.info("Logging level set to: " + str(pilot_cfg["logging"]["logLevel"]))
 
 # Initalize the updater
@@ -89,7 +90,7 @@ def check_updates():
 def install_updates():
     # Re-write the config with the new version
     pilot_cfg["version"] = updater.new_release_version
-    config.write_config(pilot_cfg)
+    pilot_drive.config.write_config(pilot_cfg)
 
     # A python dict is returned describing the status of the update (error or success)
     updater.update_pilot(release_info=updater.new_release_info, update_path=pilot_cfg["updates"]["downloadPath"])
