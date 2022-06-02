@@ -90,7 +90,7 @@ def check_updates():
 def install_updates():
     # Re-write the config with the new version
     pilot_cfg["version"] = updater.new_release_version
-    pilot_drive.config.write_config(pilot_cfg)
+    config_man.write_config(pilot_cfg)
 
     # A python dict is returned describing the status of the update (error or success)
     updater.update_pilot(release_info=updater.new_release_info, update_path=pilot_cfg["updates"]["downloadPath"])
