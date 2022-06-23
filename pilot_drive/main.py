@@ -18,9 +18,12 @@ log.info("Logging level set to: " + str(pilot_cfg["logging"]["logLevel"]))
 updater = update_manager.PilotUpdater(current_version=pilot_cfg["version"], pypi_url=pilot_cfg["updates"]["projectUrl"])
 
 # Initalize the backup camera (if enabled)
-if pilot_cfg["camera"]["enabled"]:
-    from utils import camera_manager
-    backup_camera = camera_manager.CameraManager(pilot_cfg["camera"]["buttonPin"])
+try:
+    if pilot_cfg["camera"]["enabled"]:
+        from utils import camera_manager
+        backup_camera = camera_manager.CameraManager(pilot_cfg["camera"]["buttonPin"])
+except Exception as e:
+    log.error("Failed to enable camera:")
 
 # Initialize the OBDII controller
 if pilot_cfg["obd"]["enabled"]:
@@ -114,11 +117,7 @@ def music_info():
             track_info = None
 
         # Get track playback status
-        bt_man.get_track_status()
-        if bt_man.status:
-            track_status = bt_man.status
-        else:
-            track_status = None
+        track_status = bt_man.get_track_status()
         
         return jsonify({"btInfo" : {"connected" : bt_man.connected,
                                     "connectedDevice" : {"name" : bt_man.device_name, "address" : bt_man.device_addr},

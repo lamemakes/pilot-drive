@@ -22,6 +22,7 @@ class BluetoothManager:
         self.device_name = None
         self.device_addr = None
         self.volume = None
+        self.track = None
 
         # Track Variables
         self.track_info = None
@@ -43,7 +44,7 @@ class BluetoothManager:
 
     # Get the status of the current track (paused, playing)
     def get_track_status(self):
-        self.status = self.track.status
+        return self.track.status
 
 
     # Sets a dict object with all track metadata contained in it.
@@ -95,13 +96,9 @@ class BluetoothManager:
 
     def prop_changed(self, iface, changed, invalidated):
         # TODO: Sync volume control here, seems to be an update field.
-        if "Title" in str(changed.items()):
-            if "org.bluez.MediaPlayer1" in str(iface):
-                self.log.debug("Track properties updated: " + str(changed.items()))
-                self.track = Track(self.mgr) 
-                self.track.get_track(changed)
-                self.get_track_data()
-
+        if self.track == None:
+            self.track = Track(self.mgr) 
+        self.track.prop_changed(iface, changed, invalidated)
 
 ########## Main Methods ########## 
 

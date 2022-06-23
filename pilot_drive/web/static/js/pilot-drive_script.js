@@ -181,17 +181,9 @@ function updateTrackInfo(track) {
 
         var trackInfo = track["metadata"];
 
-        if (trackInfo["title"] != null) {
-            title.innerHTML = trackInfo["title"];
-        }
-
-        if (trackInfo["album"] != null) {
-            album.innerHTML = trackInfo["album"];
-        }
-
-        if (trackInfo["artist"] != null) {
-            artist.innerHTML = trackInfo["artist"];
-        }
+        title.innerHTML = (trackInfo["title"] != null) ? trackInfo["title"] : "";
+        album.innerHTML = (trackInfo["album"] != null) ? trackInfo["album"] : "";
+        artist.innerHTML = (trackInfo["artist"] != null) ? trackInfo["artist"] : "";
 
     } else {
         if (topTime.style.display == "block" || topTime.style.display == "") {

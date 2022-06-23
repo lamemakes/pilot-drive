@@ -3,6 +3,7 @@ from dbus.exceptions import DBusException
 
 class Track:
     def __init__(self, mgr):
+        
         self.log = logging.getLogger()
 
         self.track_obj = {"Track" : None}
@@ -14,16 +15,26 @@ class Track:
                     self.track_obj = iface.get("org.bluez.MediaPlayer1")
 
             self.active_track = False
-            self.status = "paused"
+            self.status = None
 
             # Set all needed values to be able to pull track metadata when class is instantiated.
             self.get_track()
 
             if self.active_track:
-                self.get_status()
-                self.get_position()
+                if "Status" in str(self.track_obj):
+                    self.get_status(self.track_obj)
+                if "Position" in str(self.track_obj):
+                    self.get_position()
         except DBusException as e:
             self.log.error(e)
+
+    def prop_changed(self, iface, changed, invalidated):
+        # TODO: Sync volume control here?, seems to be an update field.
+        self.log.debug("Track properties updated: " + str(changed.items()))
+        if "Title" in str(changed.items()):
+            self.get_track(changed)
+        if "Status" in str(changed.items()):
+            self.get_status(changed)
 
 
     def get_track(self, prop_update=None):
@@ -70,7 +81,7 @@ class Track:
                     self.title = track.get("Title")
 
                 if track.get("Album"):
-                # Album formatting, covering all my bases to make sure the Album stays on one line (damn features!)
+                # Album formatting
                     if len(track.get("Album")) > 34 and ("feat" in track.get("Album").lower() or "ft" in track.get("Album").lower()):
                         split_char = None
                         if "(" in track.get("Album"):
@@ -109,8 +120,10 @@ class Track:
         else:
             self.active_track = False
 
-    def get_status(self):
-        self.status = self.track_obj.get("Status")
+    def get_status(self, props):
+        self.log.error("GET_STATUS: " + str(props.get("Status")))     # WA DEBUG
+        self.status = props.get("Status")
+        return self.status
 
     def get_position(self):
         self.position = self.track_obj.get("Position")
