@@ -23,7 +23,9 @@ class Track:
             if self.active_track:
                 if "Status" in str(self.track_obj):
                     self.get_status(self.track_obj)
+                # TODO: Implement position
                 if "Position" in str(self.track_obj):
+                    self.position = ""
                     self.get_position()
         except DBusException as e:
             self.log.error(e)

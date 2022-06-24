@@ -168,14 +168,14 @@ fi
 echo -e "${blue}Disabling screen blanking...${endc}"
 echo
 
-raspi-config nonint do_blanking 0
+raspi-config nonint do_blanking 1
 
 
 # Disable RPi overscan
 echo -e "${blue}Enabling overscan...${endc}"
 echo
 
-raspi-config nonint do_overscan 0
+raspi-config nonint do_overscan 1
 
 
 # Remove RPi Setup Wizard so it doesn't appear on every boot
