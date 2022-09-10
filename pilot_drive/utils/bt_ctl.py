@@ -57,7 +57,8 @@ class BluetoothManager:
             "artist" : None,
             "album" : None,
             "duration" : None,
-            "position" : None
+            # Needs to be implemented
+            # "position" : None
             }
 
         else:
@@ -65,8 +66,9 @@ class BluetoothManager:
             "title" : self.track.title,
             "artist" : self.track.artist,
             "album" : self.track.album,
-            "duration" : self.track.duration,
-            "position" : self.track.position  
+            "duration" : self.track.duration
+            # Needs to be implemented
+            # "position" : self.track.position 
             }
 
         # Update the status of the track

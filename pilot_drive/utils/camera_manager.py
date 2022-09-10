@@ -18,8 +18,8 @@ class CameraManager:
         self.camera_state = False
 
         # Set button pin to be an input pin and set initial value to be pulled low (off)
-        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        
+        GPIO.setup(btn_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
         # Create GPIO event for the backup camera, debounce is needed for the button in my experience.
         GPIO.add_event_detect(btn_pin, GPIO.RISING, callback=self.show_camera, bouncetime=400)
 
