@@ -77,10 +77,10 @@ When the machine reboots, you should see...
 In an attempt to keep the UI dynamic, customizable, and have a low barrier to entry in terms of hackability, I opted for a web based UI. So far this has worked pretty well, using Flask as the Python backend, serving data to the ((vanilla)) HTML & JavaScript in real time via ((mostly)) RESTful API calls. 
 
 The interface has 4 main "views":
-    - **Media**: Bluetooth track data, eventually SDR audio, etc. When nothing is connected, shows a screen instructing the user on how to connect.
-    - **Car Info**: Displays the OBD feed, showing things like speed, gas, battery voltage, etc.
-    - **Android Notifications**: Displays ADB notifications, pulling app icons from the connect device. Looking to move into iPhone support soon as well.
-    - **Settings**: Basic settings tab. Alter time display format, units, and check for updates.
+- **Media**: Bluetooth track data, eventually SDR audio, etc. When nothing is connected, shows a screen instructing the user on how to connect.
+- **Car Info**: Displays the OBD feed, showing things like speed, gas, battery voltage, etc.
+- **Android Notifications**: Displays ADB notifications, pulling app icons from the connect device. Looking to move into iPhone support soon as well.
+- **Settings**: Basic settings tab. Alter time display format, units, and check for updates.
 
 In the top left, the connected bluetooth device shows up, while the time is shown in the center, and the system-wide CPU utilization is shown in the top right.
 
