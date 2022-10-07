@@ -84,9 +84,27 @@ The interface has 4 main "views":
 
 In the top left, the connected bluetooth device shows up, while the time is shown in the center, and the system-wide CPU utilization is shown in the top right.
 
+_Instructional screen, pulling the hostname of the Pi to display_
+![2022-10-07-132901_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638006-a1814312-4ecd-4406-9dc1-3575267e7f11.png)
+
+_A connected device playing Sweatpants by Gambino. Classic._
+![2022-10-07-133709_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638036-15805f4a-e3fe-4c4d-a024-dea50e3fdf7e.png)
+
+_The temporarily ugly OBDII interface. Looking to add more diagnostics and visuals moving forward_
+![2022-10-07-145356_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638057-c801d017-4b28-49c8-acab-7d15fe56ba94.png)
+
+_The ADB notification interface. This is scrollable, and pulls app icons from connected device_
+![2022-10-07-144358_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638077-2f73111b-4a69-4b18-86fb-53e3f89ac685.png)
+
+_The settings page, more settings will also come, like UI customization_
+![2022-10-07-144411_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638102-b87fb9d9-7990-44bc-acca-b66ffe8951eb.png)
+
+_An (at the time) up to date PILOT Drive!_
+![2022-10-07-144429_1024x600_scrot](https://user-images.githubusercontent.com/83597346/194638106-9afb39ba-be57-40d8-b943-16a0784c959e.png)
+
 
 ## Notes
 
-- I started PILTO Drive years ago as a very novice & young developer, thus it's (at times) built on some not-so-great code. I'm working to refine and clean up the existing code base though. The real major issue is the sloppy vanilla HTML & JS, but I'm looking to migrate to Vue3 very soon. 
+- I started PILOT Drive years ago as a very novice & young developer, thus it's (at times) built on some not-so-great code. I'm working to refine and clean up the existing code base though. The real major issue is the sloppy vanilla HTML & JS, but I'm looking to migrate to Vue3 very soon. 
 - PILOT Drive is a major WIP. I've put a lot of time into already, but a lot more is planned to hopefully make it the full extent of what it could be, because I do believe in it's potential. 
 - This is fully open source o if you seen anything that could be improved feel free to reach out/contribute! All is much appreciated. 
