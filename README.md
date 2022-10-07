@@ -15,46 +15,31 @@ PILOT Drive can either be installed & configured using the install script, or ma
 
 ### Using the install script
 
-To install PILOT Drive via the install script, on newly setup & internet connected Raspberry Pi (I'm using a Pi 4 B), execute:
+1. Pull the install script & run it via: ```su -c 'bash <(curl -s https://raw.githubusercontent.com/lamemakes/pilot-drive/master/install.sh)'```
+2. If using a USB soundcard or the [PILOT Drive HAT](https://github.com/lamemakes/pilot-drive-hardware)/DS3231-based RTC, you will need to follow #6 & #8 of [Manual installation](#manual-installation)
+3. **Reboot!:** ```sudo reboot now```
 
-```su -c 'bash <(curl -s https://raw.githubusercontent.com/lamemakes/pilot-drive/master/install.sh)'```
-
-This will pull & install the project, automating all the manual configuration steps.
-
-**NOTE:** If using a USB soundcard or the [PILOT Drive HAT](https://github.com/lamemakes/pilot-drive-hardware)/DS3231-based RTC, you will need to follow #6 & #8 of [Manual installation](#manual-installation)
 
 ### Manual installation
 
-1. Install the project with pip:
-    1. ```sudo python3 -m pip install pilot-drive```
-
+1. Install the project with pip via: ```sudo python3 -m pip install pilot-drive```
 2. _[If using Pi-Camera]_ Enable camera in raspi-config
-
-3. Install Firefox ESR:
-    1. ```sudo apt install firefox-esr```
-
+3. Install Firefox ESR via ```sudo apt install firefox-esr```
 4. in ```/etc/xdg/lxsession/LXDE-pi/autostart``` append the command ```firefox -kiosk localhost:5000``` to autostart the browser in kiosk mode on boot
-
-5. Install lukasjapan's bt-speaker via: 
-    1. ```bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh)```
-
+5. Install [lukasjapan's bt-speaker](https://github.com/lukasjapan/bt-speaker) via: ```bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh)```
 6. _[If using USB soundcard]_ Configure USB soundcard:
     1. Disable 3.5mm jack via "sudo raspi-config"
     2. Confifure USB soundcards via alsa:
         - https://raspberrypi.stackexchange.com/questions/80072/how-can-i-use-an-external-usb-sound-card-and-set-it-as-default
         - https://raspberrypi.stackexchange.com/questions/95193/setting-up-config-for-alsa-at-etc-asound-conf
-    3. Edit ```/etc/bt_speaker/config.ini```, set ```cardindex = ``` to reflect the usb sound card
-
+    3. Edit ```/etc/bt_speaker/config.ini```, set ```cardindex = ``` to reflect the USB sound card index
 7. _[If using Android Debug Bridge for notifications]_ Install ADB for linux:
     1. ```sudo apt install android-tools-adb```
-
 8. _[If using DS3231 RTC]_ Follow RTC tutorial:
     - https://www.raspberrypi-spy.co.uk/2015/05/adding-a-ds3231-real-time-clock-to-the-raspberry-pi/
-
 9. _[Display & preference dependant]_ Configure display:
     1. Enable overscan via raspi-config UI or ```sudo raspi-config nonint do_overscan 1```
     2. Disable screen blanking via raspi-config UI or ```sudo raspi-config nonint do_blanking 1```
-
 10. Create a new service for PILOT-Drive:
     1. Create the service file ```/etc/systemd/system/pilot-drive.service``` via:
         ```
@@ -77,12 +62,31 @@ This will pull & install the project, automating all the manual configuration st
         EOF
         ```
     2. Execute ```sudo systemctl enable pilot-drive.service``` to start the service on boot
-
 11. Initialize the PILOT Drive config:
     1. ```python3 -m pilot_drive.config <enable backup camera> <camera button pin> <enable ADB> <enable OBD> <OBD port>```
-    2. **NOTE:** It is critical that **each** argument is given and in order, enabled or not. This will be more simplictic in versions to come. Enable arguments expect booleans, either in 1/0 format or true/false. If disabling a feature with another parameter, the value of the parameter really doesn't matter, but should probably be 0/false.
+    2. **NOTE:** It is critical that **each** argument is given and in order, enabled or not. This will be more simplistic in versions to come. Enable arguments expect booleans, either in 1/0 format or true/false. If disabling a feature with another parameter, the value of the parameter really doesn't matter, but should probably be 0/false.
     3. Example execution, where the camera is disabled, but ADB & OBD are both enabled:
         - ```python3 -m pilot_drive.config false false true true /dev/pts/1``` <-- Notice the 5 arguments, in order.
+12. **Reboot!:** ```sudo reboot now```
 
-12. **Reboot!**
-    1. ```sudo reboot now```
+
+When the machine reboots, you should see...
+
+## The UI
+
+In an attempt to keep the UI dynamic, customizable, and have a low barrier to entry in terms of hackability, I opted for a web based UI. So far this has worked pretty well, using Flask as the Python backend, serving data to the ((vanilla)) HTML & JavaScript in real time via ((mostly)) RESTful API calls. 
+
+The interface has 4 main "views":
+    - **Media**: Bluetooth track data, eventually SDR audio, etc. When nothing is connected, shows a screen instructing the user on how to connect.
+    - **Car Info**: Displays the OBD feed, showing things like speed, gas, battery voltage, etc.
+    - **Android Notifications**: Displays ADB notifications, pulling app icons from the connect device. Looking to move into iPhone support soon as well.
+    - **Settings**: Basic settings tab. Alter time display format, units, and check for updates.
+
+In the top left, the connected bluetooth device shows up, while the time is shown in the center, and the system-wide CPU utilization is shown in the top right.
+
+
+## Notes
+
+- I started PILTO Drive years ago as a very novice & young developer, thus it's (at times) built on some not-so-great code. I'm working to refine and clean up the existing code base though. The real major issue is the sloppy vanilla HTML & JS, but I'm looking to migrate to Vue3 very soon. 
+- PILOT Drive is a major WIP. I've put a lot of time into already, but a lot more is planned to hopefully make it the full extent of what it could be, because I do believe in it's potential. 
+- This is fully open source o if you seen anything that could be improved feel free to reach out/contribute! All is much appreciated. 
