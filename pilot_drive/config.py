@@ -99,15 +99,17 @@ class PilotConfig:
 
 if __name__ == "__main__":
     import sys
-    arguments = sys.argv[1:]
-    for i in range(len(arguments)):
-        if arguments[i] == "0":
-            arguments[i] = False
-        elif arguments[i] == "1":
-            arguments[i] = True
+    args = sys.argv[1:]
+    if len(args) != 5:
+        print("\033[31mInvalid number of arguments provided! Was expecting 5 (in order): enable_cam, btn_pin, enable_adb, enable_obd, obd_port.\033[39m")
+    for i in range(len(args)):
+        if args[i] == "0" or args[i].lower() == "false":
+            args[i] = False
+        elif args[i] == "1" or args[i].lower() == "true":
+            args[i] = True
 
     pilot_cfg = PilotConfig(logging.getLogger())
 
-    enable_cam, btn_pin, enable_adb, enable_obd, obd_port = arguments
+    enable_cam, btn_pin, enable_adb, enable_obd, obd_port = args
 
     print(pilot_cfg.generate_config(enable_cam, btn_pin, enable_adb, enable_obd, obd_port))
