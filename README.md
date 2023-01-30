@@ -1,5 +1,7 @@
 # PILOT Drive
 
+## **NOTE (01/30/2023)**: 🚧 PILOT Drive is in the middle of a UI transition to React. The current method of a sloppy, untested UI was a quick solution for a while, but is not long term for obvious reasons. Lots of changes may come in the next few months. 🚧 
+
 Tired of your vehicle's closed-source, boring, non-customizable proprietary headunit? Want something a little smarter that you can hack around your own needs? Look no further than PILOT Drive.
 
 PILOT Drive is an open source software/hardware carPC based on the Raspberry Pi and built on Python 3. The objective was to make something that was cheap, reasonably easy to implement, and gave the user a plethora of additional functionality that their vehicle had not prevous offered. 
