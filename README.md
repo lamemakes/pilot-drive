@@ -1,6 +1,6 @@
 # PILOT Drive
 
-## **🚧 NOTE (01/30/2023) 🚧**: PILOT Drive is in the middle of a UI transition to Vue. The current method of a sloppy, untested UI was a quick solution for a while, but is not long term for obvious reasons. Lots of changes may come in the next few months.
+## **🚧 NOTE (01/30/2023) 🚧**: PILOT Drive is in the middle of a UI transition to Vue. The current method of a sloppy, untested UI was a quick solution for a while, but is not long term for obvious reasons. Lots of changes may come in the next few months. For more info, check out the "2.0.0" branch. Cheers!
 
 Tired of your vehicle's closed-source, boring, non-customizable proprietary headunit? Want something a little smarter that you can hack around your own needs? Look no further than PILOT Drive.
 
