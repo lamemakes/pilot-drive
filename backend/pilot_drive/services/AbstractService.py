@@ -15,12 +15,15 @@ class AbstractService(ABC):
         self.service_type = service_type.value
         
 
-    def push_to_queue(self, event_json: str):
+    def push_to_queue(self, event_json: str, event_type: dict=None):
         '''
         Push a new event to the master queue.
 
-        :param event_json: the JSON string that will be passed to the queue, and in turn to the UI.
+        :param event_json: the JSON dict that will be passed to the queue, and in turn to the UI.
         '''
+        if not event_type:
+            event_type = self.service_type
+
         self.event_queue.push_event(event_type=self.service_type, event_json=event_json)
 
     

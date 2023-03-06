@@ -64,7 +64,7 @@ class Settings(AbstractService):
         pass
 
 
-    def get_web_settings_json(self):
+    def get_web_settings(self):
         '''
         Gets the settings for the UI, and adds the version info.
         '''
@@ -155,7 +155,7 @@ class Settings(AbstractService):
       '''
       Push the web settings onto the bus again. When the UI is refreshed, it expects a new settings event on the bus.
       '''
-      self.push_to_queue(self.get_web_settings_json())
+      self.push_to_queue(self.get_web_settings())
 
 
 

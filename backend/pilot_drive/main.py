@@ -6,7 +6,7 @@ import websockets
 
 from MasterEventQueue import MasterEventQueue, EventType
 from web import ServeStatic
-from services import Settings
+from services import Settings, Bluetooth
 
 
 class PilotDrive:
@@ -20,6 +20,9 @@ class PilotDrive:
 
         self.settings = Settings(master_event_queue=self.master_queue, service_type=EventType.SETTINGS)
         processes.append(self.settings)
+
+        self.bluetooth = Bluetooth(master_event_queue=self.master_queue, service_type=EventType.BLUETOOTH)
+        processes.append(self.bluetooth)
 
         self.process_factory(processes=processes)
 
@@ -53,8 +56,9 @@ class PilotDrive:
                 if self.master_queue.is_new_event():
                     event = self.master_queue.get()
                     await websocket.send(json.dumps(event))
-                message = await websocket.recv()
-                self.handle_message(message=message)
+                # if await websocket.recv():
+                #     message = await websocket.recv()
+                #     self.handle_message(message=message)
             except websockets.ConnectionClosedOK:
                 break
     

@@ -1,8 +1,8 @@
 <template>
     <div id="top-row">
         <div id="connected-device">
-            <span v-if="bluetoothStore.connected && bluetoothStore.hostname">
-                {{ bluetoothStore.hostname }}
+            <span v-if="bluetoothStore.connected && bluetoothStore.connectedName">
+                {{ bluetoothStore.connectedName }}
             </span>
         </div>
         <div id="clock">

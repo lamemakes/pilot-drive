@@ -11,6 +11,7 @@ class EventType(Enum):
     PHONE = 'phone'
     SYSTEM = 'system'
     VEHICLE = 'vehicle'
+    MEDIA = 'media'
 
 
 class MasterEventQueue():
@@ -34,6 +35,8 @@ class MasterEventQueue():
         '''
 
         event = {"type": event_type, event_type: event_json}
+
+        print("NEW EVENT: " + str(event))
 
         self.__queue.put(event)
         self.__new_event.value = 1

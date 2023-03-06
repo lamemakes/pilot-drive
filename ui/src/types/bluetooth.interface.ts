@@ -1,6 +1,7 @@
 export interface BluetoothDevice {
     connected: boolean;
-    hostname?: string | undefined,
+    connectedName: string | undefined,
+    localHostname?: string | undefined,
     battery?: number | undefined,
-    macAddress?: string | undefined
+    address?: string | undefined
 }

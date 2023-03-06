@@ -1,3 +1,4 @@
+from enum import Enum
 from __init__ import __version__ as VERSION
 
 
@@ -69,3 +70,94 @@ DEFAULT_BACKEND_SETTINGS = {
       "buttonPin": 0
     },
 }
+
+'''
+Constants for bluetooth
+((enums are cool!))
+'''
+
+class IFaceTypes(Enum):
+    '''
+    Enum used to properly address/pull different interfaces
+
+    Bluez media API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
+    '''
+    BLUEZ = 'org.bluez'                                 # Overarching bluez DBus interface
+    MEDIA_PLAYER_1 = 'org.bluez.MediaPlayer1'           # Responsible for most metadata on the tracks, provides title, artist, album, duration, postion, etc.
+    MEDIA_TRANSPORT_1 = 'org.bluez.MediaTransport1'     # Provides track state such as idle or active
+    MEDIA_FOLDER_1 = 'org.bluez.MediaFolder1'
+    MEDIA_ITEM_1 = 'org.bluez.MediaItem1'               # Also can be a metadata provider for tracks, not used currently.
+    DEVICE_1 = 'org.bluez.Device1'                      # Used to pull device info            
+
+
+class MediaPlayerAttributes(Enum):
+    '''
+    Enum used for interacting with the bluez MediaPlayer
+
+    Bluez media API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
+    '''
+    NAME = 'Name'
+    SHUFFLE = 'Shuffle'
+    REPEAT = 'Repeat'
+    SCAN = 'Scan'
+    STATUS = 'Status'
+    POSITION = 'Position'
+    TRACK = 'Track'
+    TYPE = 'Type'
+    SUBTYPE = 'Subtype'
+    BROWSABLE = 'Browsable'
+    SEARCHABLE = 'Searchable'
+
+class MediaItemAttributes(Enum):
+    METADATA = 'Metadata'
+
+
+class MediaTransportAttributes(Enum):
+    STATE = 'State'
+
+
+class Status(Enum):
+    PLAYING = 'playing'
+    STOPPED = 'stopped'
+    PAUSED = 'paused'
+    FORWARD_SEEK = 'forward-seek'
+    REVERSE_SEEK = 'reverse-seek'
+    ERROR = 'error'
+
+
+class TrackAttributes(Enum):
+    '''
+    Enum used for getting/setting different track attributes.
+
+    Bluez docs: https://github.com/bluez/bluez/blob/master/doc/
+    '''
+    TITLE = 'Title'           # Responsible for most metadata on the tracks, provides title, artist, album, duration, postion, etc.
+    ALBUM = 'Album'     # Provides track state such as idle or active
+    ARTIST = 'Artist'
+    DURATION = 'Duration'
+    GENRE = 'Genre'
+    TRACK_NUMBER = 'TrackNumber'
+    NUMBER_OF_TRACKS = 'NumberOfTracks'
+
+
+class BluetoothDevice(Enum):
+    '''
+    Enum used for getting device attributes
+
+    Bluez device API docs: https://github.com/bluez/bluez/blob/master/doc/device-api.txt
+    '''
+    CONNECTED = 'Connected'
+    ADDRESS = 'Address'
+    NAME = 'Name'
+    ALIAS = 'Alias'
+    TRUSTED = 'Trusted'
+    RSSI = 'RSSI'
+    PAIRED = 'Paired'
+    UUIDS = 'UUIDs'
+    ICON = 'Icon'
+
+
+class MediaSources(Enum):
+    BLUETOOTH = 'bluetooth'
+    RADIO = 'radio'
+    FILES = 'files'
