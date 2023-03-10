@@ -1,7 +1,6 @@
 import json
 import os
 import constants
-import logging
 
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType

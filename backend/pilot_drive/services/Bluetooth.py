@@ -10,6 +10,9 @@ from MasterEventQueue import MasterEventQueue, EventType
 
 
 class Bluetooth(AbstractService):
+    '''
+    The service that manages the bluetooth media of PILOT Drive. 
+    '''
     def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType):
         super().__init__(master_event_queue, service_type)
 
@@ -22,6 +25,10 @@ class Bluetooth(AbstractService):
     Utility Methods
     '''
     def __reset_vars(self):
+        '''
+        Cleanses the diffent internal states. Intended to prevent leaching of values.
+        '''
+
         # If the class has already been initialized and the cars are just being cleaned, preserve the bluetooth enabled var
         if self.bluetooth:
             is_enabled = self.bluetooth['enabled']
@@ -52,11 +59,19 @@ class Bluetooth(AbstractService):
         
         
     def __push_media_to_queue(self):
+        '''
+        Similar to the push_to_queue method, but pushes the media object to the event queue with the type of "media"
+        '''
         media_json = self.media
         self.event_queue.push_event(event_type=EventType.MEDIA, event=media_json)
 
 
     def __handle_connect(self, changed_props: dbus.Dictionary=None):
+        '''
+        Handles the bluetooth device connection state. Sets the connection state on the Bluetooth.bluetooth object. When used with the prop_changed callback, the connection properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        '''
         connected = False
         if self.bluetooth['enabled']:
             if changed_props:
@@ -87,6 +102,11 @@ class Bluetooth(AbstractService):
 
 
     def __get_iface_items(self, iface: IFaceTypes):
+        '''
+        A getter for the items of a specified interface. 
+
+        :return: an array of DBus items from each instance of the interface (ie. Device1 will return an array containing each device & it's properties.)
+        '''
         iface_items = []
         for path, ifaces in self.mgr.GetManagedObjects().items():
             if iface in str(ifaces):
@@ -96,6 +116,11 @@ class Bluetooth(AbstractService):
 
 
     def __set_powered(self, changed_props: dbus.Dictionary=None):
+        '''
+        The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not). Sets power state/enabled within the Bluetooth.bluetooth object. When used with the prop_changed callback, the changed power state properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        '''
         enabled = None
         if changed_props:
             enabled = changed_props
@@ -108,6 +133,11 @@ class Bluetooth(AbstractService):
 
 
     def __set_status(self, changed_props: dbus.Dictionary=None):
+        '''
+        The setter for the track status. Sets status attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed status properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        '''
         status = None
         try:
             if self.bluetooth['connected']:
@@ -129,6 +159,11 @@ class Bluetooth(AbstractService):
 
 
     def __set_position(self, changed_props: dbus.Dictionary=None):
+        '''
+        The setter for the timestamp of the track. Sets position attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed position properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        '''
         position = None
         try:
             if self.bluetooth['connected']:
@@ -150,6 +185,11 @@ class Bluetooth(AbstractService):
 
 
     def __set_track(self, changed_props: dbus.Dictionary=None):
+        '''
+        The setter for the track. Sets track attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed track properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        '''
         track = None
         try:
             if self.bluetooth['connected']:
@@ -182,14 +222,28 @@ class Bluetooth(AbstractService):
         except dbus.exceptions.DBusException as e:
             print(e)    # TODO: Logging...
 
+
     '''
     Signal Reciever Methods
     '''
     def iface_added(self, path, iface):
-        pass
+        '''
+        Callback for when an interface is add. This typically means the device is connected, but calls the handle_connect method to confirm.
+
+        :param path: the path to the specified removed interface
+        :param iface: the interface that was removed
+        '''
+        self.__handle_connect()
+
 
     def iface_removed(self, path, iface):
-        self.connected = False
+        '''
+        Callback for when an interface is removed. This typically means the device disconnected, but calls the handle_connect method to confirm.
+
+        :param path: the path to the specified removed interface
+        :param iface: the interface that was removed
+        '''
+        self.__handle_connect()
 
 
     def prop_changed(self, iface: str, changed: dbus.Dictionary, invalidated: dbus.Array):
@@ -236,7 +290,12 @@ class Bluetooth(AbstractService):
             self.__push_media_to_queue()
 
 
-    def bluetooth_control(self, action: str):
+    def bluetooth_control(self, action: TrackControl):
+        '''
+        Control the current song
+
+        :param action: the intended control action using the TrackControl enum, ie. Play, Pause, Skip Next or Skip Previous.
+        '''
         player = None
         bus = dbus.SystemBus()
         mgr = dbus.Interface(bus.get_object('org.bluez', '/'), 'org.freedesktop.DBus.ObjectManager')
@@ -262,6 +321,9 @@ class Bluetooth(AbstractService):
     Run the main loop
     '''
     def main(self):
+        '''
+        Run the main bluetooth DBus loop
+        '''
         # Start the main loop
         DBusGMainLoop(set_as_default=True)
 
@@ -300,6 +362,9 @@ class Bluetooth(AbstractService):
 
 
     def refresh(self):
+        '''
+        The refresh method to re-push the current bluetooth & media objects to the mast queue.
+        '''
         self.push_to_queue(event=self.bluetooth)
         if self.bluetooth["connected"]:
             self.__push_media_to_queue()
