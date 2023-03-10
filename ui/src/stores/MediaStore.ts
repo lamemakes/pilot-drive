@@ -4,9 +4,9 @@ import { Media } from "../types/media.interface";
 export let MediaStore:Media = reactive({
     source: 'bluetooth',
     song: {
-        title: 'Sweatpants',
-        artist: 'Childish Gambino',
-        album: 'Because the Internet',
+        title: undefined,
+        artist: undefined,
+        album: undefined,
         duration: undefined,
         position: undefined,
         isPlaying: false,

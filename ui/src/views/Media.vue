@@ -1,5 +1,5 @@
 <template>
-    <div v-if="mediaStore.source == 'bluetooth' || mediaStore.source == 'files'">
+    <div id="media-container" v-if="mediaStore.source == 'bluetooth' || mediaStore.source == 'files'">
         <SongInfo />
     </div>
 </template>
@@ -19,5 +19,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+
+#media-container {
+    height: 72%;
+    display: grid;
+    align-items: center;
+}
 
 </style>

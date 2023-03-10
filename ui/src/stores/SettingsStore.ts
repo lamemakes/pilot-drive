@@ -8,7 +8,7 @@ export let SettingsStore: Settings = reactive({
     metricUnits: false,
     vehicleEnabled: false,
     phoneEnabled: false,
-    selectedTheme: "",
+    selectedTheme: "sherbet",
     themes: [
         {
             name: "sherbet",

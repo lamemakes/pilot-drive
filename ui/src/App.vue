@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, provide, ref, watch } from "vue";
+import { defineComponent, onMounted, provide, ref, watch } from "vue";
 import NavButtons from "./components/NavButtons.vue";
 import InfoBar from "./components/InfoBar.vue";
 import { BluetoothStore } from "./stores/BluetoothStore";
@@ -69,6 +69,10 @@ export default defineComponent({
     provide('mediaStore', mediaStore);
     provide('websocket', ref(websocket));
 
+    onMounted(() => {
+      setGlobalTheme(settingsStore.value.selectedTheme);
+    })
+
   }
 })
 </script>
@@ -76,7 +80,7 @@ export default defineComponent({
 <style lang="scss">
 @font-face{
   font-family: Futura;
-  src: local('Futura'), url(./src/assets/fonts/Futura.ttf) format('truetype');
+  src: local('Futura'), url(assets/fonts/Futura.ttf) format('truetype');
 }
 
 * {

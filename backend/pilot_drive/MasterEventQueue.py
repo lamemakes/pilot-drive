@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import StrEnum
 from multiprocessing import Manager
 
 
-class EventType(Enum):
+class EventType(StrEnum):
     '''
     Enum used by services to add an event to the master queue
     '''
@@ -26,17 +26,18 @@ class MasterEventQueue():
         self.__new_event = manager.Value('i', 0)
         
 
-    def push_event(self, event_type: EventType, event_json: str):
+    def push_event(self, event_type: EventType, event: str):
         '''
         Used to push a new event to the Master Event Queue
 
         :param event_type: the event source, utilizing the EventType enum
-        :param event_json: the JSON text of the event
+        :param event: the dict of the event to be converted to JSON
         '''
 
-        event = {"type": event_type, event_type: event_json}
+        event = {"type": event_type, event_type: event}
 
-        print("NEW EVENT: " + str(event))
+        import json
+        print("NEW EVENT: " + str(json.dumps(event)))
 
         self.__queue.put(event)
         self.__new_event.value = 1

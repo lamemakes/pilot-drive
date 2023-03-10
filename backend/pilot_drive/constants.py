@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 from __init__ import __version__ as VERSION
 
 
@@ -71,12 +71,13 @@ DEFAULT_BACKEND_SETTINGS = {
     },
 }
 
+
 '''
 Constants for bluetooth
 ((enums are cool!))
 '''
 
-class IFaceTypes(Enum):
+class IFaceTypes(StrEnum):
     '''
     Enum used to properly address/pull different interfaces
 
@@ -88,9 +89,10 @@ class IFaceTypes(Enum):
     MEDIA_FOLDER_1 = 'org.bluez.MediaFolder1'
     MEDIA_ITEM_1 = 'org.bluez.MediaItem1'               # Also can be a metadata provider for tracks, not used currently.
     DEVICE_1 = 'org.bluez.Device1'                      # Used to pull device info            
+    ADAPTER_1 = 'org.bluez.Adapter1'                    # Used to determine things like if bluetooth is enabled on the host
 
 
-class MediaPlayerAttributes(Enum):
+class MediaPlayerAttributes(StrEnum):
     '''
     Enum used for interacting with the bluez MediaPlayer
 
@@ -108,15 +110,27 @@ class MediaPlayerAttributes(Enum):
     BROWSABLE = 'Browsable'
     SEARCHABLE = 'Searchable'
 
-class MediaItemAttributes(Enum):
+
+class MediaItemAttributes(StrEnum):
     METADATA = 'Metadata'
 
 
-class MediaTransportAttributes(Enum):
+class MediaTransportAttributes(StrEnum):
     STATE = 'State'
 
 
-class Status(Enum):
+class AdapterAttributes(StrEnum):
+    '''
+    Enum used for interacting with bluez adpater
+
+    Bluez adapter API docs: https://github.com/bluez/bluez/blob/master/doc/adapter-api.txt
+    '''
+    CLASS = 'Class'
+    POWER_STATE = 'PowerState'
+    POWERED = 'Powered'
+
+
+class TrackStatus(StrEnum):
     PLAYING = 'playing'
     STOPPED = 'stopped'
     PAUSED = 'paused'
@@ -125,7 +139,14 @@ class Status(Enum):
     ERROR = 'error'
 
 
-class TrackAttributes(Enum):
+class TrackControl(StrEnum):
+    PAUSE = 'pause'
+    PLAY = 'play'
+    NEXT = 'next'
+    PREV = 'prev'
+
+
+class TrackAttributes(StrEnum):
     '''
     Enum used for getting/setting different track attributes.
 
@@ -140,7 +161,7 @@ class TrackAttributes(Enum):
     NUMBER_OF_TRACKS = 'NumberOfTracks'
 
 
-class BluetoothDevice(Enum):
+class BluetoothDevice(StrEnum):
     '''
     Enum used for getting device attributes
 
@@ -157,7 +178,7 @@ class BluetoothDevice(Enum):
     ICON = 'Icon'
 
 
-class MediaSources(Enum):
+class MediaSources(StrEnum):
     BLUETOOTH = 'bluetooth'
     RADIO = 'radio'
     FILES = 'files'

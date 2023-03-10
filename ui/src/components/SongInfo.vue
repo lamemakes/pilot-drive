@@ -57,7 +57,6 @@ export default defineComponent({
     width: 100%;
     text-align: center;
     font-size: 40px;
-    padding-top: 12%;
     color: var(--primary-lumin);
 }
 

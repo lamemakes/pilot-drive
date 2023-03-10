@@ -172,3 +172,5 @@ cython_debug/
 
 # PILOT Drive custom paths:
 backend/pilot_drive/web/files/
+.vscode/
+node_modules/

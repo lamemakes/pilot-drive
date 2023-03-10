@@ -1,12 +1,12 @@
 <template>
     <div v-if="songStore && songStore.song" class="song-ctrl-btn" id="control-container">
-        <div class="song-ctl-btn" id="skip-prev-btn" @click="skipTrack(Skip.prev)">
+        <div class="song-ctl-btn" id="skip-prev-btn" @click="skipTrack(TrackActions.PREV)">
             <img class="control-icon" :src="Icons.SKIP_PREV_ICON">
         </div>
         <div class="song-ctl-btn" id="status-btn" @click="changeState">
             <img class="control-icon" :src="(songStore.song.isPlaying) ? Icons.PAUSE_ICON : Icons.PLAY_ICON">
         </div>
-        <div class="song-ctl-btn" id="skip-next-btn" @click="skipTrack(Skip.next);">
+        <div class="song-ctl-btn" id="skip-next-btn" @click="skipTrack(TrackActions.NEXT);">
             <img class="control-icon" :src="Icons.SKIP_NEXT_ICON">
         </div>
     </div>
@@ -20,11 +20,6 @@ import { ColorVars, handleIconLumin } from '../utils/theme';
 
 export default defineComponent({
     setup () {
-        enum Skip {
-            prev = -1,
-            next = 1
-        }
-
         enum Icons {
             PLAY_ICON = "../src/assets/icons/play.svg",
             PAUSE_ICON = "../src/assets/icons/pause.svg",
@@ -32,27 +27,40 @@ export default defineComponent({
             SKIP_NEXT_ICON = "../src/assets/icons/skip_next.svg"
         }
 
+        enum TrackActions {
+            PLAY = 'play',
+            PAUSE = 'pause',
+            NEXT = 'next',
+            PREV = 'prev'
+        }
+
         const songStore = ref(inject("mediaStore") as Media);
         const settingsStore = ref(inject('settingsStore') as Settings);
+        const websocket = ref(inject('websocket') as WebSocket);
+
+        const pushControl = (action: string) => {
+            if (songStore.value.source){
+                websocket.value.send(
+                    JSON.stringify(
+                        {
+                            type: songStore.value.source,
+                            [songStore.value.source.toString()]: action
+                        }
+                    )
+                )
+            }
+        }
 
         const changeState = () => {
             if (songStore.value.song) {
                 songStore.value.song.isPlaying = !songStore.value.song.isPlaying;
-                // TODO: Add endpoint call
+                pushControl(songStore.value.song.isPlaying ? TrackActions.PLAY : TrackActions.PAUSE)
             }
         }
 
-        const skipTrack = (skip: number) => {
-            switch (skip){
-                // TODO: Add endpoint call
-                case Skip.prev:
-                    console.log("Previous Track");
-                    break;
-                case Skip.next:
-                    console.log("Next Track");
-                    break
-                default:
-                    return
+        const skipTrack = (action: TrackActions) => {
+            if (action === TrackActions.NEXT || action === TrackActions.PREV) {
+                pushControl(action)
             }
         }
 
@@ -65,7 +73,7 @@ export default defineComponent({
         {deep: true})
 
 
-        return {Icons, songStore, changeState, Skip, skipTrack}
+        return {Icons, songStore, changeState, TrackActions, skipTrack}
     }
 })
 </script>

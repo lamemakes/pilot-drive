@@ -2,8 +2,9 @@ import json
 from dbus.mainloop.glib import DBusGMainLoop    # Handling the DBus event based loop
 from gi.repository import GLib                  # Handling the DBus event based loop
 import dbus
+import socket
 
-from constants import MediaSources, IFaceTypes, TrackAttributes, Status, BluetoothDevice, MediaItemAttributes, MediaPlayerAttributes, MediaTransportAttributes
+from constants import AdapterAttributes, MediaSources, IFaceTypes, TrackAttributes, TrackControl, TrackStatus, BluetoothDevice, MediaItemAttributes, MediaPlayerAttributes, MediaTransportAttributes
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType
 
@@ -12,6 +13,8 @@ class Bluetooth(AbstractService):
     def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType):
         super().__init__(master_event_queue, service_type)
 
+        self.__local_hostname = socket.gethostname()
+        self.bluetooth = None
         self.__reset_vars()
 
 
@@ -19,16 +22,23 @@ class Bluetooth(AbstractService):
     Utility Methods
     '''
     def __reset_vars(self):
+        # If the class has already been initialized and the cars are just being cleaned, preserve the bluetooth enabled var
+        if self.bluetooth:
+            is_enabled = self.bluetooth['enabled']
+        else: 
+            is_enabled = False
+
         self.bluetooth = {
+            'enabled': is_enabled,
             'connected': False,
             'connectedName': None,
-            'localHostname': None,
+            'localHostname': self.__local_hostname,
             'battery': None,
             'address': None
         }
 
         self.media = {
-            'source': MediaSources.BLUETOOTH.value,
+            'source': MediaSources.BLUETOOTH,
             'song': {
                 'title': None,
                 'artist': None,
@@ -38,50 +48,63 @@ class Bluetooth(AbstractService):
                 'isPlaying': False,
                 'cover': None
             }
-
         }
-
+        
+        
     def __push_media_to_queue(self):
         media_json = self.media
-        self.event_queue.push_event(event_type=EventType.MEDIA.value, event_json=media_json)
+        self.event_queue.push_event(event_type=EventType.MEDIA, event=media_json)
 
 
-    def __handle_connect(self, connected:bool = None):
-        if connected == None:
-            device = self.__get_iface_items(IFaceTypes.DEVICE_1)
-            connected = device.get(BluetoothDevice.CONNECTED.value)
-        
+    def __handle_connect(self, changed_props: dbus.Dictionary=None):
+        connected = False
+        if self.bluetooth['enabled']:
+            if changed_props:
+                connected = changed_props
+            else:
+                for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
+                    if device.get(BluetoothDevice.CONNECTED):
+                        connected = True
+                        device_name = device.get(BluetoothDevice.NAME)
+                        device_addr = device.get(BluetoothDevice.ADDRESS)
+                        print('Bluetooth device: ' + device_name + ' connected with MAC address of ' + device_addr + '.') # TODO: Add logging
+                        self.bluetooth['connectedName'] = device_name
+                        self.bluetooth['address'] = device_addr
 
-        if connected:
-            self.bluetooth["connected"] = True
-            self.__set_connected_device()
-            self.__set_track()
-            self.__set_status()
-            self.__set_position()
-            self.push_to_queue(self.bluetooth)
-            self.__push_media_to_queue()
+            if connected:
+                self.bluetooth["connected"] = True
+                self.__set_track()
+                self.__set_status()
+                self.__set_position()
+            else:
+                self.__reset_vars()
         else:
-            self.__reset_vars()
-            self.push_to_queue(self.bluetooth)
+            print('Enable bluetooth to proceed!')
+
+        self.push_to_queue(self.bluetooth)
+        if self.bluetooth['connected']:
             self.__push_media_to_queue()
 
 
     def __get_iface_items(self, iface: IFaceTypes):
+        iface_items = []
         for path, ifaces in self.mgr.GetManagedObjects().items():
-            if iface.value in str(ifaces):
-                return ifaces[iface.value]
-            
-        return None
+            if iface in str(ifaces):
+                iface_items.append(ifaces[iface])
+                
+        return iface_items if len(iface_items) > 0 else None
 
 
-    def __set_connected_device(self):
-        iface_items = self.__get_iface_items(IFaceTypes.DEVICE_1)
-        if iface_items:                                  
-                device_name = iface_items.get(BluetoothDevice.NAME.value)
-                device_addr = iface_items.get(BluetoothDevice.ADDRESS.value)
-                print('Bluetooth device: ' + device_name + ' connected with MAC address of ' + device_addr + '.') # TODO: Add logging
-                self.bluetooth['connectedName'] = device_name
-                self.bluetooth['address'] = device_addr
+    def __set_powered(self, changed_props: dbus.Dictionary=None):
+        enabled = None
+        if changed_props:
+            enabled = changed_props
+        else:
+            enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1)[0]
+
+        enabled = enabled.get(AdapterAttributes.POWER_STATE)
+
+        self.bluetooth['enabled'] = (enabled == "on")  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
 
     def __set_status(self, changed_props: dbus.Dictionary=None):
@@ -92,11 +115,14 @@ class Bluetooth(AbstractService):
                 if changed_props:
                     status = changed_props
                 else:
-                    status = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)
+                    status = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)[0]
 
-                status = status.get(MediaPlayerAttributes.STATUS.value)
+                try:
+                    status = status.get(MediaPlayerAttributes.STATUS)
 
-                self.media['song']['isPlaying'] = True if status == Status.PLAYING.value else False
+                    self.media['song']['isPlaying'] = True if status == TrackStatus.PLAYING else False
+                except AttributeError:
+                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
             
         except dbus.exceptions.DBusException as e:
             print(e)    # TODO: Logging...
@@ -110,11 +136,14 @@ class Bluetooth(AbstractService):
                 if changed_props:
                     position = changed_props
                 else:
-                    position = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)
+                    position = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)[0]
 
-                position = int(position.get(MediaPlayerAttributes.POSITION.value))
+                try:
+                    position = position.get(MediaPlayerAttributes.POSITION)
 
-                self.media['song']['position'] = position 
+                    self.media['song']['position'] = position if position else None
+                except AttributeError:
+                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
             
         except dbus.exceptions.DBusException as e:
             print(e)    # TODO: Logging...
@@ -128,33 +157,27 @@ class Bluetooth(AbstractService):
                 if changed_props:
                     track = changed_props
                 else:
-                    track = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)
+                    track = self.__get_iface_items(IFaceTypes.MEDIA_PLAYER_1)[0]
 
-                track = track.get(MediaPlayerAttributes.TRACK.value)
+                try:
+                    track = track.get(MediaPlayerAttributes.TRACK)
 
-                # Set all needed values to be able to pull track metadata when class is instantiated.
-                if track:
-                    # Set values as default to prevent previous values from leaching over if values aren't populated
-                    metadata = {
-                        'title': '', 
-                        'artist': '', 
-                        'album': '', 
-                        'duration': ''
-                    }
-
-                    EMPTY = ''
-
-                    print(track)
-
+                    # Set all needed values to be able to pull track metadata when class is instantiated.
                     if track:
-                        metadata['title'] = str(track.get(TrackAttributes.TITLE.value)) if track.get(TrackAttributes.TITLE.value) else EMPTY
-                        metadata['artist'] = str(track.get(TrackAttributes.ARTIST.value)) if track.get(TrackAttributes.ARTIST.value) else EMPTY
-                        metadata['album'] = str(track.get(TrackAttributes.ALBUM.value)) if track.get(TrackAttributes.ALBUM.value) else EMPTY
-                        metadata['duration'] = str(track.get(TrackAttributes.DURATION.value)) if track.get(TrackAttributes.DURATION.value) else EMPTY
-                    
-                        self.media['song'] = {**self.media['song'], **metadata} # Set track vars, but preserve everything else
+                        # Set values as default to prevent previous values from leaching over if values aren't populated
+                        metadata = {}
 
-                    print(self.media)
+                        EMPTY = ''
+
+                        if track.get('Title'):
+                            metadata['title'] = str(track.get('Title')) if track.get('Title') else EMPTY
+                            metadata['artist'] = str(track.get('Artist')) if track.get('Artist') else EMPTY
+                            metadata['album'] = str(track.get('Album')) if track.get('Album') else EMPTY
+                            metadata['duration'] = str(track.get('Duration')) if track.get('Duration') else EMPTY
+                        
+                            self.media['song'] = {**self.media['song'], **metadata} # Set track vars, but preserve everything else
+                except AttributeError:
+                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
             
         except dbus.exceptions.DBusException as e:
             print(e)    # TODO: Logging...
@@ -166,8 +189,6 @@ class Bluetooth(AbstractService):
         pass
 
     def iface_removed(self, path, iface):
-        print('*******IFACE REMOVED: ' + str(iface))
-        print()
         self.connected = False
 
 
@@ -182,25 +203,59 @@ class Bluetooth(AbstractService):
 
         changed_key = list(changed.keys())[0]   # In my experience, changed will never return more than one top-level key.
 
-        match changed_key:
-            case BluetoothDevice.CONNECTED.value:
-                self.__handle_connect(connected=changed.get(BluetoothDevice.CONNECTED.value))
-            case MediaPlayerAttributes.TRACK.value:
-                self.__set_track(changed_props=changed)
-            case MediaPlayerAttributes.STATUS.value:
-                self.__set_status(changed_props=changed)
-            case MediaPlayerAttributes.POSITION.value:
-                self.__set_position(changed_props=changed)
-            case MediaItemAttributes.METADATA.value:        # This returns duplicate information to "Track". Don't waste processing power on it
-                return
-            case MediaTransportAttributes.STATE.value:      # Also not useful at the moment. Indicates active/idle. May be implemented later.
-                return 
+        match iface:
+            case IFaceTypes.MEDIA_PLAYER_1:
+                match changed_key:
+                    case MediaPlayerAttributes.TRACK:
+                        self.__set_track(changed_props=changed)
+                    case MediaPlayerAttributes.STATUS:
+                        self.__set_status(changed_props=changed)
+                    case MediaPlayerAttributes.POSITION:
+                        self.__set_position(changed_props=changed)
+            case IFaceTypes.MEDIA_TRANSPORT_1:
+                match changed_key:
+                    case MediaItemAttributes.METADATA:        # This returns duplicate information to "Track". Don't waste processing power on it
+                        return
+                    case MediaTransportAttributes.STATE:      # Also not useful at the moment. Indicates active/idle. May be implemented later.
+                        return
+            case IFaceTypes.ADAPTER_1:
+                match changed_key:
+                    case AdapterAttributes.POWER_STATE:
+                        self.__set_powered(changed_props=changed)
+                    case AdapterAttributes.CLASS:              # Class specifies specific bluetooth capabilities, not used at the moment
+                        return
+            case IFaceTypes.DEVICE_1:
+                match changed_key:
+                    case BluetoothDevice.CONNECTED:
+                        self.__handle_connect(changed_props=changed)
             case _:
-                print("Unrecognized key: " + changed_key)
-                return
+                print('Unrecognized keyword: "' + changed_key + '" from interface: "' + iface + '"')
 
         # Push the changes to the Queue to be sent to the frontend.
-        self.__push_media_to_queue()
+        if self.bluetooth['enabled'] and self.bluetooth["connected"]:
+            self.__push_media_to_queue()
+
+
+    def bluetooth_control(self, action: str):
+        player = None
+        bus = dbus.SystemBus()
+        mgr = dbus.Interface(bus.get_object('org.bluez', '/'), 'org.freedesktop.DBus.ObjectManager')
+        for path, ifaces in mgr.GetManagedObjects().items():
+            if "org.bluez.MediaPlayer1" in str(ifaces):  
+                player = dbus.Interface(bus.get_object('org.bluez', path), 'org.bluez.MediaPlayer1')
+            
+        if player:
+            match action:
+                case TrackControl.PLAY:
+                    player.Play()
+                case TrackControl.PAUSE:
+                    player.Pause()
+                case TrackControl.NEXT:
+                    player.Next()
+                case TrackControl.PREV:
+                    player.Previous()
+                case _:
+                    print('Unknown bluetooth control action: "' + action + '"!')    # TODO: Logging!
 
 
     '''
@@ -237,6 +292,14 @@ class Bluetooth(AbstractService):
             dbus_interface='org.freedesktop.DBus.Properties',
             bus_name='org.bluez')
 
+        self.__reset_vars()
+        self.__set_powered()
         self.__handle_connect()
             
         GLib.MainLoop().run()
+
+
+    def refresh(self):
+        self.push_to_queue(event=self.bluetooth)
+        if self.bluetooth["connected"]:
+            self.__push_media_to_queue()
