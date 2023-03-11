@@ -210,10 +210,10 @@ class Bluetooth(AbstractService):
                         EMPTY = ''
 
                         if track.get('Title'):
-                            metadata['title'] = str(track.get('Title')) if track.get('Title') else EMPTY
-                            metadata['artist'] = str(track.get('Artist')) if track.get('Artist') else EMPTY
-                            metadata['album'] = str(track.get('Album')) if track.get('Album') else EMPTY
-                            metadata['duration'] = str(track.get('Duration')) if track.get('Duration') else EMPTY
+                            metadata['title'] = str(track.get(TrackAttributes.TITLE)) if track.get(TrackAttributes.TITLE) else EMPTY
+                            metadata['artist'] = str(track.get(TrackAttributes.ARTIST)) if track.get(TrackAttributes.ARTIST) else EMPTY
+                            metadata['album'] = str(track.get(TrackAttributes.ALBUM)) if track.get(TrackAttributes.ALBUM) else EMPTY
+                            metadata['duration'] = str(track.get(TrackAttributes.DURATION)) if track.get(TrackAttributes.DURATION) else EMPTY
                         
                             self.media['song'] = {**self.media['song'], **metadata} # Set track vars, but preserve everything else
                 except AttributeError:

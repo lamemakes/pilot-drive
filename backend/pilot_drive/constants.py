@@ -73,9 +73,11 @@ DEFAULT_BACKEND_SETTINGS = {
 
 
 '''
-Constants for bluetooth
-((enums are cool!))
+Constants used for Bluetooth functionality.
+
+Most are hardcoded strings created in hopes to mitigate string typo errors (and enums are cool!)
 '''
+
 
 class IFaceTypes(StrEnum):
     '''
@@ -94,7 +96,7 @@ class IFaceTypes(StrEnum):
 
 class MediaPlayerAttributes(StrEnum):
     '''
-    Enum used for interacting with the bluez MediaPlayer
+    Enum used for the attributes of the MediaPlayer iface
 
     Bluez media API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
     '''
@@ -112,16 +114,27 @@ class MediaPlayerAttributes(StrEnum):
 
 
 class MediaItemAttributes(StrEnum):
+    '''
+    Enum used for the attributes of the MediaItem iface
+
+    Bluez transport API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
+    '''
     METADATA = 'Metadata'
+    VOLUME = 'Volume'
 
 
 class MediaTransportAttributes(StrEnum):
+    '''
+    Enum used for the attributes of the MediaTransport iface
+
+    Bluez transport API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
+    '''
     STATE = 'State'
 
 
 class AdapterAttributes(StrEnum):
     '''
-    Enum used for interacting with bluez adpater
+     Enum used for the attributes of the Adapter iface
 
     Bluez adapter API docs: https://github.com/bluez/bluez/blob/master/doc/adapter-api.txt
     '''
@@ -130,7 +143,25 @@ class AdapterAttributes(StrEnum):
     POWERED = 'Powered'
 
 
+class PowerStates(StrEnum):
+    '''
+    Enum used for the power states of the Adapter iface
+
+    PowerStates docs: https://github.com/bluez/bluez/blob/master/doc/adapter-api.txt#L280-#L285
+    '''
+    ON = 'on'
+    OFF = 'off'
+    OFF_ENABLING = 'off-enabling'
+    ON_DISABLING = 'on-disabling'
+    OFF_BLOCKED = 'off-blocked'
+
+
 class TrackStatus(StrEnum):
+    '''
+    Enum used for the track status states
+
+    Status state docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L271-#L275
+    '''
     PLAYING = 'playing'
     STOPPED = 'stopped'
     PAUSED = 'paused'
@@ -140,6 +171,9 @@ class TrackStatus(StrEnum):
 
 
 class TrackControl(StrEnum):
+    '''
+    Enum used to handle values passed from the frontend regarding track control
+    '''
     PAUSE = 'pause'
     PLAY = 'play'
     NEXT = 'next'
@@ -148,9 +182,9 @@ class TrackControl(StrEnum):
 
 class TrackAttributes(StrEnum):
     '''
-    Enum used for getting/setting different track attributes.
+    Enum used for the track attributes.
 
-    Bluez docs: https://github.com/bluez/bluez/blob/master/doc/
+    Bluez docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L288-#L320
     '''
     TITLE = 'Title'           # Responsible for most metadata on the tracks, provides title, artist, album, duration, postion, etc.
     ALBUM = 'Album'     # Provides track state such as idle or active
@@ -161,9 +195,9 @@ class TrackAttributes(StrEnum):
     NUMBER_OF_TRACKS = 'NumberOfTracks'
 
 
-class BluetoothDevice(StrEnum):
+class Device(StrEnum):
     '''
-    Enum used for getting device attributes
+    Enum used for the attributes of the Device iface
 
     Bluez device API docs: https://github.com/bluez/bluez/blob/master/doc/device-api.txt
     '''
@@ -179,6 +213,9 @@ class BluetoothDevice(StrEnum):
 
 
 class MediaSources(StrEnum):
+    '''
+    Enum used for the media source passed to the frontend
+    '''
     BLUETOOTH = 'bluetooth'
     RADIO = 'radio'
     FILES = 'files'
