@@ -1,10 +1,14 @@
 export interface Vehicle {
     enabled: boolean, // Is OBD reading enabled?
     connected: boolean,
-    speed: number | undefined,
-    fuelLevel: number | undefined,
-    voltage: number | undefined,
-    rpm: number | undefined,
-    engineLoad: number | undefined,
-    dtc: boolean
+    stats: Stats[]
+}
+
+export interface Stats {
+    name: string,
+    value: {
+        quantity: number,
+        units: string,
+        magnitude: number
+    }
 }

@@ -6,7 +6,7 @@ import websockets
 
 from MasterEventQueue import MasterEventQueue, EventType
 from web import ServeStatic
-from services import Settings, Bluetooth
+from services import Settings, Bluetooth, Vehicle
 
 
 class PilotDrive:
@@ -20,6 +20,9 @@ class PilotDrive:
 
         self.settings = Settings(master_event_queue=self.master_queue, service_type=EventType.SETTINGS)
         self.__processes.append(self.settings)
+
+        self.vehicle = Vehicle(master_event_queue=self.master_queue, service_type=EventType.VEHICLE, obd_port="/dev/pts/4")
+        self.__processes.append(self.vehicle)
 
         self.bluetooth = Bluetooth(master_event_queue=self.master_queue, service_type=EventType.BLUETOOTH)
         self.__processes.append(self.bluetooth)

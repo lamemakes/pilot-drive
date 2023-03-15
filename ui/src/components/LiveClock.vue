@@ -15,7 +15,7 @@ export default defineComponent({
         
         const time = ref(getTime(settingsStore.value.tfHourTime));
 
-        setInterval(() => time.value = getTime(settingsStore.value.tfHourTime))
+        setInterval(() => time.value = getTime(settingsStore.value.tfHourTime), 500)
 
         return {time}
     }

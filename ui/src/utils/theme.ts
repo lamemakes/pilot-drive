@@ -1,6 +1,4 @@
-import { inject, ref } from "vue";
 import { SettingsStore } from "../stores/SettingsStore";
-import { Settings, Theme } from "../types/settings.interface";
 
 // Lumin values are for text on either the primary/secondary color
 export enum ColorVars {

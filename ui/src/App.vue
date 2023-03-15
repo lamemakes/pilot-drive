@@ -16,6 +16,7 @@ import { setGlobalTheme } from "./utils/theme";
 import { MediaStore } from "./stores/MediaStore";
 import { initializeWebSocket } from "./utils/backend";
 import { Data } from "./types/data.interface";
+import { VehicleStore } from "./stores/VehicleStore";
 
 export default defineComponent({
   components: {
@@ -27,6 +28,7 @@ export default defineComponent({
     const bluetoothStore = ref(BluetoothStore);
     const settingsStore = ref(SettingsStore);
     const mediaStore = ref(MediaStore);
+    const vehicleStore = ref(VehicleStore)
 
     const websocket = initializeWebSocket();
     websocket.onmessage = (message) => {
@@ -38,6 +40,11 @@ export default defineComponent({
                 case 'bluetooth':
                   if (dataObj.bluetooth){
                     bluetoothStore.value = dataObj.bluetooth;
+                  }
+                  break;
+                  case 'vehicle':
+                  if (dataObj.vehicle){
+                    vehicleStore.value = dataObj.vehicle;
                   }
                   break;
                 case 'media':
@@ -67,6 +74,7 @@ export default defineComponent({
     provide('bluetoothStore', bluetoothStore);
     provide('settingsStore', settingsStore);
     provide('mediaStore', mediaStore);
+    provide('vehicleStore', vehicleStore);
     provide('websocket', ref(websocket));
 
     onMounted(() => {

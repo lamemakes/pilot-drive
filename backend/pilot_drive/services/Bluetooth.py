@@ -4,7 +4,7 @@ from gi.repository import GLib                  # Handling the DBus event based 
 import dbus
 import socket
 
-from constants import AdapterAttributes, MediaSources, IFaceTypes, TrackAttributes, TrackControl, TrackStatus, BluetoothDevice, MediaItemAttributes, MediaPlayerAttributes, MediaTransportAttributes
+from constants import AdapterAttributes, MediaSources, IFaceTypes, TrackAttributes, TrackControl, TrackStatus, Device, MediaItemAttributes, MediaPlayerAttributes, MediaTransportAttributes
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType
 
@@ -78,10 +78,10 @@ class Bluetooth(AbstractService):
                 connected = changed_props
             else:
                 for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
-                    if device.get(BluetoothDevice.CONNECTED):
+                    if device.get(Device.CONNECTED):
                         connected = True
-                        device_name = device.get(BluetoothDevice.NAME)
-                        device_addr = device.get(BluetoothDevice.ADDRESS)
+                        device_name = device.get(Device.NAME)
+                        device_addr = device.get(Device.ADDRESS)
                         print('Bluetooth device: ' + device_name + ' connected with MAC address of ' + device_addr + '.') # TODO: Add logging
                         self.bluetooth['connectedName'] = device_name
                         self.bluetooth['address'] = device_addr
@@ -209,7 +209,7 @@ class Bluetooth(AbstractService):
 
                         EMPTY = ''
 
-                        if track.get('Title'):
+                        if track.get(TrackAttributes.TITLE):    # if the track doesn't have a title, there is no real point in displaying.
                             metadata['title'] = str(track.get(TrackAttributes.TITLE)) if track.get(TrackAttributes.TITLE) else EMPTY
                             metadata['artist'] = str(track.get(TrackAttributes.ARTIST)) if track.get(TrackAttributes.ARTIST) else EMPTY
                             metadata['album'] = str(track.get(TrackAttributes.ALBUM)) if track.get(TrackAttributes.ALBUM) else EMPTY
@@ -280,7 +280,7 @@ class Bluetooth(AbstractService):
                         return
             case IFaceTypes.DEVICE_1:
                 match changed_key:
-                    case BluetoothDevice.CONNECTED:
+                    case Device.CONNECTED:
                         self.__handle_connect(changed_props=changed)
             case _:
                 print('Unrecognized keyword: "' + changed_key + '" from interface: "' + iface + '"')
