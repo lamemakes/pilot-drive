@@ -1,7 +1,7 @@
 <template>
-    <div id="notification-container" v-if="notification" :class="(notification.body) ? 'body-notif' : 'no-body-notif'">
+    <div id="notification-container" v-if="notification" :class="(hasBody) ? 'body-notif' : 'no-body-notif'">
         <p id="heading-container" class="notif-text"><span id="title">{{ notification.title }}</span> - <span id="name">{{ notification.app_name }}</span></p>
-        <p id="body" class="notif-text" v-if="notification.body">{{ notification.body }}</p>
+        <p id="body" class="notif-text" v-if="hasBody">{{ notification.body }}</p>
     </div>
 </template>
 
@@ -17,7 +17,9 @@ export default defineComponent({
 
         const notification = props.notification
 
-        return {notification}
+        const hasBody = notification?.body && notification?.body != "null"  // Sometimes null is returned as a string
+
+        return {notification, hasBody}
     }
 })
 </script>

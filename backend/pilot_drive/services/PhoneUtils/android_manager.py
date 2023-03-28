@@ -252,7 +252,7 @@ class AndroidManager(AbstractManager):
                 except (
                     TypeError
                 ) as err:  # All the needed values didn't exist, don't create the notification object
-                    self.logger.error(
+                    self.logger.debug(
                         msg=f'Failed to create notification from: "{formatted_notif}": {err}'
                     )
                     continue

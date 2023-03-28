@@ -110,8 +110,5 @@ export default defineComponent({
   bottom: 30px;
   width: 100%;
   z-index: 1;
-  div {
-    margin-inline: 20px;
-  }
 }
 </style>

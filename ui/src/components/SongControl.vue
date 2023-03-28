@@ -1,13 +1,13 @@
 <template>
     <div v-if="songStore && songStore.song" class="song-ctrl-btn" id="control-container">
         <div class="song-ctl-btn" id="skip-prev-btn" @click="skipTrack(TrackActions.PREV)">
-            <img class="control-icon" :src="Icons.SKIP_PREV_ICON">
+            <img class="control-icon" :src="iconMap.get(TrackActions.PREV)">
         </div>
         <div class="song-ctl-btn" id="status-btn" @click="changeState">
-            <img class="control-icon" :src="(songStore.song.isPlaying) ? Icons.PAUSE_ICON : Icons.PLAY_ICON">
+            <img class="control-icon" :src="(songStore.song.isPlaying) ? iconMap.get(TrackActions.PAUSE) : iconMap.get(TrackActions.PLAY)">
         </div>
         <div class="song-ctl-btn" id="skip-next-btn" @click="skipTrack(TrackActions.NEXT);">
-            <img class="control-icon" :src="Icons.SKIP_NEXT_ICON">
+            <img class="control-icon" :src="iconMap.get(TrackActions.NEXT)">
         </div>
     </div>
 </template>
@@ -17,15 +17,13 @@ import { defineComponent, inject, onMounted, ref, watch } from 'vue'
 import { Media } from '../types/media.interface';
 import { Settings } from '../types/settings.interface';
 import { ColorVars, handleIconLumin } from '../utils/theme';
+import playIcon from '../assets/icons/play.svg'
+import pauseIcon from '../assets/icons/pause.svg'
+import skipPrevIcon from '../assets/icons/skip_prev.svg'
+import skipNextIcon from '../assets/icons/skip_next.svg'
 
 export default defineComponent({
     setup () {
-        enum Icons {
-            PLAY_ICON = "../src/assets/icons/play.svg",
-            PAUSE_ICON = "../src/assets/icons/pause.svg",
-            SKIP_PREV_ICON = "../src/assets/icons/skip_prev.svg",
-            SKIP_NEXT_ICON = "../src/assets/icons/skip_next.svg"
-        }
 
         enum TrackActions {
             PLAY = 'play',
@@ -33,6 +31,13 @@ export default defineComponent({
             NEXT = 'next',
             PREV = 'prev'
         }
+
+        const iconMap = new Map<TrackActions, string>([
+            [TrackActions.PLAY, playIcon],
+            [TrackActions.PAUSE, pauseIcon],
+            [TrackActions.PREV, skipPrevIcon],
+            [TrackActions.NEXT, skipNextIcon]
+        ])
 
         const songStore = ref(inject("mediaStore") as Media);
         const settingsStore = ref(inject('settingsStore') as Settings);
@@ -73,7 +78,7 @@ export default defineComponent({
         {deep: true})
 
 
-        return {Icons, songStore, changeState, TrackActions, skipTrack}
+        return {iconMap, songStore, changeState, TrackActions, skipTrack}
     }
 })
 </script>

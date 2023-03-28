@@ -1,14 +1,14 @@
 <template>
     <div v-for="item in routes" :key="item.name" class="route-btn">
-        <router-link :to="{ name: item.name}">
-            <img class="route-img" :src="getImageUrl(NAV_ICON_PATH + item.name + '.svg')" />
+        <router-link :to="{ name: item.name}" v-if="isEnabled(item)" class="nav-link">
+            <img class="route-img" :src="item.icon" />
         </router-link>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, onMounted, ref, watch, watchEffect } from 'vue'
-import { routes } from "../constants/routes"
+import { defineComponent, inject, onMounted, Ref, ref, watch, watchEffect } from 'vue'
+import { routes, route } from "../constants/routes"
 import { Settings } from '../types/settings.interface';
 import { ColorVars, handleIconLumin} from '../utils/theme';
 
@@ -16,11 +16,17 @@ export default defineComponent({
     setup () {
         const settingsStore = ref(inject('settingsStore') as Settings);
 
-        const NAV_ICON_PATH = "../assets/icons/";
-
-        const getImageUrl = (name: string) => {
-            return new URL(name, import.meta.url).href
+        const isEnabled = (route:route) => {
+            if (route.conditional === true) {
+                const enabledString = `${route.name}Enabled`
+                console.error(enabledString)
+                const checkEnabled = settingsStore.value[enabledString as keyof Settings] as boolean
+                return checkEnabled
+            } else {
+                return true
+            }
         }
+
 
         let isDarkLumin = true; // Default value if root can't be queried for whatever reason
 
@@ -35,7 +41,7 @@ export default defineComponent({
         {deep: true})
         
 
-        return {routes, NAV_ICON_PATH, getImageUrl}
+        return {routes, isEnabled}
     },
 })
 </script>
@@ -60,5 +66,9 @@ a {
 
 .router-link-active, router-link-exact-active {
     background-color: var(--accent-color);
+}
+
+.nav-link {
+    margin-inline: 20px;
 }
 </style>

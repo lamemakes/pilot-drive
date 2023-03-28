@@ -85,8 +85,7 @@ class Settings(AbstractService):
             **self.__settings.get(constants.WEB_SETTINGS_ATTRIBUTE),
         }
 
-    @web_settings.setter
-    def web_settings(self, web_settings: dict):
+    def set_web_settings(self, web_settings: dict):
         """
         Setter for web settings. Removes the unneccesary version info, updates the local web settings, and saves the new settings.json
 

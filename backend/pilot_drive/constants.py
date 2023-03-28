@@ -5,7 +5,7 @@ from __init__ import __version__ as VERSION
 """
 Constants for the static frontend
 """
-STATIC_WEB_PORT = 8002
+STATIC_WEB_PORT = 8001
 STATIC_WEB_PATH = "./web/files/"
 
 """

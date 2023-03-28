@@ -21,10 +21,6 @@ class PilotDrive:
         p = Process(target=self.logging.main)
         p.start()
 
-        self.logging.info(msg="pre-yeet")
-        self.logging.debug(msg="yeetbug")
-        self.logging.info(msg="post-yeet")
-
         self.master_queue = MasterEventQueue(logging=self.logging)
 
         self.__processes = []
@@ -69,7 +65,7 @@ class PilotDrive:
         # Set message handlers for your services, ie. if there is a new "settings" type recieved from the websocket, pass it to
         # settings.set_web_settings as it is a settings change event.
         self.service_msg_handlers = {
-            EventType.SETTINGS.value: self.settings.web_settings,
+            EventType.SETTINGS.value: self.settings.set_web_settings,
             EventType.BLUETOOTH.value: self.bluetooth.bluetooth_control,
         }
 
@@ -123,7 +119,6 @@ class PilotDrive:
                 break
 
     async def handler(self, websocket):
-        websocket.enableTrace(False)
         self.settings.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
         await asyncio.gather(
             self.consumer(websocket=websocket), self.producer(websocket=websocket)

@@ -14,17 +14,22 @@ Utilizing PILOT Drive, a user can:
 
 ## Consider yourself a hacker?
 PILOT Drive is for you! Designed to be hackable, through means of:
-- Usage of common languages/frameworks. Python 3 is one of the most common & easy to learn languages, while the UI uses easy to read [Vue Single File Components](https://vuejs.org/guide/scaling-up/sfc.html).
-- Modularity. The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
-- A fully open source codebase. While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
+- __Common languages/frameworks__: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html).
+- __Modularity__: The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
+- __Fully open source codebase__: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
+
+## Documentation
+The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/en/2.0.0/). 
 
 ## Want to contribute?
 - Found a bug or have an idea for an improvement? Raise a new [issue](https://github.com/lamemakes/pilot-drive/issues)!
 - Want to contribute to the codebase? Create a fork and make a PR when you're all said and done!
 - Contribution ideas/PILOT Drive roadmap:
-    - Software Defined Radio integration
-    - Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html) to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing
-    - More in-depth bluetooth implementations, giving the user access to more information on the connected device
-    - Intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features.
-    - Navigation & GPS integration. Potentially integrating OpenStreetMap for these capabilities.
-    - More efficiencies & better resource management. 
+    - __Testing__: More unit testing & E2E testing could be used at any level of the stack!
+    - __Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, exlainations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
+    - __Media types__: More audio types, such as software defined radio, local audio files, etc.
+    - __Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing
+    - __Bluetooth features__: More in-depth bluetooth implementations, giving the user access to more functionality to the connected device
+    - __UI enhancements__: More intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features.
+    - __Navigation__: GPS & OpenStreetMap integration.
+    - __Optimizations__: More efficiencies & better resource management (ie. multiprocessing fixes). 

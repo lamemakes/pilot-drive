@@ -24,7 +24,10 @@ import PhoneNotification from '../components/PhoneNotification.vue';
 import { Phone } from '../types/phone.interface';
 import { Settings } from '../types/settings.interface';
 import { ColorVars, handleIconLumin } from '../utils/theme';
-
+import usbDisabled from '../assets/icons/usb_disabled.svg'
+import phoneLock from '../assets/icons/phone_lock.svg'
+import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg'
+import mobileDisabled from '../assets/icons/mobile_disabled.svg'
 
 export default defineComponent({
     components: {
@@ -37,25 +40,18 @@ export default defineComponent({
 
         interface NotConnectedDisplay {
             message: string,
-            icon: Icons
-        }
-
-        enum Icons {
-            USB_DISABLED = "../src/assets/icons/usb_disabled.svg",
-            PHONE_LOCK = "../src/assets/icons/phone_lock.svg",
-            BLUETOOTH_DISABLED = "../src/assets/icons/bluetooth_disabled.svg",
-            MOBILE_DISABLED = "../src/assets/icons/mobile_disabled.svg"
+            icon: string
         }
 
 
         const androidMessageMap = new Map<string, NotConnectedDisplay>([
-            ['disconnected', {message: 'Connect an android device via USB and enable USB debugging to see notifications!', icon: Icons.USB_DISABLED}],
-            ['locked', {message: 'Unlock your android device to see notifications!', icon: Icons.PHONE_LOCK}],
-            ['untrusted', {message: 'Always allow USB debugging from this machine to see notifications!', icon: Icons.PHONE_LOCK}]
+            ['disconnected', {message: 'Connect an android device via USB and enable USB debugging to see notifications!', icon: usbDisabled}],
+            ['locked', {message: 'Unlock your android device to see notifications!', icon: phoneLock}],
+            ['untrusted', {message: 'Always allow USB debugging from this machine to see notifications!', icon: phoneLock}]
         ])
 
         const iosMessageMap = new Map<string, NotConnectedDisplay>([
-            ['disconnected', {message: 'Connect an iOS device via bluetooth to see notifications!', icon: Icons.BLUETOOTH_DISABLED}]
+            ['disconnected', {message: 'Connect an iOS device via bluetooth to see notifications!', icon: bluetoothDisabled}]
         ])
 
         const getNotConnectedMessage = (state: string): NotConnectedDisplay => {
@@ -74,7 +70,7 @@ export default defineComponent({
                 }
                 default: {
                     console.error(`Invalid phone type "${phoneStore.value.type}"! Returning default not connected.`)
-                    return {message: 'Connect a device to see notifications!', icon: Icons.MOBILE_DISABLED}
+                    return {message: 'Connect a device to see notifications!', icon: mobileDisabled}
                 }
             }
         }
