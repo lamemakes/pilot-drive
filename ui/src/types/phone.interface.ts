@@ -1,19 +1,17 @@
 import { BluetoothDevice } from "./bluetooth.interface";
 
-export interface Phone extends BluetoothDevice {
+export interface Phone {
     enabled: boolean,
-    connected: boolean,
-    deviceType: 'ios' | 'android' | undefined,
+    type: 'android' | 'ios' | undefined,
+    state: 'connected' | 'locked' | 'disconnected' | 'untrusted',
     notifications: PhoneNotification[]
 }
 
 export interface PhoneNotification {
-    subtext: string | undefined,
-    title: string | undefined,
-    icon: Blob | undefined,
-    key: string | undefined,
-    packageName: string | undefined,
-    priority: string | undefined,
-    tickerText: string | undefined,
-    time: string | undefined,
+    id: number,
+    app_id: string,
+    app_name: string,
+    title: string,
+    time: number,
+    body?: string
 }

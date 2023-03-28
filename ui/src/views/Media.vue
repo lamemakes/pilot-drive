@@ -8,12 +8,20 @@
 import { defineComponent, inject, ref, watch } from 'vue'
 import { Media } from '../types/media.interface';
 import SongInfo from '../components/SongInfo.vue'
+import { BluetoothDevice } from '../types/bluetooth.interface';
 
 export default defineComponent({
     components: {SongInfo},
     setup () {
         const mediaStore = ref(inject("mediaStore") as Media);
-        return {mediaStore}
+        const bluetoothStore = ref(inject('bluetoothStore') as BluetoothDevice)
+
+        // watch(bluetoothStore, () => {
+        //     handleIconLumin("route-img", ColorVars.SECONDARY_LUMIN);
+        // },
+        // {deep: true})
+
+        return {mediaStore, bluetoothStore}
     }
 })
 </script>

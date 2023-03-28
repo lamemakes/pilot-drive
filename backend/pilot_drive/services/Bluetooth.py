@@ -16,6 +16,7 @@ from constants import (
     MediaPlayerAttributes,
     MediaTransportAttributes,
 )
+from MasterLogger import MasterLogger
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType
 
@@ -25,8 +26,13 @@ class Bluetooth(AbstractService):
     The service that manages the bluetooth media of PILOT Drive.
     """
 
-    def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType):
-        super().__init__(master_event_queue, service_type)
+    def __init__(
+        self,
+        master_event_queue: MasterEventQueue,
+        service_type: EventType,
+        logger: MasterLogger,
+    ):
+        super().__init__(master_event_queue, service_type, logger)
 
         self.__local_hostname = socket.gethostname()
         self.bluetooth = None
@@ -92,13 +98,9 @@ class Bluetooth(AbstractService):
                         connected = True
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
-                        print(
-                            "Bluetooth device: "
-                            + device_name
-                            + " connected with MAC address of "
-                            + device_addr
-                            + "."
-                        )  # TODO: Add logging
+                        self.logging.info(
+                            msg=f"Bluetooth device: {device_name} connected with MAC address of {device_addr}."
+                        )
                         self.bluetooth["connectedName"] = device_name
                         self.bluetooth["address"] = device_addr
 
@@ -110,7 +112,7 @@ class Bluetooth(AbstractService):
             else:
                 self.__reset_vars()
         else:
-            print("Enable bluetooth to proceed!")
+            self.logger.warning(msg="Bluetooth is disabled!")  # TODO: Action here?
 
         self.push_to_queue(self.bluetooth)
         if self.bluetooth["connected"]:
@@ -172,7 +174,7 @@ class Bluetooth(AbstractService):
                     return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
 
         except dbus.exceptions.DBusException as e:
-            print(e)  # TODO: Logging...
+            self.__l
 
     def __set_position(self, changed_props: dbus.Dictionary = None):
         """
@@ -197,7 +199,7 @@ class Bluetooth(AbstractService):
                     return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
 
         except dbus.exceptions.DBusException as e:
-            print(e)  # TODO: Logging...
+            self.logger.error(msg=f"A DBus error has occurred: {e}")
 
     def __set_track(self, changed_props: dbus.Dictionary = None):
         """
@@ -256,7 +258,7 @@ class Bluetooth(AbstractService):
                     return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
 
         except dbus.exceptions.DBusException as e:
-            print(e)  # TODO: Logging...
+            self.logger.error(msg=f"A DBus error has occurred: {e}")
 
     """
     Signal Reciever Methods
@@ -321,12 +323,8 @@ class Bluetooth(AbstractService):
                     case Device.CONNECTED:
                         self.__handle_connect(changed_props=changed)
             case _:
-                print(
-                    'Unrecognized keyword: "'
-                    + changed_key
-                    + '" from interface: "'
-                    + iface
-                    + '"'
+                self.logger.error(
+                    msg=f"Unrecognized keyword: {changed_key} from interface: {iface}"
                 )
 
         # Push the changes to the Queue to be sent to the frontend.
@@ -361,9 +359,9 @@ class Bluetooth(AbstractService):
                 case TrackControl.PREV:
                     player.Previous()
                 case _:
-                    print(
-                        'Unknown bluetooth control action: "' + action + '"!'
-                    )  # TODO: Logging!
+                    self.logger.warning(
+                        msg=f"Unknown bluetooth control action: {action}"
+                    )
 
     """
     Run the main loop

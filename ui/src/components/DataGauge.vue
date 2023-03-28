@@ -23,8 +23,6 @@ export default defineComponent({
     setup (props) {
         const stats = toRef(props, 'stats')
 
-        console.log(stats.value?.value.quantity)
-
         return {stats}
     }
 })

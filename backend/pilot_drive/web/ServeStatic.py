@@ -1,6 +1,7 @@
 import http.server
 import socketserver
 from multiprocessing import Process
+from MasterLogger import MasterLogger
 
 
 class ServeStatic:
@@ -8,15 +9,17 @@ class ServeStatic:
     The class that serves the static web assets (the Vue frontend)
     """
 
-    def __init__(self, port: int, relative_directory: str):
+    def __init__(self, port: int, relative_directory: str, logger: MasterLogger):
         """
         Constructor for the ServeStatic class
 
         :param port: The port that the server will be ran at (ie. http://localhost:<port>)
         :param relative_directory: The directory that the server will be serving from (containing index.html)
         """
-        self.port = port
-        self.directory = relative_directory
+        self.__port = port
+        self.__directory = relative_directory
+        self.__logger = logger
+        self.__logger.info(msg="Initializing the static web server!")
 
     def __handler(self, request, client_address, server):
         """
@@ -30,13 +33,12 @@ class ServeStatic:
             request=request,
             client_address=client_address,
             server=server,
-            directory=self.directory,
+            directory=self.__directory,
         )
 
     def main(self):
         """
         starts the server, serving static assets
         """
-        with socketserver.TCPServer(("", self.port), self.__handler) as httpd:
-            print("serving! port:", self.port)  # WA DEBUG
+        with socketserver.TCPServer(("", self.__port), self.__handler) as httpd:
             httpd.serve_forever()

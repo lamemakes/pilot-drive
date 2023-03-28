@@ -3,6 +3,7 @@ import os
 import time
 
 from constants import QUERIED_FIELDS
+from MasterLogger import MasterLogger
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType
 
@@ -28,6 +29,7 @@ class Vehicle(AbstractService):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
+        logger: MasterLogger,
         obd_port: str = None,
     ):
         """
@@ -37,7 +39,7 @@ class Vehicle(AbstractService):
         :param event_type: the event type that will go on the queue. If no argument is specified, it defaults to the calling services type
         :param obd_port: the port to attempt a connection to an OBD port. If unspecified, python OBD will attempt to detect a connection.
         """
-        super().__init__(master_event_queue, service_type)
+        super().__init__(master_event_queue, service_type, logger)
 
         self.__connected = False
         self.__connection = None
@@ -78,9 +80,10 @@ class Vehicle(AbstractService):
         if self.__obd_port:
             if os.path.exists(self.__obd_port):
                 self.__connection = obd.OBD(self.__obd_port)
+                self.logger.info(f"OBD connection made to {self.__obd_port}.")
             else:
                 raise InvalidPortException(
-                    'Specified path: "' + self.__obd_port + '" does not exist!'
+                    f'Specified path: "{self.__obd_port}" does not exist!'
                 )
         else:
             self.__connection = obd.OBD()
@@ -131,12 +134,12 @@ class Vehicle(AbstractService):
 
                             field_index += 1
                         else:
-                            print('Failed to query for "' + field_name + '"!')
+                            self.logger.error(msg=f'Failed to query for "{field_name}"')
                             # field_index += 1
                             continue
                 else:
                     raise InvalidQueryException(
-                        'Specified OBD command: "' + field_name + '" is not valid!'
+                        f'Specified OBD command: "{field_name}" is not valid!'
                     )
 
                 # field_index += 1
@@ -146,9 +149,20 @@ class Vehicle(AbstractService):
 
     def main(self):
         queries_made = 0
+        connection_error_logged = False
         while True:
             if not self.__is_connected():
-                self.__handle_connect()
+                try:
+                    self.__handle_connect()
+                except InvalidPortException as err:
+                    if not connection_error_logged:  # Don't spam the log
+                        self.logger.error(
+                            msg=f'Invalid serial port specified: "{err}", will continue to attempt a connection.'
+                        )
+                        connection_error_logged = True
+                    time.sleep(
+                        0.5
+                    )  # Busy wait then continue to try and connect in case it happens to show up
 
             if self.__is_connected():
                 self.__query_fields(queries_made=queries_made)

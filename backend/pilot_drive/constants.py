@@ -13,6 +13,19 @@ Constants for the websocket server
 """
 WS_PORT = 8000
 
+
+"""
+Constants for logging
+"""
+# Logging defaults
+LOG_PATH = "/etc/pilot-drive/logging/"
+LOG_FILE_NAME = "pilot_drive.log"
+DEFAULT_LOG_SETTINGS = {
+    "logLevel": 20,
+    "logToFile": True,
+    "logPath": f"{LOG_PATH}{LOG_FILE_NAME}",
+}
+
 """
 Constants for PILOT Drive Settings & it's defaults
 """

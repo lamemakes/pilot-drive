@@ -17,6 +17,7 @@ import { MediaStore } from "./stores/MediaStore";
 import { initializeWebSocket } from "./utils/backend";
 import { Data } from "./types/data.interface";
 import { VehicleStore } from "./stores/VehicleStore";
+import { PhoneStore } from "./stores/PhoneStore";
 
 export default defineComponent({
   components: {
@@ -29,6 +30,7 @@ export default defineComponent({
     const settingsStore = ref(SettingsStore);
     const mediaStore = ref(MediaStore);
     const vehicleStore = ref(VehicleStore)
+    const phoneStore = ref(PhoneStore)
 
     const websocket = initializeWebSocket();
     websocket.onmessage = (message) => {
@@ -54,11 +56,10 @@ export default defineComponent({
                   break;
                 case 'phone':
                   if (dataObj.phone) {
-                    console.log(dataObj.phone) // TODO: phone implementation
+                    phoneStore.value = dataObj.phone
                   }
                   break;
                 case 'settings':
-                  console.log("SETTINGS!")
                   if (dataObj.settings) {
                     console.log(dataObj.settings.selectedTheme)
                     settingsStore.value = dataObj.settings;
@@ -75,6 +76,7 @@ export default defineComponent({
     provide('settingsStore', settingsStore);
     provide('mediaStore', mediaStore);
     provide('vehicleStore', vehicleStore);
+    provide('phoneStore', phoneStore)
     provide('websocket', ref(websocket));
 
     onMounted(() => {

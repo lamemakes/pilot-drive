@@ -53,7 +53,6 @@ class Notification:
         )
 
 
-
 @dataclass
 class PhoneContainer:
     enabled: bool

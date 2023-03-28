@@ -1,17 +1,11 @@
 import json
 import os
 import constants
+from MasterLogger import MasterLogger
 
 from services import AbstractService
 from MasterEventQueue import MasterEventQueue, EventType
-
-
-class InvalidAttributeException(Exception):
-    """
-    Exception raised when an invalid attribute is used in the set_setting or get_setting methods
-    """
-
-    pass
+from .ServiceExceptions import InvalidAttributeException, FailedToReadSettingsException
 
 
 class Settings(AbstractService):
@@ -19,19 +13,24 @@ class Settings(AbstractService):
     The service that manages the settings of PILOT Drive, both web and overarching app wise.
     """
 
-    def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType):
+    def __init__(
+        self,
+        master_event_queue: MasterEventQueue,
+        service_type: EventType,
+        logger: MasterLogger,
+    ):
         """
         Initialize the settings service, and create a new settings file/load in a current one.
 
         :param master_event_queue: the master event queue (message bus) that handles new events
         :param service_type: the EvenType enum that indicated what the service will appear as on the event queue
         """
-        super().__init__(master_event_queue, service_type)
+        super().__init__(master_event_queue, service_type, logger)
 
         self.__settings_lock = False  # Lock is utilized to prevent an invalid settings file from being overwritten
 
         self.__full_settings_path = (
-            constants.SETTINGS_PATH + constants.SETTINGS_FILE_NAME
+            f"{constants.SETTINGS_PATH}{constants.SETTINGS_FILE_NAME}"
         )
 
         # If a settings file doesn't exist, provide a set of default settings and write the settings file.
@@ -47,10 +46,9 @@ class Settings(AbstractService):
                         fp.seek(0)  # Reset pointer
                         self.__settings = json.load(fp=fp)
             except json.JSONDecodeError as err:
-                print(
-                    "Failed to load JSON from settings file, using defaults! Any modified settings will not be written. "
-                    + str(err)
-                )  # TODO: Add logging !
+                self.logger.error(
+                    msg=f"Failed to load JSON from settings file, using defaults! Any modified settings will not be written: {err}"
+                )
                 self.__settings_lock = True
                 self.__settings = {
                     **constants.DEFAULT_BACKEND_SETTINGS,
@@ -101,7 +99,7 @@ class Settings(AbstractService):
                     self.set_setting(attribute=key, value=web_settings[key], web=True)
                     setting_changed = True
                 except InvalidAttributeException as err:
-                    print("Invalid web setting used: " + err)
+                    self.logger.error(msg=f"Invalid web setting used: {err}")
 
         if setting_changed:
             self.write_settings()
@@ -153,9 +151,7 @@ class Settings(AbstractService):
             else:
                 return self.__settings[attribute]
         except InvalidAttributeException:  # The attribute doesn't exist
-            print(
-                'Invalid attribute to get: "' + attribute + '"'
-            )  # TODO: Replace with logging!
+            self.logger.error(msg=f"Invalid attribute to get: {attribute}")
             return
 
     def set_setting(self, attribute: str, value, web: bool = False):
@@ -174,9 +170,7 @@ class Settings(AbstractService):
             else:
                 self.__settings[attribute] = value
         except InvalidAttributeException:  # The attribute doesn't exist
-            print(
-                'Invalid attribute to get: "' + attribute + '"'
-            )  # TODO: Replace with logging!
+            self.logger.error(msg=f"Invalid attribute to get: {attribute}")
             return
 
     def refresh(self):
@@ -184,3 +178,17 @@ class Settings(AbstractService):
         Push the web settings onto the bus again. When the UI is refreshed, it expects a new settings event on the bus.
         """
         self.push_to_queue(self.web_settings)
+
+    @staticmethod
+    def get_raw_settings() -> dict:
+        settings_path = f"{constants.SETTINGS_PATH}{constants.SETTINGS_FILE_NAME}"
+        if not os.path.exists(settings_path):
+            raise FailedToReadSettingsException(
+                f'Failed to find settings file at: "{settings_path}"'
+            )
+
+        try:
+            with open(settings_path, "r") as raw_settings:
+                return json.load(fp=raw_settings)
+        except json.JSONDecodeError as err:
+            raise FailedToReadSettingsException(f"Failed to read settings: {err}")

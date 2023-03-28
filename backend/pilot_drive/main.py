@@ -4,38 +4,64 @@ import constants
 import asyncio
 import websockets
 
+from MasterLogger import MasterLogger
 from MasterEventQueue import MasterEventQueue, EventType
 from web import ServeStatic
-from services import Settings, Bluetooth, Vehicle, Phone
+from services import Settings, Bluetooth, Vehicle, Phone, ServiceExceptions
 
 
 class PilotDrive:
     def __init__(self):
-        self.master_queue = MasterEventQueue()
+        try:
+            log_settings = Settings.get_raw_settings()["logging"]
+        except ServiceExceptions.FailedToReadSettingsException:
+            log_settings = constants.DEFAULT_LOG_SETTINGS
+
+        self.logging = MasterLogger(log_settings=log_settings)
+        p = Process(target=self.logging.main)
+        p.start()
+
+        self.logging.info(msg="pre-yeet")
+        self.logging.debug(msg="yeetbug")
+        self.logging.info(msg="post-yeet")
+
+        self.master_queue = MasterEventQueue(logging=self.logging)
 
         self.__processes = []
 
-        web_server = ServeStatic(constants.STATIC_WEB_PORT, constants.STATIC_WEB_PATH)
+        web_server = ServeStatic(
+            constants.STATIC_WEB_PORT, constants.STATIC_WEB_PATH, logger=self.logging
+        )
         self.__processes.append(web_server)
 
         self.settings = Settings(
-            master_event_queue=self.master_queue, service_type=EventType.SETTINGS
+            master_event_queue=self.master_queue,
+            service_type=EventType.SETTINGS,
+            logger=self.logging,
         )
         self.__processes.append(self.settings)
 
         self.vehicle = Vehicle(
             master_event_queue=self.master_queue,
             service_type=EventType.VEHICLE,
+            logger=self.logging,
             obd_port="/dev/pts/4",
         )
         self.__processes.append(self.vehicle)
 
         self.bluetooth = Bluetooth(
-            master_event_queue=self.master_queue, service_type=EventType.BLUETOOTH
+            master_event_queue=self.master_queue,
+            service_type=EventType.BLUETOOTH,
+            logger=self.logging,
         )
         self.__processes.append(self.bluetooth)
 
-        self.phone = Phone(master_event_queue=self.master_queue, service_type=EventType.PHONE, settings=self.settings)
+        self.phone = Phone(
+            master_event_queue=self.master_queue,
+            service_type=EventType.PHONE,
+            logger=self.logging,
+            settings=self.settings,
+        )
         self.__processes.append(self.phone)
 
         self.process_factory(processes=self.__processes)
@@ -62,8 +88,6 @@ class PilotDrive:
             try:
                 message_in = json.loads(s=message)
                 try:
-                    print("")
-                    print(message_in)
                     handler = self.service_msg_handlers.get(
                         message_in["type"]
                     )  # Get the handler for the message type
@@ -71,17 +95,12 @@ class PilotDrive:
                         message_in.get(message_in["type"])
                     )  # Pass in the content of the websocket message
                 except KeyError:
-                    print(
-                        "Failed to find a service handler for message of type: "
-                        + message_in["type"]
-                    )  # TODO: Replace with logging!
+                    self.logging.error(
+                        msg=f'Failed to find a service handler for message of type: {message_in["type"]}'
+                    )
             except json.JSONDecodeError as err:
-                print(
-                    "Failed to decode recieved websocket message: "
-                    + err.msg
-                    + ' "'
-                    + message_in
-                    + '"'
+                self.logging.error(
+                    msg=f"Failed to decode recieved websocket message: {err.msg} {message_in}"
                 )  # TODO: Replace with logging!
 
     async def consumer(self, websocket):
@@ -104,15 +123,16 @@ class PilotDrive:
                 break
 
     async def handler(self, websocket):
+        websocket.enableTrace(False)
         self.settings.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
         await asyncio.gather(
             self.consumer(websocket=websocket), self.producer(websocket=websocket)
         )
 
     async def main(self):
-        print("MAIN RUN!")  # WA DEBUG
+        self.logging.info(msg="Initializing PILOT Drive main loop!")
         async with websockets.serve(self.handler, "", constants.WS_PORT):
-            print("Starting WebSocket server!")  # TODO: Replace with logging!
+            self.logging.info(msg="Starting WebSocket server!")
             await asyncio.Future()  # run forever
 
 

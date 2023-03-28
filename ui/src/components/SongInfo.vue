@@ -1,17 +1,17 @@
 <template>
-    <div v-if="songStore && songStore.song" id="song-info-container">
+    <div v-if="mediaStore && mediaStore.song" id="song-info-container">
         <div id="song-info">
             <div id="title">
-                <span>{{ songStore.song.title }}</span>
+                <span>{{ mediaStore.song.title }}</span>
             </div>
-            <div v-if="songStore.song.artist" id="artist">
-                <span>{{ songStore.song.artist }}</span>
+            <div v-if="mediaStore.song.artist" id="artist">
+                <span>{{ mediaStore.song.artist }}</span>
             </div>
-            <div v-if="songStore.song.album" id="album">
-                <span>{{ songStore.song.album }}</span>
+            <div v-if="mediaStore.song.album" id="album">
+                <span>{{ mediaStore.song.album }}</span>
             </div>
         </div>
-        <div class="progressbar" v-if="songStore.song.duration && songStore.song.position">
+        <div class="progressbar" v-if="mediaStore.song.duration && mediaStore.song.position">
             <div class="progressbar" id="progress-inner" :style="{width: progress + '%'}"></div>
         </div>
 
@@ -30,24 +30,24 @@ export default defineComponent({
     components: { SongControl },
     setup () {
         
-        const songStore = ref((inject("mediaStore") as Media));
+        const mediaStore = ref((inject("mediaStore") as Media));
 
         const progress = ref(0);
 
         const progInterval = 1000
 
         const progbarUpdate = setInterval( () => {
-            if (songStore.value.song && songStore.value.song.duration && songStore.value.song.position){
-                const percent = (songStore.value.song.position / songStore.value.song.duration) * 100
+            if (mediaStore.value.song && mediaStore.value.song.duration && mediaStore.value.song.position){
+                const percent = (mediaStore.value.song.position / mediaStore.value.song.duration) * 100
                 progress.value = percent > 100 ? 100 : percent // Confirm it doesn't get larger than 100%
-                if (songStore.value.song.isPlaying) {
-                    songStore.value.song.position += progInterval;
+                if (mediaStore.value.song.isPlaying) {
+                    mediaStore.value.song.position += progInterval;
                 }
-                console.log(songStore.value.song.position)
+                console.log(mediaStore.value.song.position)
             }
         }, progInterval)
 
-        return {songStore, progress}
+        return {mediaStore, progress}
     }
 })
 </script>

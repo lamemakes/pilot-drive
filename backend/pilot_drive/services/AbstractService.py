@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 from MasterEventQueue import MasterEventQueue, EventType
+from MasterLogger import MasterLogger
 from multiprocessing import Process
 
 
 class AbstractService(ABC):
     @abstractmethod
-    def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType):
+    def __init__(
+        self,
+        master_event_queue: MasterEventQueue,
+        service_type: EventType,
+        logger: MasterLogger,
+    ):
         """
         Initialize the service
 
@@ -14,6 +20,9 @@ class AbstractService(ABC):
         """
         self.event_queue = master_event_queue
         self.service_type = service_type
+
+        self.logger = logger
+        self.logger.info(msg=f"Initializing {service_type} service!")
 
     def push_to_queue(self, event: dict, event_type: dict = None):
         """

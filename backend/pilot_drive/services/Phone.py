@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import time
 from typing import List
+from MasterLogger import MasterLogger
 from services.Settings import Settings
 from .PhoneUtils.phone_constants import (
     PHONE_TYPES,
@@ -23,8 +24,14 @@ class NoPhoneManagerException(Exception):
 
 
 class Phone(AbstractService):
-    def __init__(self, master_event_queue: MasterEventQueue, service_type: EventType, settings: Settings):
-        super().__init__(master_event_queue, service_type)
+    def __init__(
+        self,
+        master_event_queue: MasterEventQueue,
+        service_type: EventType,
+        logger: MasterLogger,
+        settings: Settings,
+    ):
+        super().__init__(master_event_queue, service_type, logger)
         self.__settings = settings
 
         self.__enabled = False
@@ -35,21 +42,21 @@ class Phone(AbstractService):
 
         if self.enabled:
             try:
-                print(self.__settings.get_setting('phone'))
-                self.__type = PHONE_TYPES(self.__settings.get_setting('phone')['type'])
+                self.__type = PHONE_TYPES(self.__settings.get_setting("phone")["type"])
             except ValueError:
                 raise FailedToReadSettingsException(
-                    "Invalid phone type provided: "
-                    + self.__settings.get_setting('phone')["type"]
+                    f'Invalid phone type provided: {self.__settings.get_setting("phone")["type"]}'
                 )
             except KeyError:
-                raise FailedToReadSettingsException("Failed to retrieve phone settings!")
-            
+                raise FailedToReadSettingsException(
+                    "Failed to retrieve phone settings!"
+                )
+
             match self.__type:
                 case PHONE_TYPES.ANDROID:
                     from .PhoneUtils.android_manager import AndroidManager
 
-                    self.__phone_manager = AndroidManager()
+                    self.__phone_manager = AndroidManager(logger=self.logger)
                 case _:
                     raise FailedToReadSettingsException("Unrecognized phone type!")
         else:
@@ -66,13 +73,11 @@ class Phone(AbstractService):
         phone_settings = self.__settings.get_setting("phone")
 
         try:
-            print(self.__settings.get_setting('phone'))
-            self.__type = PHONE_TYPES(self.__settings.get_setting('phone')['type'])
+            self.__type = PHONE_TYPES(self.__settings.get_setting("phone")["type"])
         except ValueError:
             self.__enabled = False
             raise FailedToReadSettingsException(
-                "Invalid phone type provided: "
-                + self.__settings.get_setting('phone')["type"]
+                f'Invalid phone type provided: {self.__settings.get_setting("phone")["type"]}'
             )
 
         settings_enabled = phone_settings.get("enabled") != None
@@ -97,12 +102,24 @@ class Phone(AbstractService):
             return True
 
     def __android_loop(self, manager: AbstractManager):
-        self.push_to_queue(PhoneContainer(enabled=self.__enabled, type=self.__type.value, state=self.state.value).__dict__)
+        self.push_to_queue(
+            PhoneContainer(
+                enabled=self.__enabled, type=self.__type.value, state=self.state.value
+            ).__dict__
+        )
         while True:
             push_notifs = False
-            phone_container = PhoneContainer(enabled=self.__enabled, type=self.__type.value, state=self.state.value, notifications=self.__notifications)
+            phone_container = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
 
             if self.state != self.__state:
+                self.logger.info(
+                    msg=f' Android phone state changed from "{self.__state}" to "{self.state}"'
+                )
                 self.__state = self.state
                 if self.__state == PHONE_STATES.DISCONNECTED:
                     phone_container.notifications = []
@@ -112,9 +129,7 @@ class Phone(AbstractService):
             if self.state == PHONE_STATES.CONNECTED:
                 manager_notifs = manager.notifications
                 manager_notifs.sort(key=self.__notification_sort, reverse=True)
-                if not self.notificationsMatch(
-                    self.__notifications, manager_notifs
-                ):
+                if not self.notificationsMatch(self.__notifications, manager_notifs):
                     self.__notifications = manager_notifs
                     phone_container.notifications = self.__notifications
                     push_notifs = True
@@ -123,7 +138,6 @@ class Phone(AbstractService):
                 self.push_to_queue(event=phone_container.__dict__)
 
             time.sleep(1)
-
 
     def push_to_queue(self, event: dict, event_type: dict = None):
         """
@@ -137,26 +151,30 @@ class Phone(AbstractService):
 
         # Convert Notification object to a serializable form
         json_notifs = []
-        for item in event['notifications']:
+        for item in event["notifications"]:
             json_notifs.append(item.__dict__)
 
-        event['notifications'] = json_notifs
+        event["notifications"] = json_notifs
 
         self.event_queue.push_event(event_type=self.service_type, event=event)
-
 
     def main(self):
         if not self.__enabled:
             return
-        
+
         if self.__type == PHONE_TYPES.ANDROID:
             self.__android_loop(self.__phone_manager)
         else:
-            print('Failed to get phone type, exiting phone manager!')
+            self.logger.error(msg="Failed to get phone type, exiting phone manager!")
 
     def refresh(self):
         if not self.__enabled:
             self.push_to_queue(PhoneContainer(enabled=self.__enabled).__dict__)
         else:
-            notif_refresh = PhoneContainer(enabled=self.__enabled, type=self.__type.value, state=self.state.value, notifications=self.__notifications)
+            notif_refresh = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
             self.push_to_queue(event=notif_refresh.__dict__)

@@ -1,5 +1,6 @@
 from enum import StrEnum
 from multiprocessing import Manager
+from MasterLogger import MasterLogger
 
 
 class EventType(StrEnum):
@@ -22,10 +23,11 @@ class MasterEventQueue:
     is_new_event() and pop_event() methods to handle new events.
     """
 
-    def __init__(self):
+    def __init__(self, logging: MasterLogger):
         manager = Manager()
         self.__queue = manager.Queue()
         self.__new_event = manager.Value("i", 0)
+        self.__logging = logging
 
     def push_event(self, event_type: EventType, event: str):
         """
@@ -39,7 +41,7 @@ class MasterEventQueue:
 
         import json
 
-        print("NEW EVENT: " + str(json.dumps(event)))
+        self.__logging.debug(msg=f"New Event: {json.dumps(event)}")
 
         self.__queue.put(event)
         self.__new_event.value = 1

@@ -33,17 +33,6 @@ export default defineComponent({
         const settingsStore = ref(inject('settingsStore') as Settings);
         const websocket = ref(inject('websocket') as WebSocket);
 
-        function pushSettingsDebounce() {
-            const DEBOUNCE_TIME = 200;
-            return function () {
-                let timeout: any;
-                if (timeout == undefined) clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    pushSettings();
-                }, DEBOUNCE_TIME);
-            };
-        }
-
         const pushSettings = () => {
             websocket.value.send(
                 JSON.stringify(

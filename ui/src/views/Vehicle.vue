@@ -49,9 +49,6 @@ export default defineComponent({
 
         const stats = ref(vehicleStore.value.stats);
 
-        console.error("IS METRIC?")
-        console.error(settingsStore.value.metricUnits)
-
         watch(vehicleStore, () => {
             vehicleStore.value.stats.forEach((item, index) => {
                 const gaugeVals = getGaugeVals(item.name);
