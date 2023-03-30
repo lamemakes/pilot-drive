@@ -1,5 +1,5 @@
 export interface BluetoothDevice {
-    hostEnabled: boolean;
+    enabled: boolean;
     connected: boolean;
     connectedName: string | undefined,
     localHostname?: string | undefined,

@@ -21,13 +21,14 @@
 <script lang="ts">
 import { defineComponent, inject, ref, watch } from 'vue'
 import PhoneNotification from '../components/PhoneNotification.vue';
-import { Phone } from '../types/phone.interface';
-import { Settings } from '../types/settings.interface';
+import { Phone } from '../types/Phone.interface';
+import { Settings } from '../types/Settings.interface';
 import { ColorVars, handleIconLumin } from '../utils/theme';
 import usbDisabled from '../assets/icons/usb_disabled.svg'
 import phoneLock from '../assets/icons/phone_lock.svg'
 import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg'
 import mobileDisabled from '../assets/icons/mobile_disabled.svg'
+import { NotConnectedDisplay } from '../types/NotConnectedDisplay.interface';
 
 export default defineComponent({
     components: {
@@ -37,12 +38,6 @@ export default defineComponent({
         
         const phoneStore = ref(inject('phoneStore') as Phone);
         const settingsStore = ref(inject('settingsStore') as Settings);
-
-        interface NotConnectedDisplay {
-            message: string,
-            icon: string
-        }
-
 
         const androidMessageMap = new Map<string, NotConnectedDisplay>([
             ['disconnected', {message: 'Connect an android device via USB and enable USB debugging to see notifications!', icon: usbDisabled}],

@@ -1,10 +1,10 @@
 // Data types incoming from the backend
 
-import { BluetoothDevice } from "./bluetooth.interface";
-import { Media } from "./media.interface";
-import { Phone } from "./phone.interface";
-import { Settings } from "./settings.interface";
-import { Vehicle } from "./vehicle.interface";
+import { BluetoothDevice } from "./Bluetooth.interface";
+import { Media } from "./Media.interface";
+import { Phone } from "./Phone.interface";
+import { Settings } from "./Settings.interface";
+import { Vehicle } from "./Vehicle.interface";
 
 export interface Data {
     type: "bluetooth" | "media" | "phone" | "vehicle" | 'settings',

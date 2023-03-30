@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { Media } from "../types/media.interface";
+import { Media } from "../types/Media.interface";
 
 export let MediaStore:Media = reactive({
     source: 'bluetooth',

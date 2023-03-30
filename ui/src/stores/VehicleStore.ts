@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { Vehicle } from "../types/vehicle.interface";
+import { Vehicle } from "../types/Vehicle.interface";
 
 export let VehicleStore:Vehicle = reactive({
     enabled: false,

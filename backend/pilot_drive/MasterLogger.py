@@ -1,6 +1,6 @@
 import inspect
 from multiprocessing import Manager
-from constants import DEFAULT_LOG_SETTINGS, LOG_FILE_NAME
+from pilot_drive.constants import DEFAULT_LOG_SETTINGS, LOG_FILE_NAME, absolute_path
 import logging
 import os
 import time
@@ -12,7 +12,6 @@ class MasterLogger:
         self.__logging_queue = manager.Queue()
         self.__new_log = manager.Value("i", 0)
         self.logger: logging.Logger = self.__initialize_logger(log_settings)
-        self.__current_dir = f"{os.getcwd()}/"
 
     def __initialize_logger(self, log_settings) -> logging.Logger:
         init_errors = (
@@ -76,7 +75,7 @@ class MasterLogger:
                 origin = (
                     inspect.stack()[1]
                     .filename.replace("/main.py", "/__main__")
-                    .replace(self.__current_dir, "")
+                    .replace(absolute_path, "")
                     .replace("/", ".")
                     .replace(".py", "")
                 )  # Daisy chaining replace statements sucks. TODO: Use RegEx here.

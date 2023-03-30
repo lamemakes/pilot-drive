@@ -1,6 +1,6 @@
 import { reactive } from "vue";
-import { Phone } from "../types/phone.interface";
-import { Vehicle } from "../types/vehicle.interface";
+import { Phone } from "../types/Phone.interface";
+import { Vehicle } from "../types/Vehicle.interface";
 
 export let PhoneStore:Phone = reactive({
     enabled: false,

@@ -1,5 +1,5 @@
-import { Settings } from "../types/settings.interface";
-import { Theme } from "../types/settings.interface";
+import { Settings } from "../types/Settings.interface";
+import { Theme } from "../types/Settings.interface";
 import { reactive } from "vue";
 
 export let SettingsStore: Settings = reactive({

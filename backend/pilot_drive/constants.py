@@ -1,18 +1,24 @@
 from enum import StrEnum
-from __init__ import __version__ as VERSION
+from pilot_drive import __version__ as VERSION
+import os
+import inspect
 
+
+'''
+Absolute filepath to the currently executed PILOT Drive
+'''
+absolute_path = f'{"/".join(os.path.abspath(inspect.getsourcefile(lambda:0)).split("/")[:-1])}/' # Ugly and rediculous, pulls constants.py out of the path and just returns the directories
 
 """
 Constants for the static frontend
 """
 STATIC_WEB_PORT = 8001
-STATIC_WEB_PATH = "./web/files/"
+STATIC_WEB_PATH = "web/files/"    # A relative filepath from the root project directory
 
 """
 Constants for the websocket server
 """
 WS_PORT = 8000
-
 
 """
 Constants for logging

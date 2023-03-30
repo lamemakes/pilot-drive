@@ -1,6 +1,6 @@
 from enum import StrEnum
 from multiprocessing import Manager
-from MasterLogger import MasterLogger
+from pilot_drive.MasterLogger import MasterLogger
 
 
 class EventType(StrEnum):
@@ -14,6 +14,7 @@ class EventType(StrEnum):
     SYSTEM = "system"
     VEHICLE = "vehicle"
     MEDIA = "media"
+    WEB = "web"
 
 
 class MasterEventQueue:
@@ -26,7 +27,7 @@ class MasterEventQueue:
     def __init__(self, logging: MasterLogger):
         manager = Manager()
         self.__queue = manager.Queue()
-        self.__new_event = manager.Value("i", 0)
+        self.__new_event = manager.Value('i', 0)
         self.__logging = logging
 
     def push_event(self, event_type: EventType, event: str):

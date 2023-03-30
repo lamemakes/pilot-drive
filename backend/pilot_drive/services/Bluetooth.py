@@ -1,10 +1,11 @@
 import json
+from multiprocessing.managers import ValueProxy
 from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
 from gi.repository import GLib  # Handling the DBus event based loop
 import dbus
 import socket
 
-from constants import (
+from pilot_drive.constants import (
     AdapterAttributes,
     MediaSources,
     IFaceTypes,
@@ -16,9 +17,9 @@ from constants import (
     MediaPlayerAttributes,
     MediaTransportAttributes,
 )
-from MasterLogger import MasterLogger
-from services import AbstractService
-from MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.services import AbstractService
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
 
 
 class Bluetooth(AbstractService):
@@ -30,12 +31,12 @@ class Bluetooth(AbstractService):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
-        logger: MasterLogger,
+        logger: MasterLogger
     ):
         super().__init__(master_event_queue, service_type, logger)
 
         self.__local_hostname = socket.gethostname()
-        self.bluetooth = None
+        self.bluetooth = {'enabled': True}
         self.__reset_vars()
 
     """
@@ -98,7 +99,7 @@ class Bluetooth(AbstractService):
                         connected = True
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
-                        self.logging.info(
+                        self.logger.info(
                             msg=f"Bluetooth device: {device_name} connected with MAC address of {device_addr}."
                         )
                         self.bluetooth["connectedName"] = device_name
@@ -331,6 +332,7 @@ class Bluetooth(AbstractService):
         if self.bluetooth["enabled"] and self.bluetooth["connected"]:
             self.__push_media_to_queue()
 
+
     def bluetooth_control(self, action: TrackControl):
         """
         Control the current song
@@ -410,7 +412,8 @@ class Bluetooth(AbstractService):
         self.__set_powered()
         self.__handle_connect()
 
-        GLib.MainLoop().run()
+        loop = GLib.MainLoop()
+        loop.run()
 
     def refresh(self):
         """
@@ -419,3 +422,6 @@ class Bluetooth(AbstractService):
         self.push_to_queue(event=self.bluetooth)
         if self.bluetooth["connected"]:
             self.__push_media_to_queue()
+
+    def terminate(self):
+        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')

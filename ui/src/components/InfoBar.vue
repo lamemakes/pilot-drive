@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
-import { BluetoothDevice } from '../types/bluetooth.interface';
+import { BluetoothDevice } from '../types/Bluetooth.interface';
 import LiveClock from './LiveClock.vue';
 
 export default defineComponent({

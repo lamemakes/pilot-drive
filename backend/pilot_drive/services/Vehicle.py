@@ -2,10 +2,10 @@ import obd
 import os
 import time
 
-from constants import QUERIED_FIELDS
-from MasterLogger import MasterLogger
-from services import AbstractService
-from MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.constants import QUERIED_FIELDS
+from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.services import AbstractService
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
 
 
 class InvalidPortException(Exception):
@@ -173,3 +173,6 @@ class Vehicle(AbstractService):
 
     def refresh(self):
         self.__push_info()
+
+    def terminate(self):
+        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')

@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import { defineComponent, inject, onMounted, ref, watch } from 'vue'
-import { Media } from '../types/media.interface';
-import { Settings } from '../types/settings.interface';
+import { Media } from '../types/Media.interface';
+import { Settings } from '../types/Settings.interface';
 import { ColorVars, handleIconLumin } from '../utils/theme';
 import playIcon from '../assets/icons/play.svg'
 import pauseIcon from '../assets/icons/pause.svg'

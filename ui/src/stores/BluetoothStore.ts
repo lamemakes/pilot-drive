@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { BluetoothDevice } from "../types/bluetooth.interface";
+import { BluetoothDevice } from "../types/Bluetooth.interface";
 
 export let BluetoothStore: BluetoothDevice = reactive({
     hostEnabled: false,

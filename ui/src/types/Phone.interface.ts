@@ -1,4 +1,4 @@
-import { BluetoothDevice } from "./bluetooth.interface";
+import { BluetoothDevice } from "./Bluetooth.interface";
 
 export interface Phone {
     enabled: boolean,

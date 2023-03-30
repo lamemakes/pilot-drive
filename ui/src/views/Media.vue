@@ -1,14 +1,24 @@
 <template>
-    <div id="media-container" v-if="mediaStore.source == 'bluetooth' || mediaStore.source == 'files'">
+    <div id="media-container" v-if="((mediaStore.source === 'bluetooth' && bluetoothStore.connected) || mediaStore.source === 'files')">
         <SongInfo />
+    </div>
+    <div id="no-media-container" v-else>
+        <div id="not-connected-container">
+            <div id="not-connected-icon-container">
+                <img class="not-connected-icon" :src="getNotConnectedMessage()?.icon" />
+            </div>
+            <p>{{ getNotConnectedMessage()?.message }}</p>
+        </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, ref, watch } from 'vue'
-import { Media } from '../types/media.interface';
+import { defineComponent, inject, ref } from 'vue'
+import { Media } from '../types/Media.interface';
 import SongInfo from '../components/SongInfo.vue'
-import { BluetoothDevice } from '../types/bluetooth.interface';
+import { BluetoothDevice } from '../types/Bluetooth.interface';
+import { NotConnectedDisplay } from '../types/NotConnectedDisplay.interface';
+import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg'
 
 export default defineComponent({
     components: {SongInfo},
@@ -16,22 +26,56 @@ export default defineComponent({
         const mediaStore = ref(inject("mediaStore") as Media);
         const bluetoothStore = ref(inject('bluetoothStore') as BluetoothDevice)
 
-        // watch(bluetoothStore, () => {
-        //     handleIconLumin("route-img", ColorVars.SECONDARY_LUMIN);
-        // },
-        // {deep: true})
+        // TODO: Make these string keys Enums
+        const noMediaMessageMap = new Map<string, NotConnectedDisplay>([
+            ['bluetooth-disabled', {message: 'Enable & connect bluetooth to start playing audio!', icon: bluetoothDisabled}],
+            ['bluetooth-disconnected', {message: (bluetoothStore.value.localHostname) ? `To connect, look for ${bluetoothStore.value.localHostname} in your bluetooth settings` : 'Connect a bluetooth device to start playing audio!', icon: bluetoothDisabled}],
+        ])
 
-        return {mediaStore, bluetoothStore}
+        const getNotConnectedMessage = () => {
+            if (mediaStore.value.source == 'bluetooth') {
+                if (!bluetoothStore.value.enabled){
+                    return noMediaMessageMap.get('bluetooth-disabled')
+                }
+                if (!bluetoothStore.value.connected) {
+                    return noMediaMessageMap.get('bluetooth-disconnected')
+                }
+            }
+        }
+
+        return {mediaStore, bluetoothStore, getNotConnectedMessage}
     }
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 #media-container {
-    height: 72%;
     display: grid;
     align-items: center;
+    height: 70vh;
+}
+
+#no-media-container {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    height: 70vh;
+}
+
+
+#not-connected-container {
+    color: var(--primary-lumin);
+    display: grid;
+    justify-items: center;
+    p {
+        font-size: 25px;
+        text-align: center;
+    }
+}
+
+.not-connected-icon {
+    height: 15vh;
 }
 
 </style>

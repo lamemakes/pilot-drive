@@ -10,8 +10,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, toRef } from 'vue'
-import { Stats } from "../types/vehicle.interface";
-
+import { Stats } from '../types/Vehicle.interface'
 
 export default defineComponent({
     props: {

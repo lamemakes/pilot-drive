@@ -15,7 +15,7 @@ import { SettingsStore } from "./stores/SettingsStore";
 import { setGlobalTheme } from "./utils/theme";
 import { MediaStore } from "./stores/MediaStore";
 import { initializeWebSocket } from "./utils/backend";
-import { Data } from "./types/data.interface";
+import { Data } from "./types/Data.interface";
 import { VehicleStore } from "./stores/VehicleStore";
 import { PhoneStore } from "./stores/PhoneStore";
 

@@ -1,7 +1,7 @@
 from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
 from gi.repository import GLib  # Handling the DBus event based loop
 from .abstract_manager import AbstractManager
-from MasterEventQueue import MasterEventQueue
+from pilot_drive.MasterEventQueue import MasterEventQueue
 import dbus
 import json
 

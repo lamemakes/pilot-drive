@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from MasterEventQueue import MasterEventQueue, EventType
-from MasterLogger import MasterLogger
-from multiprocessing import Process
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.MasterLogger import MasterLogger
 
 
 class AbstractService(ABC):
@@ -10,7 +9,7 @@ class AbstractService(ABC):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
-        logger: MasterLogger,
+        logger: MasterLogger
     ):
         """
         Initialize the service
@@ -42,4 +41,8 @@ class AbstractService(ABC):
 
     @abstractmethod
     def main(self):
+        pass
+
+    @abstractmethod
+    def terminate(self):
         pass

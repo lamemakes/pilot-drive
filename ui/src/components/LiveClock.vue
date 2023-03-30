@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
-import { Settings } from '../types/settings.interface';
+import { Settings } from '../types/Settings.interface';
 import { getTime } from '../utils/date';
 
 export default defineComponent({

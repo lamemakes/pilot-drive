@@ -1,66 +1,43 @@
 import json
 from multiprocessing import Process
-import constants
+import signal
+from typing import List, Tuple
 import asyncio
 import websockets
 
-from MasterLogger import MasterLogger
-from MasterEventQueue import MasterEventQueue, EventType
-from web import ServeStatic
-from services import Settings, Bluetooth, Vehicle, Phone, ServiceExceptions
+from pilot_drive import constants
+from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.web import Web
+from pilot_drive.services import Settings, Bluetooth, Vehicle, Phone, ServiceExceptions, AbstractService
 
+class FailedToCreateServiceException(Exception):
+    pass
 
 class PilotDrive:
     def __init__(self):
+        # Logging initialization
         try:
             log_settings = Settings.get_raw_settings()["logging"]
         except ServiceExceptions.FailedToReadSettingsException:
             log_settings = constants.DEFAULT_LOG_SETTINGS
 
         self.logging = MasterLogger(log_settings=log_settings)
-        p = Process(target=self.logging.main)
-        p.start()
+        self.logger_proc = Process(target=self.logging.main)
+        self.logger_proc.start()
 
+        # Queue initialization
         self.master_queue = MasterEventQueue(logging=self.logging)
 
-        self.__processes = []
+        # Sevice initialization
+        self.__services: List[Tuple[AbstractService, Process]] = []
 
-        web_server = ServeStatic(
-            constants.STATIC_WEB_PORT, constants.STATIC_WEB_PATH, logger=self.logging
-        )
-        self.__processes.append(web_server)
-
-        self.settings = Settings(
-            master_event_queue=self.master_queue,
-            service_type=EventType.SETTINGS,
-            logger=self.logging,
-        )
-        self.__processes.append(self.settings)
-
-        self.vehicle = Vehicle(
-            master_event_queue=self.master_queue,
-            service_type=EventType.VEHICLE,
-            logger=self.logging,
-            obd_port="/dev/pts/4",
-        )
-        self.__processes.append(self.vehicle)
-
-        self.bluetooth = Bluetooth(
-            master_event_queue=self.master_queue,
-            service_type=EventType.BLUETOOTH,
-            logger=self.logging,
-        )
-        self.__processes.append(self.bluetooth)
-
-        self.phone = Phone(
-            master_event_queue=self.master_queue,
-            service_type=EventType.PHONE,
-            logger=self.logging,
-            settings=self.settings,
-        )
-        self.__processes.append(self.phone)
-
-        self.process_factory(processes=self.__processes)
+        self.settings: Settings = self.service_factory(service=Settings)
+        self.web:Web = self.service_factory(service=Web, port=constants.STATIC_WEB_PORT, relative_directory=constants.STATIC_WEB_PATH)
+        self.bluetooth: Bluetooth = self.service_factory(service=Bluetooth)
+        self.phone: Phone = self.service_factory(service=Phone, settings=self.settings)
+        if self.settings.get_setting('vehicle')['enabled']:
+            self.vehicle = self.service_factory(service=Vehicle, obd_port='')
 
         # Set message handlers for your services, ie. if there is a new "settings" type recieved from the websocket, pass it to
         # settings.set_web_settings as it is a settings change event.
@@ -69,10 +46,23 @@ class PilotDrive:
             EventType.BLUETOOTH.value: self.bluetooth.bluetooth_control,
         }
 
-    def process_factory(self, processes: list):
-        for process in processes:
-            p = Process(target=process.main)
+    def service_factory(self, service: AbstractService, **kwargs):
+        try:
+            event_type = EventType(service.__name__.lower())
+            new_service = service(master_event_queue=self.master_queue, service_type=event_type, logger=self.logging, **kwargs)
+            
+            p = Process(target=new_service.main)
             p.start()
+
+            self.__services.append((new_service, p))
+
+            return new_service
+
+        except ValueError:
+            raise FailedToCreateServiceException(f'Invalid service: "{service.__name__}" not found in EventType Enum!')
+        except TypeError:
+            raise FailedToCreateServiceException(f'Failed to create service: "{service.__name__}", are the accessory arguments correct?')
+
 
     def refresh(self):
         self.settings.refresh()
@@ -125,13 +115,17 @@ class PilotDrive:
         )
 
     async def main(self):
-        self.logging.info(msg="Initializing PILOT Drive main loop!")
-        async with websockets.serve(self.handler, "", constants.WS_PORT):
-            self.logging.info(msg="Starting WebSocket server!")
-            await asyncio.Future()  # run forever
+        try:
+            self.logging.info(msg="Initializing PILOT Drive main loop!")
+            async with websockets.serve(self.handler, "", constants.WS_PORT):
+                self.logging.info(msg="Starting WebSocket server!")
+                await asyncio.Future()  # run forever
+        except asyncio.CancelledError:
+            self.logging.info(f'SIGINT/SIGTERM recieved, terminating websocket server!')
 
-
-if __name__ == "__main__":
-    pd = PilotDrive()
-
-    asyncio.run(pd.main())
+    def terminate(self, signum, frame):
+        for service in self.__services:
+            service_obj, process = service
+            process.terminate()
+        
+        self.logger_proc.terminate()

@@ -24,7 +24,7 @@
 <script lang="ts">
 import { defineComponent, inject, ref, watch } from 'vue'
 import SongControl from './SongControl.vue';
-import { Media } from '../types/media.interface';
+import { Media } from '../types/Media.interface';
 
 export default defineComponent({
     components: { SongControl },

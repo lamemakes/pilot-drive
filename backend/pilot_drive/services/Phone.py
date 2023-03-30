@@ -1,8 +1,11 @@
-from dataclasses import dataclass
 import time
 from typing import List
-from MasterLogger import MasterLogger
-from services.Settings import Settings
+
+from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.services.Settings import Settings
+from pilot_drive.services import AbstractService
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+
 from .PhoneUtils.phone_constants import (
     PHONE_TYPES,
     PHONE_STATES,
@@ -10,9 +13,6 @@ from .PhoneUtils.phone_constants import (
     PhoneContainer,
 )
 from .PhoneUtils.abstract_manager import AbstractManager
-
-from services import AbstractService
-from MasterEventQueue import MasterEventQueue, EventType
 
 
 class FailedToReadSettingsException(Exception):
@@ -178,3 +178,6 @@ class Phone(AbstractService):
                 notifications=self.__notifications,
             )
             self.push_to_queue(event=notif_refresh.__dict__)
+
+    def terminate(self):
+        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')

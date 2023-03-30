@@ -1,1 +1,1 @@
-from .ServeStatic import ServeStatic
+from .Web import Web

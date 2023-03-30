@@ -1,10 +1,11 @@
 import json
+from multiprocessing.managers import ValueProxy
 import os
-import constants
-from MasterLogger import MasterLogger
 
-from services import AbstractService
-from MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive import constants
+from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.services import AbstractService
+from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
 from .ServiceExceptions import InvalidAttributeException, FailedToReadSettingsException
 
 
@@ -17,7 +18,7 @@ class Settings(AbstractService):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
-        logger: MasterLogger,
+        logger: MasterLogger
     ):
         """
         Initialize the settings service, and create a new settings file/load in a current one.
@@ -177,6 +178,9 @@ class Settings(AbstractService):
         Push the web settings onto the bus again. When the UI is refreshed, it expects a new settings event on the bus.
         """
         self.push_to_queue(self.web_settings)
+
+    def terminate(self):
+        pass
 
     @staticmethod
     def get_raw_settings() -> dict:
