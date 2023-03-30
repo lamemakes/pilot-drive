@@ -35,27 +35,67 @@ class Bluetooth(AbstractService):
     ):
         super().__init__(master_event_queue, service_type, logger)
 
+        DBusGMainLoop(set_as_default=True)
         self.__local_hostname = socket.gethostname()
-        self.bluetooth = {'enabled': True}
         self.__reset_vars()
 
-    """
-    Utility Methods
-    """
+    @property
+    def enabled(self):
+        """
+        The property for the bluetooth power state of the host (ie. if bluetooth is enabled or not). 
+
+        :return: boolean of if system-wide bluetooth is enabled or not
+        """
+
+        try:
+            bus = self.bus
+            mgr = self.mgr
+        except AttributeError:
+            bus = dbus.SystemBus()
+            mgr = dbus.Interface(
+            bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
+
+        enabled = None
+        enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1, mgr=mgr)[0]
+        enabled = enabled.get(AdapterAttributes.POWER_STATE)
+
+        try:
+            if self.__enabled != enabled:   # state change
+                try:
+                    bt_dict = self.bluetooth
+                except AttributeError:
+                    bt__dict = {"connected": False, "connectedName": None, "localHostname": self.__local_hostname, "battery": None, "address": None}
+                bt_dict['enabled'] = (enabled == "on")
+                self.push_to_queue(bt_dict)
+                self.__enabled = enabled
+        except AttributeError:
+            self.__enabled = enabled
+
+        return (enabled == "on")  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+
+
+    @enabled.setter
+    def enabled(self, changed_props: dbus.Dictionary = None):
+        """
+        The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not). Sets power state/enabled within the Bluetooth.bluetooth object. When used with the prop_changed callback, the changed power state properties can be fed directly to the method, rather than making a new DBus query.
+
+        :param changed_props: Optional DBus dictionary of changed props
+        """
+        enabled = changed_props
+        enabled = enabled.get(AdapterAttributes.POWER_STATE)
+
+        self.bluetooth["enabled"] = (
+            enabled == "on"
+        )  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+
 
     def __reset_vars(self):
         """
         Cleanses the diffent internal states. Intended to prevent leaching of values.
         """
 
-        # If the class has already been initialized and the cars are just being cleaned, preserve the bluetooth enabled var
-        if self.bluetooth:
-            is_enabled = self.bluetooth["enabled"]
-        else:
-            is_enabled = False
-
         self.bluetooth = {
-            "enabled": is_enabled,
+            "enabled": self.enabled,
             "connected": False,
             "connectedName": None,
             "localHostname": self.__local_hostname,
@@ -90,7 +130,7 @@ class Bluetooth(AbstractService):
         :param changed_props: Optional DBus dictionary of changed props
         """
         connected = False
-        if self.bluetooth["enabled"]:
+        if self.enabled:
             if changed_props:
                 connected = changed_props
             else:
@@ -119,36 +159,21 @@ class Bluetooth(AbstractService):
         if self.bluetooth["connected"]:
             self.__push_media_to_queue()
 
-    def __get_iface_items(self, iface: IFaceTypes):
+    def __get_iface_items(self, iface: IFaceTypes, mgr = None):
         """
         A getter for the items of a specified interface.
 
         :return: an array of DBus items from each instance of the interface (ie. Device1 will return an array containing each device & it's properties.)
         """
+        if mgr == None:
+            mgr = self.mgr
+
         iface_items = []
-        for path, ifaces in self.mgr.GetManagedObjects().items():
+        for path, ifaces in mgr.GetManagedObjects().items():
             if iface in str(ifaces):
                 iface_items.append(ifaces[iface])
 
         return iface_items if len(iface_items) > 0 else None
-
-    def __set_powered(self, changed_props: dbus.Dictionary = None):
-        """
-        The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not). Sets power state/enabled within the Bluetooth.bluetooth object. When used with the prop_changed callback, the changed power state properties can be fed directly to the method, rather than making a new DBus query.
-
-        :param changed_props: Optional DBus dictionary of changed props
-        """
-        enabled = None
-        if changed_props:
-            enabled = changed_props
-        else:
-            enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1)[0]
-
-        enabled = enabled.get(AdapterAttributes.POWER_STATE)
-
-        self.bluetooth["enabled"] = (
-            enabled == "on"
-        )  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
     def __set_status(self, changed_props: dbus.Dictionary = None):
         """
@@ -316,7 +341,7 @@ class Bluetooth(AbstractService):
             case IFaceTypes.ADAPTER_1:
                 match changed_key:
                     case AdapterAttributes.POWER_STATE:
-                        self.__set_powered(changed_props=changed)
+                        self.enabled=changed
                     case AdapterAttributes.CLASS:  # Class specifies specific bluetooth capabilities, not used at the moment
                         return
             case IFaceTypes.DEVICE_1:
@@ -329,9 +354,8 @@ class Bluetooth(AbstractService):
                 )
 
         # Push the changes to the Queue to be sent to the frontend.
-        if self.bluetooth["enabled"] and self.bluetooth["connected"]:
+        if self.enabled and self.bluetooth["connected"]:
             self.__push_media_to_queue()
-
 
     def bluetooth_control(self, action: TrackControl):
         """
@@ -409,7 +433,6 @@ class Bluetooth(AbstractService):
         )
 
         self.__reset_vars()
-        self.__set_powered()
         self.__handle_connect()
 
         loop = GLib.MainLoop()
