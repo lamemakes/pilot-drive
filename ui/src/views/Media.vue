@@ -7,7 +7,7 @@
             <div id="not-connected-icon-container">
                 <img class="not-connected-icon" :src="getNotConnectedMessage()?.icon" />
             </div>
-            <p>{{ getNotConnectedMessage()?.message }}</p>
+            <div class="not-connected-msg" v-html="getNotConnectedMessage()?.message"></div>
         </div>
     </div>
 </template>
@@ -28,8 +28,8 @@ export default defineComponent({
 
         // TODO: Make these string keys Enums
         const noMediaMessageMap = new Map<string, NotConnectedDisplay>([
-            ['bluetooth-disabled', {message: 'Enable & connect bluetooth to start playing audio!', icon: bluetoothDisabled}],
-            ['bluetooth-disconnected', {message: (bluetoothStore.value.localHostname) ? `To connect, look for ${bluetoothStore.value.localHostname} in your bluetooth settings` : 'Connect a bluetooth device to start playing audio!', icon: bluetoothDisabled}],
+            ['bluetooth-disabled', {message: '<p>Enable & connect bluetooth to start playing audio!</p>', icon: bluetoothDisabled}],
+            ['bluetooth-disconnected', {message: (bluetoothStore.value.localHostname) ? `<p>To connect, look for <span id=hostname>${bluetoothStore.value.localHostname}</span> in your bluetooth settings</p>` : '<p>Connect a bluetooth device to start playing audio!</p>', icon: bluetoothDisabled}],
         ])
 
         const getNotConnectedMessage = () => {
@@ -68,14 +68,19 @@ export default defineComponent({
     color: var(--primary-lumin);
     display: grid;
     justify-items: center;
-    p {
-        font-size: 25px;
-        text-align: center;
-    }
 }
 
 .not-connected-icon {
     height: 15vh;
+}
+
+:deep(.not-connected-msg > p) {
+    font-size: 25px;
+    text-align: center; 
+}
+
+:deep(#hostname) {
+    color: var(--accent-color);
 }
 
 </style>
