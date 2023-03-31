@@ -19,7 +19,7 @@ PILOT Drive is for you! Designed to be hackable, through means of:
 - __Fully open source codebase__: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
 
 ## Documentation
-The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/en/2.0.0/). 
+The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/en/latest/). 
 
 ## Want to contribute?
 - Found a bug or have an idea for an improvement? Raise a new [issue](https://github.com/lamemakes/pilot-drive/issues)!
