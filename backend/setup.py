@@ -21,9 +21,8 @@ setup(
     install_requires=["websockets", "obd"],
     entry_points={"console_scripts": ["pilot-drive = pilot_drive.__main__:run"]},
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    # package_dir={'utils': 'pilot_drive/utils', 'pilot-drive': 'pilot_drive'},
     include_package_data=True,
-    python_requires=">=3.10",
+    python_requires=">=3.9",
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: End Users/Desktop",

@@ -66,6 +66,7 @@ a {
 
 .router-link-active, router-link-exact-active {
     background-color: var(--accent-color);
+    box-shadow: 0 0 black;
 }
 
 .nav-link {

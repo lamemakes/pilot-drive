@@ -5,7 +5,7 @@ from gi.repository import GLib  # Handling the DBus event based loop
 import dbus
 import socket
 
-from pilot_drive.constants import (
+from .BluetoothUtils.constants import (
     AdapterAttributes,
     MediaSources,
     IFaceTypes,
@@ -37,7 +37,7 @@ class Bluetooth(AbstractService):
 
         DBusGMainLoop(set_as_default=True)
         self.__local_hostname = socket.gethostname()
-        self.__reset_vars()
+        self.__reset()
 
     @property
     def enabled(self):
@@ -64,7 +64,7 @@ class Bluetooth(AbstractService):
                 try:
                     bt_dict = self.bluetooth
                 except AttributeError:
-                    bt__dict = {"connected": False, "connectedName": None, "localHostname": self.__local_hostname, "battery": None, "address": None}
+                    bt_dict = {"connected": False, "connectedName": None, "localHostname": self.__local_hostname, "battery": None, "address": None}
                 bt_dict['enabled'] = (enabled == "on")
                 self.push_to_queue(bt_dict)
                 self.__enabled = enabled
@@ -89,7 +89,7 @@ class Bluetooth(AbstractService):
         )  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
 
-    def __reset_vars(self):
+    def __reset(self):
         """
         Cleanses the diffent internal states. Intended to prevent leaching of values.
         """
@@ -151,7 +151,7 @@ class Bluetooth(AbstractService):
                 self.__set_status()
                 self.__set_position()
             else:
-                self.__reset_vars()
+                self.__reset()
         else:
             self.logger.warning(msg="Bluetooth is disabled!")  # TODO: Action here?
 
@@ -292,10 +292,10 @@ class Bluetooth(AbstractService):
 
     def iface_added(self, path, iface):
         """
-        Callback for when an interface is add. This typically means the device is connected, but calls the handle_connect method to confirm.
+        Callback for when an interface is added. This typically means the device is connected, but calls the handle_connect method to confirm.
 
-        :param path: the path to the specified removed interface
-        :param iface: the interface that was removed
+        :param path: the path to the specified added interface
+        :param iface: the interface that was added
         """
         self.__handle_connect()
 
@@ -432,7 +432,7 @@ class Bluetooth(AbstractService):
             bus_name="org.bluez",
         )
 
-        self.__reset_vars()
+        self.__reset()
         self.__handle_connect()
 
         loop = GLib.MainLoop()

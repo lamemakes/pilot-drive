@@ -90,6 +90,7 @@ export default defineComponent({
 
 #notification-list {
     display: grid;
+    justify-content: center;
     grid-template-columns: auto;
     height: 70vh;
     width: 75%;
