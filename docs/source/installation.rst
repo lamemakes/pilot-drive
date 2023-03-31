@@ -3,7 +3,7 @@
 Installation
 ====================
 
-Installing Python 3.11 On Debian
+Installing Python 3.11
 --------------------
 
 Due to the latest Python features being implemented, Python 3.11 is required. See the following guide to install it on Debian:
@@ -26,10 +26,11 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^
 
 - Raspberry Pi 4 or other Linux SBC
-- Python > 3.11
-- (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_ To use OBD connectivity features
-- (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_ For iOS notification integration
-- (Optional) `ADB https://developer.android.com/studio/command-line/adb`_ For Android notification integration
+- Python >= 3.11
+- (Optional) `lukasjapan's bt-speaker <https://github.com/lukasjapan/bt-speaker>`_ -> For bluetooth audio
+- (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_ -> To use OBD connectivity features
+- (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_ -> For iOS notification integration
+- (Optional) `ADB <https://developer.android.com/studio/command-line/adb>`_ -> For Android notification integration
 
 Install
 ^^^^^^^^^^^^^^^^^^^^
@@ -50,10 +51,10 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^
 
 - Raspberry Pi 4 or other Linux SBC
-- Python > v3.11
-- node > v16.16.0
-- npm > v8.11.0
-- yarn > v1.22.19
+- Python >= v3.11
+- node >= v16.16.0
+- npm >= v8.11.0
+- yarn >= v1.22.19
 - (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_ To use OBD connectivity features
 - (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_ For iOS notification integration
 - (Optional) `ADB https://developer.android.com/studio/command-line/adb`_ For Android notification integration

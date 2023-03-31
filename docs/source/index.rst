@@ -9,7 +9,8 @@ PILOT Drive's documentation
 Hello and welcome to PILOT Drive!
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
+   intro
    installation
