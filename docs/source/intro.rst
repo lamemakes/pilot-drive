@@ -9,6 +9,7 @@ What can it do?
 --------------------
 
 In it's current implementation, PILOT Drive can:
+
 - Play, display, and control audio from sources like bluetooth
 - Display live data from their vehicle
 - Show notifications from connected iOS & Android devices
@@ -20,6 +21,7 @@ Designed to be hacked
 --------------------
 
 PILOT Drive was built with tweaking and hacking in mind, via:
+
 - **Common languages/frameworks**: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue Single File Components. Both of these make all current functionality easily tweakable.
 - **Modularity**: The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
 - **Fully open source codebase**: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
