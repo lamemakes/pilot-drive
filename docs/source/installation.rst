@@ -7,7 +7,6 @@ Installing Python 3.11
 Due to the latest Python features being implemented, Python 3.11 is required. See the following guide to install it on Debian:
 
 .. code-block:: sh
-   :caption:
 
    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz
    sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev git
