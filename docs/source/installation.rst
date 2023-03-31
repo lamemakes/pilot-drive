@@ -1,5 +1,3 @@
-..Installation docs for PILOT Drive
-
 Installation
 ====================
 
@@ -38,7 +36,6 @@ Install
 To quick start your installation of PILOT Drive, first confirm the dependency requirements are met, then pull & install it from PyPi
 
 .. code-block:: sh
-   :caption:
 
    python3 -m pip install pilot-drive  # Install from PyPi
    pilot-drive                         # starts the service
@@ -57,14 +54,13 @@ Requirements
 - yarn >= v1.22.19
 - (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_ To use OBD connectivity features
 - (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_ For iOS notification integration
-- (Optional) `ADB https://developer.android.com/studio/command-line/adb`_ For Android notification integration
+- (Optional) `ADB <https://developer.android.com/studio/command-line/adb>`_ For Android notification integration
 
 Install
 ^^^^^^^^^^^^^^^^^^^^
 To manually build & install PILOT Drive:
 
 .. code-block:: sh
-   :caption:
 
    git clone https://github.com/lamemakes/pilot-drive.git   # Clone the repo
    cd pilot-drive/                                      
