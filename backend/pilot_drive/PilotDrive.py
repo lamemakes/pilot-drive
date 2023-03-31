@@ -9,7 +9,7 @@ from pilot_drive import constants
 from pilot_drive.MasterLogger import MasterLogger
 from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
 from pilot_drive.web import Web
-from pilot_drive.services import Settings, Bluetooth, Vehicle, Phone, ServiceExceptions, AbstractService
+from pilot_drive.services import Settings, Bluetooth, Vehicle, Phone, ServiceExceptions, AbstractService, Camera
 
 class FailedToCreateServiceException(Exception):
     pass
@@ -35,9 +35,16 @@ class PilotDrive:
         self.settings: Settings = self.service_factory(service=Settings)
         self.web:Web = self.service_factory(service=Web, port=constants.STATIC_WEB_PORT, relative_directory=constants.STATIC_WEB_PATH)
         self.bluetooth: Bluetooth = self.service_factory(service=Bluetooth)
-        self.phone: Phone = self.service_factory(service=Phone, settings=self.settings)
+        if self.settings.get_setting('phone')['enabled']:
+            self.phone: Phone = self.service_factory(service=Phone, settings=self.settings)
+        
         if self.settings.get_setting('vehicle')['enabled']:
-            self.vehicle = self.service_factory(service=Vehicle, obd_port='')
+            obd_port = self.settings.get_setting('vehicle')['port']
+            self.vehicle: Vehicle = self.service_factory(service=Vehicle, obd_port=obd_port)
+
+        if self.settings.get_setting('camera')['enabled']:
+            btn_pin = self.settings.get_setting('camera')['buttonPin']
+            self.camera: Camera = self.service_factory(service=Camera, btn_pin=btn_pin)
 
         # Set message handlers for your services, ie. if there is a new "settings" type recieved from the websocket, pass it to
         # settings.set_web_settings as it is a settings change event.

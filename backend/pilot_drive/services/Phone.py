@@ -1,11 +1,16 @@
 import time
+import dbus
 from typing import List
+from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
+from gi.repository import GLib  # Handling the DBus event based loop
 
 from pilot_drive.MasterLogger import MasterLogger
 from pilot_drive.services.Settings import Settings
 from pilot_drive.services import AbstractService
 from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
 
+from .PhoneUtils.android_manager import AndroidManager
+from .PhoneUtils.ios_manager import IOSManager
 from .PhoneUtils.phone_constants import (
     PHONE_TYPES,
     PHONE_STATES,
@@ -54,9 +59,9 @@ class Phone(AbstractService):
 
             match self.__type:
                 case PHONE_TYPES.ANDROID:
-                    from .PhoneUtils.android_manager import AndroidManager
-
                     self.__phone_manager = AndroidManager(logger=self.logger)
+                case PHONE_TYPES.IOS:
+                    self.__phone_manager = IOSManager(logger=self.logger)
                 case _:
                     raise FailedToReadSettingsException('Unrecognized phone type!')
         else:
@@ -101,7 +106,7 @@ class Phone(AbstractService):
         else:
             return True
 
-    def __android_loop(self, manager: AbstractManager):
+    def __android_loop(self, manager: AndroidManager):
         self.push_to_queue(
             PhoneContainer(
                 enabled=self.__enabled, type=self.__type.value, state=self.state.value
@@ -139,6 +144,80 @@ class Phone(AbstractService):
 
             time.sleep(1)
 
+    def __ios_loop(self, manager: IOSManager) -> None:
+        '''
+        Due to ancs4linux being DBus based, the iOS loop implements a DBus loop.
+
+        :param manager: an instantiated IOSManager
+        '''
+        # Start the main loop
+        DBusGMainLoop(set_as_default=True)
+
+        # Initialize DBus interface to read from
+        bus = dbus.SystemBus()
+
+        # Pass the bus to the manager
+        manager.bus = bus
+
+        phone_container = PhoneContainer(enabled=self.__enabled, type=self.__type.value, state=self.state.value, notifications=self.__notifications)
+        self.push_to_queue(phone_container.__dict__)
+
+        def show_notification(notification_str: str):
+            manager.show_notification(notification_str=notification_str)
+            self.__notifications = manager.notifications
+            phone_container.notifications = self.__notifications
+            self.push_to_queue(phone_container.__dict__)
+
+        def dismiss_notification(notification_str: str):
+            manager.dismiss_notification(notification_str=notification_str)
+
+        # def iface_added(path, iface):
+        #     manager.iface_added(path=path, iface=iface)
+        #     if self.__state != self.state:
+        #         self.__state = self.state
+        #         phone_container.state = self.__state
+        #         self.push_to_queue(phone_container.__dict__)
+
+        # def iface_removed(path, iface):
+        #     manager.iface_added(path=path, iface=iface)
+        #     if self.__state != self.state:
+        #         self.__state = self.state
+        #         phone_container.state = self.__state
+        #         self.push_to_queue(phone_container.__dict__)
+
+        # Create a receiver to monitor for a newly connected device
+        bus.add_signal_receiver(
+            show_notification,
+            signal_name="ShowNotification",
+            dbus_interface="ancs4linux.Observer",
+            bus_name="ancs4linux.Observer",
+        )
+
+        # Create a receiver to monitor for a disconnected device
+        bus.add_signal_receiver(
+            dismiss_notification,
+            signal_name="DismissNotification",
+            dbus_interface="ancs4linux.Observer",
+            bus_name="ancs4linux.Observer",
+        )
+
+        # bus.add_signal_receiver(
+        #     iface_added,
+        #     signal_name="InterfacesAdded",
+        #     dbus_interface="org.freedesktop.DBus.ObjectManager",
+        #     bus_name="org.bluez",
+        # )
+
+        # # Create a receiver to monitor for a disconnected device
+        # bus.add_signal_receiver(
+        #     iface_removed,
+        #     signal_name="InterfacesRemoved",
+        #     dbus_interface="org.freedesktop.DBus.ObjectManager",
+        #     bus_name="org.bluez",
+        # )
+
+        GLib.MainLoop().run()
+
     def push_to_queue(self, event: dict, event_type: dict = None):
         '''
         Push a new event to the master queue.
@@ -162,10 +241,13 @@ class Phone(AbstractService):
         if not self.__enabled:
             return
 
-        if self.__type == PHONE_TYPES.ANDROID:
-            self.__android_loop(self.__phone_manager)
-        else:
-            self.logger.error(msg='Failed to get phone type, exiting phone manager!')
+        match self.__type:
+            case PHONE_TYPES.ANDROID:
+                self.__android_loop(self.__phone_manager)
+            case PHONE_TYPES.IOS:
+                self.__ios_loop(self.__phone_manager)
+            case _:
+                self.logger.error(msg='Failed to get phone type, exiting phone manager!')
 
     def refresh(self):
         if not self.__enabled:

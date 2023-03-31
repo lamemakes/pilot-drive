@@ -6,6 +6,8 @@
 PILOT Drive's documentation
 =======================================
 
+Hello and welcome to PILOT Drive!
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

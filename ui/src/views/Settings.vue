@@ -106,9 +106,11 @@ export default defineComponent({
         height: 100%;
         padding-top: 6px;
         padding-bottom: 2px;
+        box-shadow: 0px 2px 2px black;
     }
     .active {
-        mix-blend-mode:hard-light;
+        transform:translateY(2px);
+        box-shadow: 0 0 0;
     }
 }
 </style>

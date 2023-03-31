@@ -27,6 +27,7 @@ class PHONE_STATES(Enum):
     UNTRUSTED = (
         "untrusted"  # This is also for ADB, when the device hasn't trusted the host.
     )
+    BLUETOOTH_DISABLED = "bluetooth-disabled"
 
 
 @dataclass

@@ -1,6 +1,6 @@
 <template>
     <div id="notification-container" v-if="notification" :class="(hasBody) ? 'body-notif' : 'no-body-notif'">
-        <p id="heading-container" class="notif-text"><span id="title">{{ notification.title }}</span> - <span id="name">{{ notification.app_name }}</span></p>
+        <p id="heading-container" class="notif-text"><span id="name">{{ notification.app_name }}</span> - <span id="title">{{ notification.title }}</span></p>
         <p id="body" class="notif-text" v-if="hasBody">{{ notification.body }}</p>
     </div>
 </template>
@@ -32,7 +32,8 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     width: 100%;
-    margin: 4px 0px;
+    margin: 6px 0px;
+    box-shadow: 0.5rem 0.5rem black;
     border-radius: 5vh;
     p {
         margin: 0px 15px;
@@ -51,7 +52,7 @@ export default defineComponent({
     margin: 0px
 }
 
-#title {
+#name{
     font-size: 18px;
     font-weight: bold;
 }
