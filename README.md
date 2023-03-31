@@ -1,4 +1,4 @@
-# PILOT Drive ✨v2.0✨
+# PILOT Drive ✨v(0.)2.0✨    [![Documentation Status](https://readthedocs.org/projects/pilot-drive/badge/?version=latest)](https://pilot-drive.readthedocs.io/en/latest/?badge=latest)
 
 ## What is PILOT Drive?
 PILOT Drive is a fully open-source head unit/infotainment system built in Python 3.10 + Vue 3. It is intended to be ran on a Single Board Computer (SBC), such as the Raspberry Pi 4.
@@ -14,7 +14,7 @@ Utilizing PILOT Drive, a user can:
 
 ## Consider yourself a hacker?
 PILOT Drive is for you! Designed to be hackable, through means of:
-- __Common languages/frameworks__: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html).
+- __Common languages/frameworks__: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html). Both of these make all current functionality easily tweakable.
 - __Modularity__: The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
 - __Fully open source codebase__: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
 
@@ -33,3 +33,6 @@ The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/e
     - __UI enhancements__: More intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features.
     - __Navigation__: GPS & OpenStreetMap integration.
     - __Optimizations__: More efficiencies & better resource management (ie. multiprocessing fixes). 
+    
+## Notes
+- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unoranized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different. 
