@@ -3,6 +3,9 @@ import signal
 import asyncio
 
 def run() -> None:
+    '''
+    The main entrypoint method for PILOT Drive. This initializes the PILOT Drive class in an asyncio event loop.
+    '''
     pilot_drive = PilotDrive()
     signal.signal(signalnum=signal.SIGINT, handler=pilot_drive.terminate)
     signal.signal(signalnum=signal.SIGTERM, handler=pilot_drive.terminate)

@@ -28,6 +28,7 @@ Requirements
 - (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_               -> To use OBD connectivity features
 - (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_                -> For iOS notification integration
 - (Optional) `ADB <https://developer.android.com/studio/command-line/adb>`_        -> For Android notification integration
+- (Optional) `AAPT2 <https://maven.google.com/web/index.html?q=aapt#com.android.tools.build:aapt2>`_ -> For Android notification integration
 
 Install
 ^^^^^^^^^^^^^^^^^^^^

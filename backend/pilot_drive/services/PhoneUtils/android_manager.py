@@ -50,7 +50,7 @@ class AndroidManager(AbstractManager):
             with open(SETTINGS_PATH + ADB_PACKAGE_NAMES, "r") as package_file:
                 self.__saved_package_names = json.load(fp=package_file)
         except FileNotFoundError:
-            self.logger.error(msg="Package names file does not exist.")
+            self.logger.info(msg="Package names file does not exist, it will be created when notifications are detected.")
             self.__saved_package_names = {}
         except json.JSONDecodeError:
             self.logger.error(msg="Failed to decode ADB package names path!")

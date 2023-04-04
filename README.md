@@ -26,7 +26,7 @@ The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/e
 - Want to contribute to the codebase? Create a fork and make a PR when you're all said and done!
 - Contribution ideas/PILOT Drive roadmap:
     - __Testing__: More unit testing & E2E testing could be used at any level of the stack!
-    - __Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, exlainations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
+    - __Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, explanations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
     - __Media types__: More audio types, such as software defined radio, local audio files, etc.
     - __Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing
     - __Bluetooth features__: More in-depth bluetooth implementations, giving the user access to more functionality to the connected device
@@ -35,4 +35,4 @@ The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/e
     - __Optimizations__: More efficiencies & better resource management (ie. multiprocessing fixes). 
     
 ## Notes
-- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unoranized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different. 
+- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unoranized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how premature it still is. 

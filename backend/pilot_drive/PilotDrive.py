@@ -15,7 +15,14 @@ class FailedToCreateServiceException(Exception):
     pass
 
 class PilotDrive:
+    '''
+    The main class of PILOT Drive. Creates services (distributes logging & events queues), handles asyncio websockets, and attempts to properly exit services.
+    '''
     def __init__(self):
+        '''
+        Initialize the logger, all specified services and their handlers.
+        '''
+
         # Logging initialization
         try:
             log_settings = Settings.get_raw_settings()["logging"]
@@ -50,10 +57,19 @@ class PilotDrive:
         # settings.set_web_settings as it is a settings change event.
         self.service_msg_handlers = {
             EventType.SETTINGS.value: self.settings.set_web_settings,
-            EventType.BLUETOOTH.value: self.bluetooth.bluetooth_control,
+            EventType.BLUETOOTH.value: Bluetooth.bluetooth_control,
         }
 
-    def service_factory(self, service: AbstractService, **kwargs):
+    def service_factory(self, service: type[AbstractService], **kwargs) -> AbstractService:
+        '''
+        Creates a new service, and automatically passes master queue, event type, and logger. Takes arguments of the service class, followed by all of the specified service's keyword arguments.
+
+        :param service: a service class that has a base of AbstractService
+        :param \**kwargs: keyword arguments to be passed to the given service (Not queue, event type, or logger)
+        :return: an instance of the service class
+        :raises: FailedToCreateServiceException: if service isn't in the EventType enum
+        :raises: FailedToCreateServiceException: if the service creation returns a TypeError, possibly if the keyword arguments are wrong
+        '''
         try:
             event_type = EventType(service.__name__.lower())
             new_service = service(master_event_queue=self.master_queue, service_type=event_type, logger=self.logging, **kwargs)
@@ -71,12 +87,18 @@ class PilotDrive:
             raise FailedToCreateServiceException(f'Failed to create service: "{service.__name__}", are the accessory arguments correct?')
 
 
-    def refresh(self):
+    def refresh(self) -> None:
+        '''
+        Called when the webpage refreshes or reconnects to the WebSocket - used to recall data like settings
+        '''
         self.settings.refresh()
-        self.bluetooth.refresh()
-        self.phone.refresh()
 
-    def handle_message(self, message: str):
+    def handle_message(self, message: str) -> None:
+        '''
+        The handler for when a new WebSocket event recieved from the UI client
+
+        :params message: the event in from the UI, recieved as a JSON string to be converted to a dict
+        '''
         if message:
             try:
                 message_in = json.loads(s=message)
@@ -96,7 +118,12 @@ class PilotDrive:
                     msg=f"Failed to decode recieved websocket message: {err.msg} {message_in}"
                 )  # TODO: Replace with logging!
 
-    async def consumer(self, websocket):
+    async def consumer(self, websocket) -> None:
+        '''
+        The consumer to be used when new WebSocket messages come in from the UI
+
+        :param websocket: the WebSocket the UI is connected to
+        '''
         while True:
             try:
                 message = await websocket.recv()
@@ -104,7 +131,12 @@ class PilotDrive:
             except websockets.ConnectionClosedOK:
                 break
 
-    async def producer(self, websocket):
+    async def producer(self, websocket) -> None:
+        '''
+        The producer used when new events need to be pushed to the UI via WebSocket
+
+        :param websocket: the WebSocket the UI is connected to
+        '''
         self.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
         while True:
             try:
@@ -115,13 +147,21 @@ class PilotDrive:
             except websockets.ConnectionClosedOK:
                 break
 
-    async def handler(self, websocket):
+    async def handler(self, websocket) -> None:
+        '''
+        The handler used for the WebSocket connection, creates consumer and producer tasks
+
+        :param websocket: the WebSocket the UI is connected to
+        '''
         self.settings.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
         await asyncio.gather(
             self.consumer(websocket=websocket), self.producer(websocket=websocket)
         )
 
-    async def main(self):
+    async def main(self) -> None:
+        '''
+        The main method to be run, handles the WebSocket connection to the UI
+        '''
         try:
             self.logging.info(msg="Initializing PILOT Drive main loop!")
             async with websockets.serve(self.handler, "", constants.WS_PORT):

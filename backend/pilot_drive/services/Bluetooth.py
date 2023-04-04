@@ -1,6 +1,6 @@
 import json
 from multiprocessing.managers import ValueProxy
-from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
+import dbus.mainloop.glib  # Handling the DBus event based loop
 from gi.repository import GLib  # Handling the DBus event based loop
 import dbus
 import socket
@@ -35,9 +35,9 @@ class Bluetooth(AbstractService):
     ):
         super().__init__(master_event_queue, service_type, logger)
 
-        DBusGMainLoop(set_as_default=True)
+
         self.__local_hostname = socket.gethostname()
-        self.__reset()
+        self.__reset_vars()
 
     @property
     def enabled(self):
@@ -57,7 +57,7 @@ class Bluetooth(AbstractService):
 
         enabled = None
         enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1, mgr=mgr)[0]
-        enabled = enabled.get(AdapterAttributes.POWER_STATE)
+        enabled = bool(enabled.get(AdapterAttributes.POWERED))
 
         try:
             if self.__enabled != enabled:   # state change
@@ -65,13 +65,14 @@ class Bluetooth(AbstractService):
                     bt_dict = self.bluetooth
                 except AttributeError:
                     bt_dict = {"connected": False, "connectedName": None, "localHostname": self.__local_hostname, "battery": None, "address": None}
-                bt_dict['enabled'] = (enabled == "on")
+                bt_dict['enabled'] = enabled
                 self.push_to_queue(bt_dict)
                 self.__enabled = enabled
         except AttributeError:
             self.__enabled = enabled
 
-        return (enabled == "on")  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+        print(f'****{enabled}****')
+        return enabled  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
 
     @enabled.setter
@@ -82,20 +83,18 @@ class Bluetooth(AbstractService):
         :param changed_props: Optional DBus dictionary of changed props
         """
         enabled = changed_props
-        enabled = enabled.get(AdapterAttributes.POWER_STATE)
+        enabled = bool(enabled.get(AdapterAttributes.POWERED))
 
-        self.bluetooth["enabled"] = (
-            enabled == "on"
-        )  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+        self.bluetooth["enabled"] = enabled # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
 
-    def __reset(self):
+    def __reset_vars(self):
         """
         Cleanses the diffent internal states. Intended to prevent leaching of values.
         """
 
         self.bluetooth = {
-            "enabled": self.enabled,
+            "enabled": False,
             "connected": False,
             "connectedName": None,
             "localHostname": self.__local_hostname,
@@ -132,31 +131,47 @@ class Bluetooth(AbstractService):
         connected = False
         if self.enabled:
             if changed_props:
+                print("CONNECTED CHANGED PROPS")
+                print(changed_props)
                 connected = changed_props
             else:
                 for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
-                    if device.get(Device.CONNECTED):
+                    print("GET DEVICE")
+                    print(device.get(Device.CONNECTED))
+                    if bool(device.get(Device.CONNECTED)) == True:
+                        print("DEVICE CONNECTED")
                         connected = True
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
                         self.logger.info(
-                            msg=f"Bluetooth device: {device_name} connected with MAC address of {device_addr}."
+                            msg=f'Bluetooth device: {device_name} connected with MAC address of {device_addr}.'
                         )
                         self.bluetooth["connectedName"] = device_name
                         self.bluetooth["address"] = device_addr
+                    elif bool(device.get(Device.CONNECTED)) == False:
+                        try:
+                            if self.bluetooth['connected'] == True:
+                                self.logger.info(msg=f'Bluetooth device: {self.bluetooth["connectedName"]} is disconnected.')
+                                self.bluetooth['connected']
+                        except KeyError:
+                            pass
 
+            print("CONNECTED VAR")
+            print(connected)
             if connected:
                 self.bluetooth["connected"] = True
                 self.__set_track()
                 self.__set_status()
                 self.__set_position()
             else:
-                self.__reset()
+                self.__reset_vars()
         else:
             self.logger.warning(msg="Bluetooth is disabled!")  # TODO: Action here?
 
+        print("PUSHING BLUETOOTH TO QUEUE")
         self.push_to_queue(self.bluetooth)
         if self.bluetooth["connected"]:
+            print("PUSHING MEDIA TO QUEUE")
             self.__push_media_to_queue()
 
     def __get_iface_items(self, iface: IFaceTypes, mgr = None):
@@ -165,6 +180,7 @@ class Bluetooth(AbstractService):
 
         :return: an array of DBus items from each instance of the interface (ie. Device1 will return an array containing each device & it's properties.)
         """
+
         if mgr == None:
             mgr = self.mgr
 
@@ -173,7 +189,10 @@ class Bluetooth(AbstractService):
             if iface in str(ifaces):
                 iface_items.append(ifaces[iface])
 
-        return iface_items if len(iface_items) > 0 else None
+        if len(iface_items) > 0:
+            return iface_items
+        else:
+            return None
 
     def __set_status(self, changed_props: dbus.Dictionary = None):
         """
@@ -199,8 +218,8 @@ class Bluetooth(AbstractService):
                 except AttributeError:
                     return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
 
-        except dbus.exceptions.DBusException as e:
-            self.__l
+        except dbus.exceptions.DBusException as err:
+            self.logger.error(f'Failed to set status: {err}')
 
     def __set_position(self, changed_props: dbus.Dictionary = None):
         """
@@ -292,10 +311,10 @@ class Bluetooth(AbstractService):
 
     def iface_added(self, path, iface):
         """
-        Callback for when an interface is added. This typically means the device is connected, but calls the handle_connect method to confirm.
+        Callback for when an interface is add. This typically means the device is connected, but calls the handle_connect method to confirm.
 
-        :param path: the path to the specified added interface
-        :param iface: the interface that was added
+        :param path: the path to the specified removed interface
+        :param iface: the interface that was removed
         """
         self.__handle_connect()
 
@@ -357,21 +376,28 @@ class Bluetooth(AbstractService):
         if self.enabled and self.bluetooth["connected"]:
             self.__push_media_to_queue()
 
-    def bluetooth_control(self, action: TrackControl):
+    @staticmethod
+    def bluetooth_control(action: str):
         """
         Control the current song
 
         :param action: the intended control action using the TrackControl enum, ie. Play, Pause, Skip Next or Skip Previous.
         """
+        try:
+            TrackControl(action)
+        except ValueError:
+            # self.logger.warning(msg=f'Failed to cast control command to Enum!')
+            return
+
         player = None
         bus = dbus.SystemBus()
         mgr = dbus.Interface(
-            bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager"
+            bus.get_object(IFaceTypes.BLUEZ, "/"), "org.freedesktop.DBus.ObjectManager"
         )
         for path, ifaces in mgr.GetManagedObjects().items():
-            if "org.bluez.MediaPlayer1" in str(ifaces):
+            if IFaceTypes.MEDIA_PLAYER_1 in str(ifaces):
                 player = dbus.Interface(
-                    bus.get_object("org.bluez", path), "org.bluez.MediaPlayer1"
+                    bus.get_object(IFaceTypes.BLUEZ, path), IFaceTypes.MEDIA_PLAYER_1
                 )
 
         if player:
@@ -385,9 +411,10 @@ class Bluetooth(AbstractService):
                 case TrackControl.PREV:
                     player.Previous()
                 case _:
-                    self.logger.warning(
-                        msg=f"Unknown bluetooth control action: {action}"
-                    )
+                    return
+                    # self.logger.warning(
+                    #     msg=f"Unknown bluetooth control action: {action}"
+                    # )
 
     """
     Run the main loop
@@ -398,7 +425,7 @@ class Bluetooth(AbstractService):
         Run the main bluetooth DBus loop
         """
         # Start the main loop
-        DBusGMainLoop(set_as_default=True)
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
         # Initialize DBus interface to read from
         self.bus = dbus.SystemBus()
@@ -432,7 +459,7 @@ class Bluetooth(AbstractService):
             bus_name="org.bluez",
         )
 
-        self.__reset()
+        self.__reset_vars()
         self.__handle_connect()
 
         loop = GLib.MainLoop()
@@ -442,8 +469,10 @@ class Bluetooth(AbstractService):
         """
         The refresh method to re-push the current bluetooth & media objects to the mast queue.
         """
+        print("REFRESH PUSHING BLUETOOTH TO QUEUE")
         self.push_to_queue(event=self.bluetooth)
         if self.bluetooth["connected"]:
+            print("REFRESH PUSHING MEDIA TO QUEUE")
             self.__push_media_to_queue()
 
     def terminate(self):
