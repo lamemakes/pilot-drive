@@ -2,8 +2,7 @@ Installation
 ====================
 
 Installing Python 3.11
---------------------
-
+----------------------
 Due to the latest Python features being implemented, Python 3.11 is required. See the following guide to install it on Debian:
 
 .. code-block:: sh
@@ -17,8 +16,7 @@ Due to the latest Python features being implemented, Python 3.11 is required. Se
 
 
 Quick Start
---------------------
-
+----------------------
 Requirements
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -42,8 +40,7 @@ To quick start your installation of PILOT Drive, first confirm the dependency re
    
 
 Manual install
---------------------
-
+----------------------
 Requirements
 ^^^^^^^^^^^^^^^^^^^^
 

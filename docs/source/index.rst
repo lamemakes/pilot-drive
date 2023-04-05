@@ -13,8 +13,7 @@ The aim is to create an in-vehicle system that can display media, car, and phone
 Most of the headunits around currently are either OEM/proprietary or claim to be open, but are only open to a certain threshold.
 
 What can it do?
---------------------
-
+----------------------
 In it's current implementation, PILOT Drive can:
 
 - Play, display, and control audio from sources like bluetooth
@@ -25,8 +24,7 @@ In it's current implementation, PILOT Drive can:
 - Integrate with the PILOT Drive HAT for a seamless in-vehicle experience.
 
 Designed to be hacked
---------------------
-
+----------------------
 PILOT Drive was built with tweaking and hacking in mind, via:
 
 - **Common languages/frameworks**: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue Single File Components. Both of these make all current functionality easily tweakable.
@@ -38,4 +36,5 @@ PILOT Drive was built with tweaking and hacking in mind, via:
    :maxdepth: 1
    :caption: Contents:
 
-   installation
+   Installation <installation>
+   API Reference <api/pilot_drive>

@@ -184,6 +184,9 @@ class Settings(AbstractService):
 
     @staticmethod
     def get_raw_settings() -> dict:
+        '''
+        Returns the settings.json in a full dict without any processing or validation. Not recommended for use unless you know what you're doing.
+        '''
         settings_path = f"{constants.SETTINGS_PATH}{constants.SETTINGS_FILE_NAME}"
         if not os.path.exists(settings_path):
             raise FailedToReadSettingsException(
