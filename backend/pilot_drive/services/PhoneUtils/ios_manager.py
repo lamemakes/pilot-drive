@@ -1,6 +1,6 @@
 from typing import List
 from .abstract_manager import AbstractManager
-from pilot_drive.MasterEventQueue import MasterEventQueue
+from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue
 import dbus
 import json
 

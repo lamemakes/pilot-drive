@@ -1,8 +1,8 @@
 import time
 
-from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.master_logging.MasterLogger import MasterLogger
 from pilot_drive.services import AbstractService, ServiceExceptions
-from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
 
 
 class CameraManager(AbstractService):

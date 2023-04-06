@@ -5,7 +5,7 @@ import json
 import os
 import typing
 
-from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.master_logging.MasterLogger import MasterLogger
 from .abstract_manager import AbstractManager
 from .phone_constants import (
     SETTINGS_PATH,

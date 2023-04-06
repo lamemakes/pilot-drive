@@ -1,6 +1,6 @@
 from enum import StrEnum
 from multiprocessing import Manager
-from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.master_logging.MasterLogger import MasterLogger
 
 
 class EventType(StrEnum):

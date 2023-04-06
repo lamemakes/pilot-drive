@@ -3,9 +3,9 @@ from multiprocessing.managers import ValueProxy
 import os
 
 from pilot_drive import constants
-from pilot_drive.MasterLogger import MasterLogger
+from pilot_drive.master_logging.MasterLogger import MasterLogger
 from pilot_drive.services import AbstractService
-from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
 from .ServiceExceptions import InvalidAttributeException, FailedToReadSettingsException
 
 

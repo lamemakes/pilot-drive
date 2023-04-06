@@ -1,11 +1,15 @@
-from pilot_drive.PilotDrive import PilotDrive
+"""
+The entrypoint for PILOT Drive. This initializes the PilotDrive class, which starts the program.
+"""
 import signal
 import asyncio
+from pilot_drive.pilot_drive import PilotDrive
 
 
 def run() -> None:
     """
-    The main entrypoint method for PILOT Drive. This initializes the PILOT Drive class in an asyncio event loop.
+    The main entrypoint method for PILOT Drive. This initializes the PILOT Drive class in an
+    asyncio event loop.
     """
     pilot_drive = PilotDrive()
     signal.signal(signalnum=signal.SIGINT, handler=pilot_drive.terminate)

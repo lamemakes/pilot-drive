@@ -1,13 +1,17 @@
+"""
+The main PILOT Drive module that contains the class thar starts the services and runs the 
+websockets logic.
+"""
+
 import json
 from multiprocessing import Process
-import signal
 from typing import List, Tuple
 import asyncio
 import websockets
 
 from pilot_drive import constants
-from pilot_drive.MasterLogger import MasterLogger
-from pilot_drive.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_logging.MasterLogger import MasterLogger
+from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
 from pilot_drive.web import Web
 from pilot_drive.services import (
     Settings,
@@ -21,14 +25,18 @@ from pilot_drive.services import (
 
 
 class FailedToCreateServiceException(Exception):
-    pass
+    """
+    Exception that occurs when a service could not be created
+    """
 
 
 class PilotDrive:
     """
-    The main class of PILOT Drive. Creates services (distributes logging & events queues), handles asyncio websockets, and attempts to properly exit services.
+    The main class of PILOT Drive. Creates services (distributes logging & events queues), handles
+    asyncio websockets, and attempts to properly exit services.
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self):
         """
         Initialize the logger, all specified services and their handlers.
@@ -72,25 +80,30 @@ class PilotDrive:
             btn_pin = self.settings.get_setting("camera")["buttonPin"]
             self.camera: Camera = self.service_factory(service=Camera, btn_pin=btn_pin)
 
-        # Set message handlers for your services, ie. if there is a new "settings" type recieved from the websocket, pass it to
-        # settings.set_web_settings as it is a settings change event.
+        # Set message handlers for your services, ie. if there is a new "settings" type recieved
+        # from the websocket, pass it to settings.set_web_settings as it is a settings change event.
         self.service_msg_handlers = {
             EventType.SETTINGS.value: self.settings.set_web_settings,
             EventType.BLUETOOTH.value: Bluetooth.bluetooth_control,
         }
 
+    # pylint: disable=anomalous-backslash-in-string
     def service_factory(
         self, service: type[AbstractService], **kwargs
     ) -> AbstractService:
         """
-        Creates a new service, and automatically passes master queue, event type, and logger. Takes arguments of the service class, followed by all of the specified service's keyword arguments.
+        Creates a new service, and automatically passes master queue, event type, and logger. Takes
+        arguments of the service class, followed by all of the specified service's keyword
+        arguments.
 
         :param service: a service class that has a base of AbstractService
-        :param \**kwargs: keyword arguments to be passed to the given service (Not queue, event type, or logger)
+        :param \**kwargs: extra keyword arguments to be passed to the given service
         :return: an instance of the service class
         :raises: FailedToCreateServiceException: if service isn't in the EventType enum
-        :raises: FailedToCreateServiceException: if the service creation returns a TypeError, possibly if the keyword arguments are wrong
+        :raises: FailedToCreateServiceException: if the service creation returns a TypeError,
+        possibly if the keyword arguments are wrong
         """
+        # pylint: enable=anomalous-backslash-in-string
         try:
             event_type = EventType(service.__name__.lower())
             new_service = service(
@@ -100,25 +113,27 @@ class PilotDrive:
                 **kwargs,
             )
 
-            p = Process(target=new_service.main)
-            p.start()
+            service_process = Process(target=new_service.main)
+            service_process.start()
 
-            self.__services.append((new_service, p))
+            self.__services.append((new_service, service_process))
 
             return new_service
 
-        except ValueError:
+        except ValueError as exc:
             raise FailedToCreateServiceException(
                 f'Invalid service: "{service.__name__}" not found in EventType Enum!'
-            )
-        except TypeError:
+            ) from exc
+        except TypeError as exc:
             raise FailedToCreateServiceException(
-                f'Failed to create service: "{service.__name__}", are the accessory arguments correct?'
-            )
+                f"""Failed to create service: "{service.__name__}",
+                are the accessory arguments correct?"""
+            ) from exc
 
     def refresh(self) -> None:
         """
-        Called when the webpage refreshes or reconnects to the WebSocket - used to recall data like settings
+        Called when the webpage refreshes or reconnects to the WebSocket - used to recall data
+        like settings
         """
         self.settings.refresh()
 
@@ -126,7 +141,8 @@ class PilotDrive:
         """
         The handler for when a new WebSocket event recieved from the UI client
 
-        :params message: the event in from the UI, recieved as a JSON string to be converted to a dict
+        :params message: the event in from the UI, recieved as a JSON string to be converted to a
+        dict
         """
         if message:
             try:
@@ -140,12 +156,13 @@ class PilotDrive:
                     )  # Pass in the content of the websocket message
                 except KeyError:
                     self.logging.error(
-                        msg=f'Failed to find a service handler for message of type: {message_in["type"]}'
+                        msg=f"""Failed to find a service handler for message of type:
+                        {message_in["type"]}"""
                     )
             except json.JSONDecodeError as err:
                 self.logging.error(
                     msg=f"Failed to decode recieved websocket message: {err.msg} {message_in}"
-                )  # TODO: Replace with logging!
+                )
 
     async def consumer(self, websocket) -> None:
         """
@@ -166,7 +183,7 @@ class PilotDrive:
 
         :param websocket: the WebSocket the UI is connected to
         """
-        self.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
+        self.refresh()  # When the app is started/UI is refreshed, send a settings event on the bus
         while True:
             try:
                 if self.master_queue.is_new_event():
@@ -182,7 +199,6 @@ class PilotDrive:
 
         :param websocket: the WebSocket the UI is connected to
         """
-        self.settings.refresh()  # When the app is initialized/the UI is refreshed, it expects a settings even on the bus.
         await asyncio.gather(
             self.consumer(websocket=websocket), self.producer(websocket=websocket)
         )
@@ -197,11 +213,21 @@ class PilotDrive:
                 self.logging.info(msg="Starting WebSocket server!")
                 await asyncio.Future()  # run forever
         except asyncio.CancelledError:
-            self.logging.info(f"SIGINT/SIGTERM recieved, terminating websocket server!")
+            self.logging.info(
+                msg="SIGINT/SIGTERM recieved, terminating websocket server!"
+            )
 
     def terminate(self, signum, frame):
+        """
+        Cleanly terminates each process and calls it's cleanup method
+        """
+        self.logging.info(
+            msg=f'Recieved signal: "{signum}" with frame "{frame}", terminating!'
+        )
+
         for service in self.__services:
             service_obj, process = service
+            self.logging.debug(msg=f"Terminating: {service_obj} process")
             process.terminate()
 
         self.logger_proc.terminate()
