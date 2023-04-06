@@ -1,6 +1,6 @@
 import time
 
-from pilot_drive.master_logging.MasterLogger import MasterLogger
+from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services import AbstractService, ServiceExceptions
 from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
 

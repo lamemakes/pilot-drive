@@ -1,6 +1,12 @@
+'''
+Module used to track and display  
+'''
+
+import json
 from enum import StrEnum
 from multiprocessing import Manager
-from pilot_drive.master_logging.MasterLogger import MasterLogger
+
+from pilot_drive.master_logging.master_logger import MasterLogger
 
 
 class EventType(StrEnum):
@@ -19,9 +25,9 @@ class EventType(StrEnum):
 
 class MasterEventQueue:
     """
-    The class that manages the master event queue. Services are passed the created MasterEventQueue object from
-    the main loop, and use the push_event() method to add events to the queue. The main loop will use the
-    is_new_event() and pop_event() methods to handle new events.
+    The class that manages the master event queue. Services are passed the created MasterEventQueue
+    object from the main loop, and use the push_event() method to add events to the queue. The main
+    loop will use the is_new_event() and pop_event() methods to handle new events.
     """
 
     def __init__(self, logging: MasterLogger):
@@ -40,8 +46,6 @@ class MasterEventQueue:
 
         event = {"type": event_type, event_type: event}
 
-        import json
-
         self.__logging.debug(msg=f"New Event: {json.dumps(event)}")
 
         self.__queue.put(event)
@@ -51,7 +55,8 @@ class MasterEventQueue:
         """
         Used to push a new event to the Master Event Queue
 
-        :returns: event dict object of {"type": <type>, <type>: <event_json>}, or None if the queue is empty.
+        :returns: event dict object of {"type": <type>, <type>: <event_json>}, or None if the queue
+        is empty.
         """
 
         if self.__queue.empty():
@@ -71,4 +76,4 @@ class MasterEventQueue:
         :returns: boolean if there is a new event or not
         """
 
-        return not (self.__new_event.value == 0)
+        return not self.__new_event.value == 0

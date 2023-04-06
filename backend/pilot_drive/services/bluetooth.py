@@ -1,9 +1,14 @@
-import json
-from multiprocessing.managers import ValueProxy
-import dbus.mainloop.glib  # Handling the DBus event based loop
-from gi.repository import GLib  # Handling the DBus event based loop
-import dbus
+'''
+Module for the Bluetooth service
+'''
 import socket
+import dbus.mainloop.glib
+import dbus
+from gi.repository import GLib
+
+from pilot_drive.master_logging.master_logger import MasterLogger
+from pilot_drive.services import AbstractService
+from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 from .BluetoothUtils.constants import (
     AdapterAttributes,
@@ -17,10 +22,6 @@ from .BluetoothUtils.constants import (
     MediaPlayerAttributes,
     MediaTransportAttributes,
 )
-from pilot_drive.master_logging.MasterLogger import MasterLogger
-from pilot_drive.services import AbstractService
-from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
-
 
 class Bluetooth(AbstractService):
     """
@@ -36,6 +37,9 @@ class Bluetooth(AbstractService):
         super().__init__(master_event_queue, service_type, logger)
 
         self.__local_hostname = socket.gethostname()
+        self.__enabled = False
+        self.bus = None
+        self.mgr = None
         self.__reset_vars()
 
     @property
@@ -77,22 +81,24 @@ class Bluetooth(AbstractService):
         except AttributeError:
             self.__enabled = enabled
 
-        print(f"****{enabled}****")
-        return enabled  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+        # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and
+        # "off-blocked". For all intensive purposes here though, it's either on of off.
+        return enabled
 
     @enabled.setter
     def enabled(self, changed_props: dbus.Dictionary = None):
         """
-        The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not). Sets power state/enabled within the Bluetooth.bluetooth object. When used with the prop_changed callback, the changed power state properties can be fed directly to the method, rather than making a new DBus query.
+        The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not).
+        Sets power state/enabled within the Bluetooth.bluetooth object. When used with the
+        prop_changed callback, the changed power state properties can be fed directly to the method
+        rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
         enabled = changed_props
         enabled = bool(enabled.get(AdapterAttributes.POWERED))
 
-        self.bluetooth[
-            "enabled"
-        ] = enabled  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
+        self.bluetooth["enabled"] = enabled
 
     def __reset_vars(self):
         """
@@ -123,14 +129,17 @@ class Bluetooth(AbstractService):
 
     def __push_media_to_queue(self):
         """
-        Similar to the push_to_queue method, but pushes the media object to the event queue with the type of "media"
+        Similar to the push_to_queue method, but pushes the media object to the event queue with
+        the type of "media"
         """
         media_json = self.media
         self.event_queue.push_event(event_type=EventType.MEDIA, event=media_json)
 
     def __handle_connect(self, changed_props: dbus.Dictionary = None):
         """
-        Handles the bluetooth device connection state. Sets the connection state on the Bluetooth.bluetooth object. When used with the prop_changed callback, the connection properties can be fed directly to the method, rather than making a new DBus query.
+        Handles the bluetooth device connection state. Sets the connection state on the
+        Bluetooth.bluetooth object. When used with the prop_changed callback, the connection
+        properties can be fed directly to the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
@@ -144,23 +153,24 @@ class Bluetooth(AbstractService):
                 for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
                     print("GET DEVICE")
                     print(device.get(Device.CONNECTED))
-                    if bool(device.get(Device.CONNECTED)) == True:
+                    if bool(device.get(Device.CONNECTED)) is True:
                         print("DEVICE CONNECTED")
                         connected = True
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
                         self.logger.info(
-                            msg=f"Bluetooth device: {device_name} connected with MAC address of {device_addr}."
+                            msg=f'''Bluetooth device: {device_name}
+                             connected with MAC address of {device_addr}.'''
                         )
                         self.bluetooth["connectedName"] = device_name
                         self.bluetooth["address"] = device_addr
-                    elif bool(device.get(Device.CONNECTED)) == False:
+                    elif bool(device.get(Device.CONNECTED)) is False:
                         try:
-                            if self.bluetooth["connected"] == True:
+                            if self.bluetooth["connected"] is True:
                                 self.logger.info(
-                                    msg=f'Bluetooth device: {self.bluetooth["connectedName"]} is disconnected.'
+                                    msg=f'''Bluetooth device:
+                                     {self.bluetooth["connectedName"]} is disconnected.'''
                                 )
-                                self.bluetooth["connected"]
                         except KeyError:
                             pass
 
@@ -174,7 +184,7 @@ class Bluetooth(AbstractService):
             else:
                 self.__reset_vars()
         else:
-            self.logger.warning(msg="Bluetooth is disabled!")  # TODO: Action here?
+            self.logger.warning(msg="Bluetooth is disabled!")
 
         print("PUSHING BLUETOOTH TO QUEUE")
         self.push_to_queue(self.bluetooth)
@@ -186,32 +196,35 @@ class Bluetooth(AbstractService):
         """
         A getter for the items of a specified interface.
 
-        :return: an array of DBus items from each instance of the interface (ie. Device1 will return an array containing each device & it's properties.)
+        :return: an array of DBus items from each instance of the interface (ie. Device1 will
+        return an array containing each device & it's properties.)
         """
 
-        if mgr == None:
+        if mgr is None:
             mgr = self.mgr
 
         iface_items = []
-        for path, ifaces in mgr.GetManagedObjects().items():
+        for path, ifaces in mgr.GetManagedObjects().items(): #pylint: disable=unused-variable
             if iface in str(ifaces):
                 iface_items.append(ifaces[iface])
 
         if len(iface_items) > 0:
             return iface_items
-        else:
-            return None
+        return None
 
     def __set_status(self, changed_props: dbus.Dictionary = None):
         """
-        The setter for the track status. Sets status attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed status properties can be fed directly to the method, rather than making a new DBus query.
+        The setter for the track status. Sets status attributes within the Bluetooth.media object.
+        When used with the prop_changed callback, the changed status properties can be fed directly
+        to the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
         status = None
         try:
             if self.bluetooth["connected"]:
-                # If being passed changed props use them, but if nothing is passed check in the managed items for track info
+                # If being passed changed props use them, but if nothing is passed check in the
+                # managed items for track info
                 if changed_props:
                     status = changed_props
                 else:
@@ -221,24 +234,29 @@ class Bluetooth(AbstractService):
                     status = status.get(MediaPlayerAttributes.STATUS)
 
                     self.media["song"]["isPlaying"] = (
-                        True if status == TrackStatus.PLAYING else False
+                        status == TrackStatus.PLAYING
                     )
                 except AttributeError:
-                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
+                    # Likely that the track wasn't loaded yet, ie. the device just connected and
+                    # hasn't sent it yet.
+                    return
 
         except dbus.exceptions.DBusException as err:
             self.logger.error(f"Failed to set status: {err}")
 
     def __set_position(self, changed_props: dbus.Dictionary = None):
         """
-        The setter for the timestamp of the track. Sets position attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed position properties can be fed directly to the method, rather than making a new DBus query.
+        The setter for the timestamp of the track. Sets position attributes within the
+        Bluetooth.media object. When used with the prop_changed callback, the changed position
+        properties can be fed directly to the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
         position = None
         try:
             if self.bluetooth["connected"]:
-                # If being passed changed props use them, but if nothing is passed check in the managed items for track info
+                # If being passed changed props use them, but if nothing is passed check in the
+                # managed items for track info
                 if changed_props:
                     position = changed_props
                 else:
@@ -249,21 +267,26 @@ class Bluetooth(AbstractService):
 
                     self.media["song"]["position"] = position if position else None
                 except AttributeError:
-                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
+                    # Likely that the track wasn't loaded yet, ie. the device just connected and
+                    # hasn't sent it yet.
+                    return
 
-        except dbus.exceptions.DBusException as e:
-            self.logger.error(msg=f"A DBus error has occurred: {e}")
+        except dbus.exceptions.DBusException as exc:
+            self.logger.error(msg=f"A DBus error has occurred: {exc}")
 
     def __set_track(self, changed_props: dbus.Dictionary = None):
         """
-        The setter for the track. Sets track attributes within the Bluetooth.media object. When used with the prop_changed callback, the changed track properties can be fed directly to the method, rather than making a new DBus query.
+        The setter for the track. Sets track attributes within the Bluetooth.media object. When
+        used with the prop_changed callback, the changed track properties can be fed directly to
+        the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
         track = None
         try:
             if self.bluetooth["connected"]:
-                # If being passed changed props use them, but if nothing is passed check in the managed items for track info
+                # If being passed changed props use them, but if nothing is passed check in the
+                # managed items for track info
                 if changed_props:
                     track = changed_props
                 else:
@@ -272,16 +295,18 @@ class Bluetooth(AbstractService):
                 try:
                     track = track.get(MediaPlayerAttributes.TRACK)
 
-                    # Set all needed values to be able to pull track metadata when class is instantiated.
+                    # Set all needed values to be able to pull track metadata when class is
+                    # instantiated.
                     if track:
-                        # Set values as default to prevent previous values from leaching over if values aren't populated
+                        # Set values as default to prevent previous values from leaching over if
+                        # values aren't populated
                         metadata = {}
 
                         EMPTY = ""
 
-                        if track.get(
-                            TrackAttributes.TITLE
-                        ):  # if the track doesn't have a title, there is no real point in displaying.
+                        if track.get( TrackAttributes.TITLE ):
+                            # if the track doesn't have a title, there is no real point in
+                            #displaying.
                             metadata["title"] = (
                                 str(track.get(TrackAttributes.TITLE))
                                 if track.get(TrackAttributes.TITLE)
@@ -306,29 +331,33 @@ class Bluetooth(AbstractService):
                             self.media["song"] = {
                                 **self.media["song"],
                                 **metadata,
-                            }  # Set track vars, but preserve everything else
+                            }
+                            # Set track vars, but preserve everything else
                 except AttributeError:
-                    return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
+                    # Likely that the track wasn't loaded yet, ie. the device justconnected and
+                    # hasn't sent it yet.
+                    return
 
-        except dbus.exceptions.DBusException as e:
-            self.logger.error(msg=f"A DBus error has occurred: {e}")
+        except dbus.exceptions.DBusException as exc:
+            self.logger.error(msg=f"A DBus error has occurred: {exc}")
 
-    """
-    Signal Reciever Methods
-    """
 
-    def iface_added(self, path, iface):
+    # Signal Reciever Methods
+
+    def iface_added(self, path, iface): #pylint: disable=unused-argument
         """
-        Callback for when an interface is add. This typically means the device is connected, but calls the handle_connect method to confirm.
+        Callback for when an interface is add. This typically means the device is connected, but
+        calls the handle_connect method to confirm.
 
         :param path: the path to the specified removed interface
         :param iface: the interface that was removed
         """
         self.__handle_connect()
 
-    def iface_removed(self, path, iface):
+    def iface_removed(self, path, iface): #pylint: disable=unused-argument
         """
-        Callback for when an interface is removed. This typically means the device disconnected, but calls the handle_connect method to confirm.
+        Callback for when an interface is removed. This typically means the device disconnected,
+        but calls the handle_connect method to confirm.
 
         :param path: the path to the specified removed interface
         :param iface: the interface that was removed
@@ -337,12 +366,13 @@ class Bluetooth(AbstractService):
 
     def prop_changed(
         self, iface: str, changed: dbus.Dictionary, invalidated: dbus.Array
-    ):
+    ): #pylint: disable=unused-argument
         """
         Callback for a change event on the bluez bus
 
         :param iface: The interface from where the change occurred
-        :param changed: The props that have changed (ie. "dbus.Dictionary({dbus.String('Position'): dbus.UInt32(671, variant_level=1)}, signature=dbus.Signature('sv'))")
+        :param changed: The props that have changed (ie. "dbus.Dictionary({dbus.String('Position'):
+        dbus.UInt32(671, variant_level=1)}, signature=dbus.Signature('sv'))")
         :param invalidated: Invalidated DBus props
         """
 
@@ -361,15 +391,15 @@ class Bluetooth(AbstractService):
                         self.__set_position(changed_props=changed)
             case IFaceTypes.MEDIA_TRANSPORT_1:
                 match changed_key:
-                    case MediaItemAttributes.METADATA:  # This returns duplicate information to "Track". Don't waste processing power on it
+                    case MediaItemAttributes.METADATA:  # Returns duplicate information to Track
                         return
-                    case MediaTransportAttributes.STATE:  # Also not useful at the moment. Indicates active/idle. May be implemented later.
+                    case MediaTransportAttributes.STATE:  # May be implemented later.
                         return
             case IFaceTypes.ADAPTER_1:
                 match changed_key:
                     case AdapterAttributes.POWER_STATE:
                         self.enabled = changed
-                    case AdapterAttributes.CLASS:  # Class specifies specific bluetooth capabilities, not used at the moment
+                    case AdapterAttributes.CLASS:  # Specifies specific bluetooth capabilities
                         return
             case IFaceTypes.DEVICE_1:
                 match changed_key:
@@ -389,7 +419,8 @@ class Bluetooth(AbstractService):
         """
         Control the current song
 
-        :param action: the intended control action using the TrackControl enum, ie. Play, Pause, Skip Next or Skip Previous.
+        :param action: the intended control action using the TrackControl enum, ie. Play, Pause,
+        Skip Next or Skip Previous.
         """
         try:
             TrackControl(action)
@@ -424,9 +455,7 @@ class Bluetooth(AbstractService):
                     #     msg=f"Unknown bluetooth control action: {action}"
                     # )
 
-    """
-    Run the main loop
-    """
+    # Run the main loop
 
     def main(self):
         """

@@ -3,7 +3,7 @@ import os
 import time
 
 from pilot_drive.constants import QUERIED_FIELDS
-from pilot_drive.master_logging.MasterLogger import MasterLogger
+from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
 

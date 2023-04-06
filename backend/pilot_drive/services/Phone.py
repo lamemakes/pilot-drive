@@ -5,7 +5,7 @@ from typing import List
 # from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
 # from gi.repository import GLib  # Handling the DBus event based loop
 
-from pilot_drive.master_logging.MasterLogger import MasterLogger
+from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services.Settings import Settings
 from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType

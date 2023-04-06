@@ -1,5 +1,5 @@
-from .AbstractService import AbstractService
+from .abstract_service import AbstractService
 from .Settings import Settings
-from .Bluetooth import Bluetooth
+from .bluetooth import Bluetooth
 from .Vehicle import Vehicle
 from .Phone import Phone
