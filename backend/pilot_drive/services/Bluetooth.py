@@ -31,10 +31,9 @@ class Bluetooth(AbstractService):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
-        logger: MasterLogger
+        logger: MasterLogger,
     ):
         super().__init__(master_event_queue, service_type, logger)
-
 
         self.__local_hostname = socket.gethostname()
         self.__reset_vars()
@@ -42,7 +41,7 @@ class Bluetooth(AbstractService):
     @property
     def enabled(self):
         """
-        The property for the bluetooth power state of the host (ie. if bluetooth is enabled or not). 
+        The property for the bluetooth power state of the host (ie. if bluetooth is enabled or not).
 
         :return: boolean of if system-wide bluetooth is enabled or not
         """
@@ -53,27 +52,33 @@ class Bluetooth(AbstractService):
         except AttributeError:
             bus = dbus.SystemBus()
             mgr = dbus.Interface(
-            bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
+                bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager"
+            )
 
         enabled = None
         enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1, mgr=mgr)[0]
         enabled = bool(enabled.get(AdapterAttributes.POWERED))
 
         try:
-            if self.__enabled != enabled:   # state change
+            if self.__enabled != enabled:  # state change
                 try:
                     bt_dict = self.bluetooth
                 except AttributeError:
-                    bt_dict = {"connected": False, "connectedName": None, "localHostname": self.__local_hostname, "battery": None, "address": None}
-                bt_dict['enabled'] = enabled
+                    bt_dict = {
+                        "connected": False,
+                        "connectedName": None,
+                        "localHostname": self.__local_hostname,
+                        "battery": None,
+                        "address": None,
+                    }
+                bt_dict["enabled"] = enabled
                 self.push_to_queue(bt_dict)
                 self.__enabled = enabled
         except AttributeError:
             self.__enabled = enabled
 
-        print(f'****{enabled}****')
+        print(f"****{enabled}****")
         return enabled  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
-
 
     @enabled.setter
     def enabled(self, changed_props: dbus.Dictionary = None):
@@ -85,8 +90,9 @@ class Bluetooth(AbstractService):
         enabled = changed_props
         enabled = bool(enabled.get(AdapterAttributes.POWERED))
 
-        self.bluetooth["enabled"] = enabled # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
-
+        self.bluetooth[
+            "enabled"
+        ] = enabled  # Other states exist for PowerState, like "off", "off-enabling", "off-disabling", and "off-blocked". For all intensive purposes here though, it's either on of off.
 
     def __reset_vars(self):
         """
@@ -144,15 +150,17 @@ class Bluetooth(AbstractService):
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
                         self.logger.info(
-                            msg=f'Bluetooth device: {device_name} connected with MAC address of {device_addr}.'
+                            msg=f"Bluetooth device: {device_name} connected with MAC address of {device_addr}."
                         )
                         self.bluetooth["connectedName"] = device_name
                         self.bluetooth["address"] = device_addr
                     elif bool(device.get(Device.CONNECTED)) == False:
                         try:
-                            if self.bluetooth['connected'] == True:
-                                self.logger.info(msg=f'Bluetooth device: {self.bluetooth["connectedName"]} is disconnected.')
-                                self.bluetooth['connected']
+                            if self.bluetooth["connected"] == True:
+                                self.logger.info(
+                                    msg=f'Bluetooth device: {self.bluetooth["connectedName"]} is disconnected.'
+                                )
+                                self.bluetooth["connected"]
                         except KeyError:
                             pass
 
@@ -174,7 +182,7 @@ class Bluetooth(AbstractService):
             print("PUSHING MEDIA TO QUEUE")
             self.__push_media_to_queue()
 
-    def __get_iface_items(self, iface: IFaceTypes, mgr = None):
+    def __get_iface_items(self, iface: IFaceTypes, mgr=None):
         """
         A getter for the items of a specified interface.
 
@@ -219,7 +227,7 @@ class Bluetooth(AbstractService):
                     return  # Likely that the track wasn't loaded yet, ie. the device just connected and hasn't sent it yet.
 
         except dbus.exceptions.DBusException as err:
-            self.logger.error(f'Failed to set status: {err}')
+            self.logger.error(f"Failed to set status: {err}")
 
     def __set_position(self, changed_props: dbus.Dictionary = None):
         """
@@ -360,7 +368,7 @@ class Bluetooth(AbstractService):
             case IFaceTypes.ADAPTER_1:
                 match changed_key:
                     case AdapterAttributes.POWER_STATE:
-                        self.enabled=changed
+                        self.enabled = changed
                     case AdapterAttributes.CLASS:  # Class specifies specific bluetooth capabilities, not used at the moment
                         return
             case IFaceTypes.DEVICE_1:
@@ -476,4 +484,6 @@ class Bluetooth(AbstractService):
             self.__push_media_to_queue()
 
     def terminate(self):
-        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')
+        self.logger.info(
+            msg=f"Stop signal recieved, terminating service: {self.service_type}"
+        )

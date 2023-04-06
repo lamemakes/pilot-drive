@@ -4,16 +4,16 @@ import os
 import inspect
 
 
-'''
+"""
 Absolute filepath to the currently executed PILOT Drive
-'''
-absolute_path = f'{"/".join(os.path.abspath(inspect.getsourcefile(lambda:0)).split("/")[:-1])}/' # Ugly and rediculous, pulls constants.py out of the path and just returns the directories
+"""
+absolute_path = f'{"/".join(os.path.abspath(inspect.getsourcefile(lambda:0)).split("/")[:-1])}/'  # Ugly and rediculous, pulls constants.py out of the path and just returns the directories
 
 """
 Constants for the static frontend
 """
 STATIC_WEB_PORT = 8002
-STATIC_WEB_PATH = "web/files/"    # A relative filepath from the root project directory
+STATIC_WEB_PATH = "web/files/"  # A relative filepath from the root project directory
 
 """
 Constants for the websocket server

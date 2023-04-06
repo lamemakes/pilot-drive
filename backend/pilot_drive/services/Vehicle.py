@@ -175,4 +175,6 @@ class Vehicle(AbstractService):
         self.__push_info()
 
     def terminate(self):
-        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')
+        self.logger.info(
+            msg=f"Stop signal recieved, terminating service: {self.service_type}"
+        )

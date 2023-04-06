@@ -9,7 +9,7 @@ class AbstractService(ABC):
         self,
         master_event_queue: MasterEventQueue,
         service_type: EventType,
-        logger: MasterLogger
+        logger: MasterLogger,
     ):
         """
         Initialize the service

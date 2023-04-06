@@ -7,8 +7,10 @@ import json
 from ..BluetoothUtils.constants import IFaceTypes, Device, AdapterAttributes
 from .phone_constants import PHONE_STATES
 
+
 class MissingDBusPropertyException(Exception):
     pass
+
 
 class IOSManager(AbstractManager):
     def __init__(self, logger: MasterEventQueue) -> None:
@@ -29,10 +31,10 @@ class IOSManager(AbstractManager):
     @property
     def bus(self):
         if self.__bus == None:
-            raise MissingDBusPropertyException('A bus was not provided!')
-        
+            raise MissingDBusPropertyException("A bus was not provided!")
+
         return self.__bus
-    
+
     @bus.setter
     def bus(self, bus):
         self.__bus = bus
@@ -40,7 +42,7 @@ class IOSManager(AbstractManager):
     # @property
     # def enabled(self):
     #     """
-    #     The property for the bluetooth power state of the host (ie. if bluetooth is enabled or not). 
+    #     The property for the bluetooth power state of the host (ie. if bluetooth is enabled or not).
 
     #     :return: boolean of if system-wide bluetooth is enabled or not
     #     """
@@ -75,11 +77,11 @@ class IOSManager(AbstractManager):
     #     """
     #     self.__handle_connect()
     #     return self.__state
-    
+
     # @state.setter
     # def state(self, new_state: PHONE_STATES):
     #     self.__state = new_state
-    
+
     @property
     def state(self):
         return PHONE_STATES.CONNECTED
@@ -90,16 +92,16 @@ class IOSManager(AbstractManager):
 
     @property
     def device_name(self):
-        return 'Yeebus'
-    
+        return "Yeebus"
+
     @device_name.setter
     def device_name(self, device_name: str):
         self.__device_name = device_name
 
-    '''
+    """
     DBus BlueZ methods, many of these are pulled and modified from Bluetooth.py service
     TODO: Make bluetooth utils modular and usable from both this and the bluetooth service
-    '''
+    """
     # def __get_iface_items(self, iface: IFaceTypes, mgr = None):
     #     """
     #     A getter for the items of a specified interface.
@@ -115,7 +117,7 @@ class IOSManager(AbstractManager):
     #             iface_items.append(ifaces[iface])
 
     #     return iface_items if len(iface_items) > 0 else None
-    
+
     # def __handle_connect(self, changed_props: dbus.Dictionary = None):
     #     """
     #     Handles the bluetooth device connection state. Sets the connection state on the Bluetooth.bluetooth object. When used with the prop_changed callback, the connection properties can be fed directly to the method, rather than making a new DBus query.
@@ -140,10 +142,10 @@ class IOSManager(AbstractManager):
     #     else:
     #         self.state = PHONE_STATES.BLUETOOTH_DISABLED
 
-
-    '''
+    """
     DBus signal reciever methods
-    '''
+    """
+
     def show_notification(self, notification_str: str):
         notif = self.parse_notification(notification_str)
         self.__notifications.append(notif)

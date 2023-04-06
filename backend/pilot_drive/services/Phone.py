@@ -1,6 +1,7 @@
 import time
 import dbus
 from typing import List
+
 # from dbus.mainloop.glib import DBusGMainLoop  # Handling the DBus event based loop
 # from gi.repository import GLib  # Handling the DBus event based loop
 
@@ -47,14 +48,14 @@ class Phone(AbstractService):
 
         if self.enabled:
             try:
-                self.__type = PHONE_TYPES(self.__settings.get_setting('phone')['type'])
+                self.__type = PHONE_TYPES(self.__settings.get_setting("phone")["type"])
             except ValueError:
                 raise FailedToReadSettingsException(
                     f'Invalid phone type provided: {self.__settings.get_setting("phone")["type"]}'
                 )
             except KeyError:
                 raise FailedToReadSettingsException(
-                    'Failed to retrieve phone settings!'
+                    "Failed to retrieve phone settings!"
                 )
 
             match self.__type:
@@ -63,7 +64,7 @@ class Phone(AbstractService):
                 # case PHONE_TYPES.IOS:
                 #     self.__phone_manager = IOSManager(logger=self.logger)
                 case _:
-                    raise FailedToReadSettingsException('Unrecognized phone type!')
+                    raise FailedToReadSettingsException("Unrecognized phone type!")
         else:
             self.push_to_queue(PhoneContainer(enabled=False).__dict__)
 
@@ -72,20 +73,20 @@ class Phone(AbstractService):
 
     @property
     def enabled(self) -> bool:
-        '''
+        """
         Checks if phone notifications are enabled & properly typed.
-        '''
-        phone_settings = self.__settings.get_setting('phone')
+        """
+        phone_settings = self.__settings.get_setting("phone")
 
         try:
-            self.__type = PHONE_TYPES(self.__settings.get_setting('phone')['type'])
+            self.__type = PHONE_TYPES(self.__settings.get_setting("phone")["type"])
         except ValueError:
             self.__enabled = False
             raise FailedToReadSettingsException(
                 f'Invalid phone type provided: {self.__settings.get_setting("phone")["type"]}'
             )
 
-        settings_enabled = phone_settings.get('enabled') != None
+        settings_enabled = phone_settings.get("enabled") != None
         self.__enabled = settings_enabled
 
         return settings_enabled
@@ -219,21 +220,21 @@ class Phone(AbstractService):
     #     GLib.MainLoop().run()
 
     def push_to_queue(self, event: dict, event_type: dict = None):
-        '''
+        """
         Push a new event to the master queue.
 
         :param event: the dict that will be converted to json & passed to the queue, and in turn to the UI.
         :param event_type: the event type that will go on the queue. If no argument is specified, it defaults to the calling services type
-        '''
+        """
         if not event_type:
             event_type = self.service_type
 
         # Convert Notification object to a serializable form
         json_notifs = []
-        for item in event['notifications']:
+        for item in event["notifications"]:
             json_notifs.append(item.__dict__)
 
-        event['notifications'] = json_notifs
+        event["notifications"] = json_notifs
 
         self.event_queue.push_event(event_type=self.service_type, event=event)
 
@@ -247,7 +248,9 @@ class Phone(AbstractService):
             # case PHONE_TYPES.IOS:
             #     self.__ios_loop(self.__phone_manager)
             case _:
-                self.logger.error(msg='Failed to get phone type, exiting phone manager!')
+                self.logger.error(
+                    msg="Failed to get phone type, exiting phone manager!"
+                )
 
     def refresh(self):
         if not self.__enabled:
@@ -262,4 +265,6 @@ class Phone(AbstractService):
             self.push_to_queue(event=notif_refresh.__dict__)
 
     def terminate(self):
-        self.logger.info(msg=f'Stop signal recieved, terminating service: {self.service_type}')
+        self.logger.info(
+            msg=f"Stop signal recieved, terminating service: {self.service_type}"
+        )
