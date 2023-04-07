@@ -77,7 +77,7 @@ class PhoneContainer:
 
     enabled: bool
     type: Optional[str] = None
-    state: Optional[PhoneStates] = PhoneStates.DISCONNECTED
+    state: Optional[str] = PhoneStates.DISCONNECTED.value
     notifications: Optional[List[Notification]] = field(default_factory=lambda: [])
 
 

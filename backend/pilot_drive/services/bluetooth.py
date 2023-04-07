@@ -10,7 +10,7 @@ from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
-from .BluetoothUtils.constants import (
+from .bluetooth_utils.constants import (
     AdapterAttributes,
     MediaSources,
     IFaceTypes,
@@ -136,7 +136,7 @@ class Bluetooth(AbstractService):
         media_json = self.media
         self.event_queue.push_event(event_type=EventType.MEDIA, event=media_json)
 
-    def __handle_connect(self, changed_props: dbus.Dictionary = None):
+    def __handle_connect(self, changed_props: dbus.Dictionary = None) -> None:
         """
         Handles the bluetooth device connection state. Sets the connection state on the
         Bluetooth.bluetooth object. When used with the prop_changed callback, the connection
@@ -146,51 +146,44 @@ class Bluetooth(AbstractService):
         """
         connected = False
         if self.enabled:
-            if changed_props:
-                print("CONNECTED CHANGED PROPS")
-                print(changed_props)
-                connected = changed_props
-            else:
-                for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
-                    print("GET DEVICE")
-                    print(device.get(Device.CONNECTED))
-                    if bool(device.get(Device.CONNECTED)) is True:
-                        print("DEVICE CONNECTED")
-                        connected = True
-                        device_name = device.get(Device.NAME)
-                        device_addr = device.get(Device.ADDRESS)
-                        self.logger.info(
-                            msg=f"""Bluetooth device: {device_name}
-                             connected with MAC address of {device_addr}."""
-                        )
-                        self.bluetooth["connectedName"] = device_name
-                        self.bluetooth["address"] = device_addr
-                    elif bool(device.get(Device.CONNECTED)) is False:
-                        try:
-                            if self.bluetooth["connected"] is True:
-                                self.logger.info(
-                                    msg=f"""Bluetooth device:
-                                     {self.bluetooth["connectedName"]} is disconnected."""
-                                )
-                        except KeyError:
-                            pass
-
-            print("CONNECTED VAR")
-            print(connected)
-            if connected:
-                self.bluetooth["connected"] = True
-                self.__set_track()
-                self.__set_status()
-                self.__set_position()
-            else:
-                self.__reset_vars()
-        else:
             self.logger.warning(msg="Bluetooth is disabled!")
+            self.push_to_queue(self.bluetooth)
+            return
 
-        print("PUSHING BLUETOOTH TO QUEUE")
+        if changed_props:
+            connected = changed_props
+        else:
+            for device in self.__get_iface_items(IFaceTypes.DEVICE_1):
+                if bool(device.get(Device.CONNECTED)) is True:
+                    connected = True
+                    device_name = device.get(Device.NAME)
+                    device_addr = device.get(Device.ADDRESS)
+                    self.logger.info(
+                        msg=f"""Bluetooth device: {device_name}
+                            connected with MAC address of {device_addr}."""
+                    )
+                    self.bluetooth["connectedName"] = device_name
+                    self.bluetooth["address"] = device_addr
+                elif bool(device.get(Device.CONNECTED)) is False:
+                    try:
+                        if self.bluetooth["connected"] is True:
+                            self.logger.info(
+                                msg=f"""Bluetooth device:
+                                    {self.bluetooth["connectedName"]} is disconnected."""
+                            )
+                    except KeyError:
+                        pass
+
+        if connected:
+            self.bluetooth["connected"] = True
+            self.__set_track()
+            self.__set_status()
+            self.__set_position()
+        else:
+            self.__reset_vars()
+
         self.push_to_queue(self.bluetooth)
         if self.bluetooth["connected"]:
-            print("PUSHING MEDIA TO QUEUE")
             self.__push_media_to_queue()
 
     def __get_iface_items(self, iface: IFaceTypes, mgr=None):
@@ -206,9 +199,9 @@ class Bluetooth(AbstractService):
 
         iface_items = []
         for (
-            path,
+            path,  # pylint: disable=unused-variable
             ifaces,
-        ) in mgr.GetManagedObjects().items():  # pylint: disable=unused-variable
+        ) in mgr.GetManagedObjects().items():
             if iface in str(ifaces):
                 iface_items.append(ifaces[iface])
 
@@ -304,7 +297,7 @@ class Bluetooth(AbstractService):
                         # values aren't populated
                         metadata = {}
 
-                        EMPTY = ""
+                        empty_str = ""
 
                         if track.get(TrackAttributes.TITLE):
                             # if the track doesn't have a title, there is no real point in
@@ -312,22 +305,22 @@ class Bluetooth(AbstractService):
                             metadata["title"] = (
                                 str(track.get(TrackAttributes.TITLE))
                                 if track.get(TrackAttributes.TITLE)
-                                else EMPTY
+                                else empty_str
                             )
                             metadata["artist"] = (
                                 str(track.get(TrackAttributes.ARTIST))
                                 if track.get(TrackAttributes.ARTIST)
-                                else EMPTY
+                                else empty_str
                             )
                             metadata["album"] = (
                                 str(track.get(TrackAttributes.ALBUM))
                                 if track.get(TrackAttributes.ALBUM)
-                                else EMPTY
+                                else empty_str
                             )
                             metadata["duration"] = (
                                 str(track.get(TrackAttributes.DURATION))
                                 if track.get(TrackAttributes.DURATION)
-                                else EMPTY
+                                else empty_str
                             )
 
                             self.media["song"] = {

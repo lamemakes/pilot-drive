@@ -2,7 +2,7 @@
 Module that allowsd for utilization of PiCamera for backup camera functionality
 """
 from pilot_drive.master_logging.master_logger import MasterLogger
-from pilot_drive.services import AbstractService, ServiceExceptions
+from pilot_drive.services import AbstractService, service_exceptions
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 
@@ -29,7 +29,7 @@ class Camera(AbstractService):
             from RPi import GPIO
             import picamera
         except ModuleNotFoundError as err:
-            raise ServiceExceptions.FailedToInstatiateCamera(
+            raise service_exceptions.FailedToInstatiateCamera(
                 f"Failed to find a required module, camera service will not be started: {err}"
             )
 
@@ -53,7 +53,7 @@ class Camera(AbstractService):
         try:
             self.camera = picamera.PiCamera()
         except picamera.PiCameraError as err:
-            raise ServiceExceptions.FailedToInstatiateCamera(
+            raise service_exceptions.FailedToInstatiateCamera(
                 f"Failed to open PiCamera: {err}"
             )
 

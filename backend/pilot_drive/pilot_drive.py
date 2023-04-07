@@ -18,9 +18,9 @@ from pilot_drive.services import (
     Bluetooth,
     Vehicle,
     Phone,
-    ServiceExceptions,
     AbstractService,
     Camera,
+    service_exceptions,
 )
 
 
@@ -45,7 +45,7 @@ class PilotDrive:
         # Logging initialization
         try:
             log_settings = Settings.get_raw_settings()["logging"]
-        except ServiceExceptions.FailedToReadSettingsException:
+        except service_exceptions.FailedToReadSettingsException:
             log_settings = constants.DEFAULT_LOG_SETTINGS
 
         self.logging = MasterLogger(log_settings=log_settings)
@@ -58,12 +58,15 @@ class PilotDrive:
         # Sevice initialization
         self.__services: List[Tuple[AbstractService, Process]] = []
 
-        self.settings: Settings = self.service_factory(service=Settings)
-        self.web: Web = self.service_factory(
-            service=Web,
+        self.web = Web(
+            logger=self.logging,
             port=constants.STATIC_WEB_PORT,
-            relative_directory=constants.STATIC_WEB_PATH,
+            relative_directory=constants.STATIC_WEB_PORT,
         )
+        web_process = Process(target=self.web.main())
+        web_process.start()
+
+        self.settings: Settings = self.service_factory(service=Settings)
         self.bluetooth: Bluetooth = self.service_factory(service=Bluetooth)
         if self.settings.get_setting("phone")["enabled"]:
             self.phone: Phone = self.service_factory(
@@ -78,7 +81,7 @@ class PilotDrive:
 
         if self.settings.get_setting("camera")["enabled"]:
             btn_pin = self.settings.get_setting("camera")["buttonPin"]
-            self.camera: camera = self.service_factory(service=camera, btn_pin=btn_pin)
+            self.camera: Camera = self.service_factory(service=Camera, btn_pin=btn_pin)
 
         # Set message handlers for your services, ie. if there is a new "settings" type recieved
         # from the websocket, pass it to settings.set_web_settings as it is a settings change event.

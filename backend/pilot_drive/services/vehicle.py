@@ -1,6 +1,9 @@
-import obd
+"""
+The module that manages the connected vehicle
+"""
 import os
 import time
+import obd
 
 from pilot_drive.constants import QUERIED_FIELDS
 from pilot_drive.master_logging.master_logger import MasterLogger
@@ -23,6 +26,10 @@ class InvalidQueryException(Exception):
 
 
 class Vehicle(AbstractService):
+    """
+    The vehicle service that interfaces with the connected vehicle
+    """
+
     def __init__(
         self,
         master_event_queue: MasterEventQueue,
@@ -63,16 +70,9 @@ class Vehicle(AbstractService):
         ]:
             self.__connected = True
             return True
-        else:
-            self.__connected = False
-            return False
 
-    def __reset_vars(self):
-        """
-        Cleanses the diffent internal states. Intended to prevent leaching of values.
-        """
-
-        self.stats = []
+        self.__connected = False
+        return False
 
     def __handle_connect(self):
         """
@@ -110,45 +110,40 @@ class Vehicle(AbstractService):
                 field_name = field["name"]
                 field_command = field["command"]
                 field_interval = field["interval"]
-                if obd.commands.has_name(field_command):
-                    # If the the current field's interval is greater than the global max, up the max
-                    if not self.__max_interval and field_interval > self.__max_interval:
-                        self.__max_interval = field_interval
-
-                    if queries_made % field_interval == 0:
-                        resp = self.__connection.query(
-                            obd.commands[field_command]
-                        )  # Make the query
-                        if resp.value:
-                            resp_tuple = (
-                                resp.value.to_tuple()
-                            )  # Convert to a tuple to get units & magnitude
-                            # pint converts tuples a little odd,
-                            # values come back as"(<quantity>, (('<unit>', <magnitude>),))"
-                            value = {
-                                "quantity": resp_tuple[0],
-                                "units": resp_tuple[1][0][0],
-                                "magnitude": resp_tuple[1][0][1],
-                            }
-                            if len(self.stats) == field_index:
-                                self.stats.append({"name": field_name, "value": value})
-                            else:
-                                self.stats[field_index] = {
-                                    "name": field_name,
-                                    "value": value,
-                                }
-
-                            field_index += 1
-                        else:
-                            self.logger.error(msg=f'Failed to query for "{field_name}"')
-                            # field_index += 1
-                            continue
-                else:
+                if not obd.commands.has_name(field_command):
                     raise InvalidQueryException(
-                        f'Specified OBD command: "{field_name}" is not valid!'
+                        f'OBD command: "{field_name}" is not valid!'
                     )
 
-                # field_index += 1
+                # If the the current field's interval is greater than the global max, up the max
+                if not self.__max_interval and field_interval > self.__max_interval:
+                    self.__max_interval = field_interval
+
+                if queries_made % field_interval == 0:
+                    # Make the query
+                    resp = self.__connection.query(obd.commands[field_command])
+                    if resp.value:
+                        # Convert to a tuple to get units & magnitude
+                        resp_tuple = resp.value.to_tuple()
+                        # pint converts tuples a little odd,
+                        # values come back as"(<quantity>, (('<unit>', <magnitude>),))"
+                        value = {
+                            "quantity": resp_tuple[0],
+                            "units": resp_tuple[1][0][0],
+                            "magnitude": resp_tuple[1][0][1],
+                        }
+                        if len(self.stats) == field_index:
+                            self.stats.append({"name": field_name, "value": value})
+                        else:
+                            self.stats[field_index] = {
+                                "name": field_name,
+                                "value": value,
+                            }
+
+                        field_index += 1
+                    else:
+                        self.logger.error(msg=f'Failed to query for "{field_name}"')
+                        continue
 
             if self.stats:
                 self.__push_info()

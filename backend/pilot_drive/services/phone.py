@@ -9,8 +9,8 @@ from pilot_drive.services.settings import Settings
 from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
-from .PhoneUtils.android_manager import AndroidManager
-from .PhoneUtils.phone_constants import (
+from .phone_utils.android_manager import AndroidManager
+from .phone_utils.phone_constants import (
     PhoneTypes,
     PhoneStates,
     Notification,
@@ -32,7 +32,7 @@ class NoPhoneManagerException(Exception):
 
 class Phone(AbstractService):
     """
-    The phone service that pulls notifications from the host (Android/iOS) connected device
+    The phone service that interfaces with the (Android/iOS) connected device
     """
 
     def __init__(
