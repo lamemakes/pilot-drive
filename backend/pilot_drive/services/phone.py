@@ -173,9 +173,9 @@ class Phone(AbstractService):
         Push a new event to the master queue.
 
         :param event: the dict that will be converted to json & passed to the queue, and in turn
-        to the UI.
+            to the UI.
         :param event_type: the event type that will go on the queue. If no argument is specified,
-        it defaults to the calling services type
+            it defaults to the calling services type
         """
         if not event_type:
             event_type = self.service_type

@@ -24,7 +24,7 @@ class AbstractService(ABC):
 
         :param master_event_queue: the master event queue (message bus) that handles new events
         :param service_type: the EvenType enum that indicated what the service will appear as on
-        the event queue
+            the event queue
         """
         self.event_queue = master_event_queue
         self.service_type = service_type
@@ -37,9 +37,9 @@ class AbstractService(ABC):
         Push a new event to the master queue.
 
         :param event: the dict that will be converted to json & passed to the queue, and in turn to
-        the UI.
+            the UI.
         :param event_type: the event type that will go on the queue. If no argument is specified,
-        it defaults to the calling services type
+            it defaults to the calling services type
         """
         if not event_type:
             event_type = self.service_type

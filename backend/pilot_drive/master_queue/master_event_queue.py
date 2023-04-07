@@ -26,8 +26,8 @@ class EventType(StrEnum):
 class MasterEventQueue:
     """
     The class that manages the master event queue. Services are passed the created MasterEventQueue
-    object from the main loop, and use the push_event() method to add events to the queue. The main
-    loop will use the is_new_event() and pop_event() methods to handle new events.
+        object from the main loop, and use the push_event() method to add events to the queue. The
+        main loop will use the is_new_event() and pop_event() methods to handle new events.
     """
 
     def __init__(self, logging: MasterLogger):
@@ -56,7 +56,7 @@ class MasterEventQueue:
         Used to push a new event to the Master Event Queue
 
         :returns: event dict object of {"type": <type>, <type>: <event_json>}, or None if the queue
-        is empty.
+            is empty.
         """
 
         if self.__queue.empty():

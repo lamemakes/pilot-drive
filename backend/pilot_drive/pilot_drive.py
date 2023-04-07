@@ -96,15 +96,15 @@ class PilotDrive:
     ) -> AbstractService:
         """
         Creates a new service, and automatically passes master queue, event type, and logger. Takes
-        arguments of the service class, followed by all of the specified service's keyword
-        arguments.
+            arguments of the service class, followed by all of the specified service's keyword
+            arguments.
 
         :param service: a service class that has a base of AbstractService
         :param \**kwargs: extra keyword arguments to be passed to the given service
         :return: an instance of the service class
         :raises: FailedToCreateServiceException: if service isn't in the EventType enum
         :raises: FailedToCreateServiceException: if the service creation returns a TypeError,
-        possibly if the keyword arguments are wrong
+            possibly if the keyword arguments are wrong
         """
         # pylint: enable=anomalous-backslash-in-string
         try:
@@ -136,7 +136,7 @@ class PilotDrive:
     def refresh(self) -> None:
         """
         Called when the webpage refreshes or reconnects to the WebSocket - used to recall data
-        like settings
+            like settings
         """
         self.settings.refresh()
 
@@ -145,7 +145,7 @@ class PilotDrive:
         The handler for when a new WebSocket event recieved from the UI client
 
         :params message: the event in from the UI, recieved as a JSON string to be converted to a
-        dict
+            dict
         """
         if message:
             try:

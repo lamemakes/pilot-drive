@@ -90,9 +90,9 @@ class Bluetooth(AbstractService):
     def enabled(self, changed_props: dbus.Dictionary = None):
         """
         The setter for the bluetooth power state of the host (ie. if bluetooth is enabled or not).
-        Sets power state/enabled within the Bluetooth.bluetooth object. When used with the
-        prop_changed callback, the changed power state properties can be fed directly to the method
-        rather than making a new DBus query.
+            Sets power state/enabled within the Bluetooth.bluetooth object. When used with the
+            prop_changed callback, the changed power state properties can be fed directly to the
+            method rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
@@ -131,7 +131,7 @@ class Bluetooth(AbstractService):
     def __push_media_to_queue(self):
         """
         Similar to the push_to_queue method, but pushes the media object to the event queue with
-        the type of "media"
+            the type of "media"
         """
         media_json = self.media
         self.event_queue.push_event(event_type=EventType.MEDIA, event=media_json)
@@ -139,8 +139,8 @@ class Bluetooth(AbstractService):
     def __handle_connect(self, changed_props: dbus.Dictionary = None) -> None:
         """
         Handles the bluetooth device connection state. Sets the connection state on the
-        Bluetooth.bluetooth object. When used with the prop_changed callback, the connection
-        properties can be fed directly to the method, rather than making a new DBus query.
+            Bluetooth.bluetooth object. When used with the prop_changed callback, the connection
+            properties can be fed directly to the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
@@ -242,8 +242,9 @@ class Bluetooth(AbstractService):
     def __set_position(self, changed_props: dbus.Dictionary = None):
         """
         The setter for the timestamp of the track. Sets position attributes within the
-        Bluetooth.media object. When used with the prop_changed callback, the changed position
-        properties can be fed directly to the method, rather than making a new DBus query.
+            Bluetooth.media object. When used with the prop_changed callback, the changed
+            position properties can be fed directly to the method, rather than making a new
+            DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
@@ -272,8 +273,8 @@ class Bluetooth(AbstractService):
     def __set_track(self, changed_props: dbus.Dictionary = None):
         """
         The setter for the track. Sets track attributes within the Bluetooth.media object. When
-        used with the prop_changed callback, the changed track properties can be fed directly to
-        the method, rather than making a new DBus query.
+            used with the prop_changed callback, the changed track properties can be fed directly
+            to the method, rather than making a new DBus query.
 
         :param changed_props: Optional DBus dictionary of changed props
         """
@@ -341,7 +342,7 @@ class Bluetooth(AbstractService):
     def iface_added(self, path, iface):  # pylint: disable=unused-argument
         """
         Callback for when an interface is add. This typically means the device is connected, but
-        calls the handle_connect method to confirm.
+            calls the handle_connect method to confirm.
 
         :param path: the path to the specified removed interface
         :param iface: the interface that was removed
@@ -351,7 +352,7 @@ class Bluetooth(AbstractService):
     def iface_removed(self, path, iface):  # pylint: disable=unused-argument
         """
         Callback for when an interface is removed. This typically means the device disconnected,
-        but calls the handle_connect method to confirm.
+            but calls the handle_connect method to confirm.
 
         :param path: the path to the specified removed interface
         :param iface: the interface that was removed
@@ -366,7 +367,7 @@ class Bluetooth(AbstractService):
 
         :param iface: The interface from where the change occurred
         :param changed: The props that have changed (ie. "dbus.Dictionary({dbus.String('Position'):
-        dbus.UInt32(671, variant_level=1)}, signature=dbus.Signature('sv'))")
+            dbus.UInt32(671, variant_level=1)}, signature=dbus.Signature('sv'))")
         :param invalidated: Invalidated DBus props
         """
 
@@ -414,7 +415,7 @@ class Bluetooth(AbstractService):
         Control the current song
 
         :param action: the intended control action using the TrackControl enum, ie. Play, Pause,
-        Skip Next or Skip Previous.
+            Skip Next or Skip Previous.
         """
         try:
             TrackControl(action)
