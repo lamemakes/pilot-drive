@@ -1,6 +1,6 @@
-'''
+"""
 Module used to track and display  
-'''
+"""
 
 import json
 from enum import StrEnum

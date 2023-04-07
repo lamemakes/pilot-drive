@@ -78,7 +78,7 @@ class PilotDrive:
 
         if self.settings.get_setting("camera")["enabled"]:
             btn_pin = self.settings.get_setting("camera")["buttonPin"]
-            self.camera: Camera = self.service_factory(service=Camera, btn_pin=btn_pin)
+            self.camera: camera = self.service_factory(service=camera, btn_pin=btn_pin)
 
         # Set message handlers for your services, ie. if there is a new "settings" type recieved
         # from the websocket, pass it to settings.set_web_settings as it is a settings change event.

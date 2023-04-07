@@ -1,11 +1,16 @@
-import time
-
+"""
+Module that allowsd for utilization of PiCamera for backup camera functionality
+"""
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services import AbstractService, ServiceExceptions
-from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 
-class CameraManager(AbstractService):
+class Camera(AbstractService):
+    """
+    The camera class that manages the use of the PiCamera
+    """
+
     def __init__(
         self,
         master_event_queue: MasterEventQueue,
@@ -20,26 +25,27 @@ class CameraManager(AbstractService):
         )
 
         try:
-            import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO library
+            # pylint: disable=import-outside-toplevel
+            from RPi import GPIO
             import picamera
         except ModuleNotFoundError as err:
             raise ServiceExceptions.FailedToInstatiateCamera(
                 f"Failed to find a required module, camera service will not be started: {err}"
             )
 
-        self.__GPIO = GPIO
+        self.gpio = GPIO
 
-        self.__GPIO.setwarnings(False)  # Ignore warning for now
-        self.self.__GPIO.setmode(self.__GPIO.BOARD)  # Use physical pin numbering
+        self.gpio.setwarnings(False)  # Ignore warning for now
+        self.gpio.setmode(self.gpio.BOARD)  # Use physical pin numbering
 
         # Create initial state of button
         self.camera_state = False
 
         # Set button pin to be an input pin and set initial value to be pulled low (off)
-        self.__GPIO.setup(btn_pin, self.__GPIO.IN, pull_up_down=self.__GPIO.PUD_DOWN)
+        self.gpio.setup(btn_pin, self.gpio.IN, pull_up_down=self.gpio.PUD_DOWN)
 
-        # Create GPIO event for the backup camera, debounce is needed for the button in my experience.
-        self.__GPIO.add_event_detect(
+        # Create GPIO event for the backup camera, debounce is needed for the button.
+        self.gpio.add_event_detect(
             btn_pin, GPIO.RISING, callback=self.show_camera, bouncetime=400
         )
 
@@ -59,13 +65,20 @@ class CameraManager(AbstractService):
 
     def terminate(self):
         try:
-            self.__GPIO.cleanup()
+            self.gpio.cleanup()
         except AttributeError:  # Most likely indicating that the camera failed to start
             return
 
     def show_camera(self, channel):
+        """
+        A callback or add_event_detect, open/close the camera based on the newly detected state
+
+        :param channel: the channel the change was detected on
+        """
         self.camera_state = not self.camera_state
-        self.log.debug("Camera state set to: " + str(self.camera_state))
+        self.logger.debug(
+            msg=f"Camera state set to: {self.camera_state}, on channel: {channel}"
+        )
         if self.camera_state:
             self.camera.start_preview()
         else:

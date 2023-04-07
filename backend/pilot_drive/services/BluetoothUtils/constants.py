@@ -1,10 +1,9 @@
-from enum import StrEnum
-
 """
 Constants used for Bluetooth functionality.
 
 Most are hardcoded strings created in hopes to mitigate string typo errors (and enums are cool!)
 """
+from enum import StrEnum
 
 
 class IFaceTypes(StrEnum):
@@ -14,15 +13,13 @@ class IFaceTypes(StrEnum):
     Bluez media API docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt
     """
 
-    BLUEZ = "org.bluez"  # Overarching bluez DBus interface
-    MEDIA_PLAYER_1 = "org.bluez.MediaPlayer1"  # Responsible for most metadata on the tracks, provides title, artist, album, duration, postion, etc.
-    MEDIA_TRANSPORT_1 = (
-        "org.bluez.MediaTransport1"  # Provides track state such as idle or active
-    )
+    BLUEZ = "org.bluez"
+    MEDIA_PLAYER_1 = "org.bluez.MediaPlayer1"
+    MEDIA_TRANSPORT_1 = "org.bluez.MediaTransport1"
     MEDIA_FOLDER_1 = "org.bluez.MediaFolder1"
-    MEDIA_ITEM_1 = "org.bluez.MediaItem1"  # Also can be a metadata provider for tracks, not used currently.
-    DEVICE_1 = "org.bluez.Device1"  # Used to pull device info
-    ADAPTER_1 = "org.bluez.Adapter1"  # Used to determine things like if bluetooth is enabled on the host
+    MEDIA_ITEM_1 = "org.bluez.MediaItem1"
+    DEVICE_1 = "org.bluez.Device1"
+    ADAPTER_1 = "org.bluez.Adapter1"
 
 
 class MediaPlayerAttributes(StrEnum):
@@ -125,7 +122,7 @@ class TrackAttributes(StrEnum):
     Bluez docs: https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L288-#L320
     """
 
-    TITLE = "Title"  # Responsible for most metadata on the tracks, provides title, artist, album, duration, postion, etc.
+    TITLE = "Title"  # Responsible for most metadata on the tracks
     ALBUM = "Album"  # Provides track state such as idle or active
     ARTIST = "Artist"
     DURATION = "Duration"

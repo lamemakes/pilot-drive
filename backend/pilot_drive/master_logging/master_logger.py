@@ -159,7 +159,6 @@ class MasterLogger:
         """
         self.__log_handler(logging.DEBUG, msg=msg)
 
-
     # Logic for actually logging.
 
     def __log(self, level: int, origin: str, message: str) -> None:

@@ -57,12 +57,21 @@ echo
 # Install PILOT Drive
 python3 -m pip install pilot-drive
 
-prompt_yn "${blue}Install \"\e]8;;https://github.com/lukasjapan/bt-speaker\alukasjapan's bt-speaker\e]8;;\a\" for Bluetooth audio?${endc}"
+prompt_yn "${blue}Install \"\e]8;;https://github.com/lukasjapan/bt-speaker\alukasjapan's bt-speaker\e]8;;\a\" for Bluetooth audio? [Y/n]:${endc}" "y"
 if [ "$?" -eq 1 ]; then
     echo -e "${blue}Attemtping install of \"\e]8;;https://github.com/lukasjapan/bt-speaker\alukasjapan's bt-speaker\e]8;;\a\"...${endc}"
     echo
 
     # Download, install, and configure lukasjapan's bt-speaker: https://github.com/lukasjapan/bt-speaker
     bash <(curl -s https://raw.githubusercontent.com/lukasjapan/bt-speaker/master/install.sh)
+fi
+
+# Handle phone enabling
+prompt_yn "${blue}Setup Android/iOS notification support? [y/N]:${endc}" "n"
+if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
+    echo -e "${blue}Attemtping install of Android ADB...${endc}"
+    echo
+
+    apt install android-tools-adb
     enable_adb=1
 fi

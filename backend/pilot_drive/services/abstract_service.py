@@ -1,6 +1,6 @@
-'''
+"""
 Module contains an abstract service used as a template for other service implementations
-'''
+"""
 
 from abc import ABC, abstractmethod
 from pilot_drive.master_queue import MasterEventQueue, EventType
@@ -8,9 +8,10 @@ from pilot_drive.master_logging import MasterLogger
 
 
 class AbstractService(ABC):
-    '''
+    """
     The abstract class used to implement all other services
-    '''
+    """
+
     @abstractmethod
     def __init__(
         self,
@@ -47,18 +48,18 @@ class AbstractService(ABC):
 
     @abstractmethod
     def refresh(self) -> None:
-        '''
+        """
         Add any stored events back to the event queue, as this will be called in a client refresh.
-        '''
+        """
 
     @abstractmethod
     def main(self) -> None:
-        '''
+        """
         runs servce main loop and logic
-        '''
+        """
 
     @abstractmethod
     def terminate(self) -> None:
-        '''
+        """
         Attempts to clean up the service's resources
-        '''
+        """

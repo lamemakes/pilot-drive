@@ -1,6 +1,6 @@
-'''
+"""
 Module for the Bluetooth service
-'''
+"""
 import socket
 import dbus.mainloop.glib
 import dbus
@@ -22,6 +22,7 @@ from .BluetoothUtils.constants import (
     MediaPlayerAttributes,
     MediaTransportAttributes,
 )
+
 
 class Bluetooth(AbstractService):
     """
@@ -159,8 +160,8 @@ class Bluetooth(AbstractService):
                         device_name = device.get(Device.NAME)
                         device_addr = device.get(Device.ADDRESS)
                         self.logger.info(
-                            msg=f'''Bluetooth device: {device_name}
-                             connected with MAC address of {device_addr}.'''
+                            msg=f"""Bluetooth device: {device_name}
+                             connected with MAC address of {device_addr}."""
                         )
                         self.bluetooth["connectedName"] = device_name
                         self.bluetooth["address"] = device_addr
@@ -168,8 +169,8 @@ class Bluetooth(AbstractService):
                         try:
                             if self.bluetooth["connected"] is True:
                                 self.logger.info(
-                                    msg=f'''Bluetooth device:
-                                     {self.bluetooth["connectedName"]} is disconnected.'''
+                                    msg=f"""Bluetooth device:
+                                     {self.bluetooth["connectedName"]} is disconnected."""
                                 )
                         except KeyError:
                             pass
@@ -204,7 +205,10 @@ class Bluetooth(AbstractService):
             mgr = self.mgr
 
         iface_items = []
-        for path, ifaces in mgr.GetManagedObjects().items(): #pylint: disable=unused-variable
+        for (
+            path,
+            ifaces,
+        ) in mgr.GetManagedObjects().items():  # pylint: disable=unused-variable
             if iface in str(ifaces):
                 iface_items.append(ifaces[iface])
 
@@ -233,9 +237,7 @@ class Bluetooth(AbstractService):
                 try:
                     status = status.get(MediaPlayerAttributes.STATUS)
 
-                    self.media["song"]["isPlaying"] = (
-                        status == TrackStatus.PLAYING
-                    )
+                    self.media["song"]["isPlaying"] = status == TrackStatus.PLAYING
                 except AttributeError:
                     # Likely that the track wasn't loaded yet, ie. the device just connected and
                     # hasn't sent it yet.
@@ -304,9 +306,9 @@ class Bluetooth(AbstractService):
 
                         EMPTY = ""
 
-                        if track.get( TrackAttributes.TITLE ):
+                        if track.get(TrackAttributes.TITLE):
                             # if the track doesn't have a title, there is no real point in
-                            #displaying.
+                            # displaying.
                             metadata["title"] = (
                                 str(track.get(TrackAttributes.TITLE))
                                 if track.get(TrackAttributes.TITLE)
@@ -341,10 +343,9 @@ class Bluetooth(AbstractService):
         except dbus.exceptions.DBusException as exc:
             self.logger.error(msg=f"A DBus error has occurred: {exc}")
 
-
     # Signal Reciever Methods
 
-    def iface_added(self, path, iface): #pylint: disable=unused-argument
+    def iface_added(self, path, iface):  # pylint: disable=unused-argument
         """
         Callback for when an interface is add. This typically means the device is connected, but
         calls the handle_connect method to confirm.
@@ -354,7 +355,7 @@ class Bluetooth(AbstractService):
         """
         self.__handle_connect()
 
-    def iface_removed(self, path, iface): #pylint: disable=unused-argument
+    def iface_removed(self, path, iface):  # pylint: disable=unused-argument
         """
         Callback for when an interface is removed. This typically means the device disconnected,
         but calls the handle_connect method to confirm.
@@ -366,7 +367,7 @@ class Bluetooth(AbstractService):
 
     def prop_changed(
         self, iface: str, changed: dbus.Dictionary, invalidated: dbus.Array
-    ): #pylint: disable=unused-argument
+    ):  # pylint: disable=unused-argument
         """
         Callback for a change event on the bluez bus
 

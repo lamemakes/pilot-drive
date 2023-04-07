@@ -5,23 +5,21 @@ import time
 from pilot_drive.constants import QUERIED_FIELDS
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services import AbstractService
-from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 
 class InvalidPortException(Exception):
     """
-    Exception raised when an invalid connection is detected, either from an invalid port string, or a Python OBD connection failure.
+    Exception raised when an invalid connection is detected, either from an invalid port string, or
+    a Python OBD connection failure.
     """
-
-    pass
 
 
 class InvalidQueryException(Exception):
     """
-    Exception raised when an query field is detected as specified in the QUERIED_FIELDS constants.py.
+    Exception raised when an query field is detected as specified in the QUERIED_FIELDS
+    constants.py.
     """
-
-    pass
 
 
 class Vehicle(AbstractService):
@@ -35,9 +33,12 @@ class Vehicle(AbstractService):
         """
         Initialize the Vehicle service
 
-        :param event: the dict that will be converted to json & passed to the queue, and in turn to the UI.
-        :param event_type: the event type that will go on the queue. If no argument is specified, it defaults to the calling services type
-        :param obd_port: the port to attempt a connection to an OBD port. If unspecified, python OBD will attempt to detect a connection.
+        :param event: the dict that will be converted to json & passed to the queue, and in turn
+        to the UI.
+        :param event_type: the event type that will go on the queue. If no argument is specified,
+        it defaults to the calling services type
+        :param obd_port: the port to attempt a connection to an OBD port. If unspecified, python
+        OBD will attempt to detect a connection.
         """
         super().__init__(master_event_queue, service_type, logger)
 
@@ -97,8 +98,11 @@ class Vehicle(AbstractService):
 
     def __query_fields(self, queries_made: int):
         """
-        Query the fields that are input. Expects a list of dicts in the form of {"name": "<display name>", "command": "<python OBD command>", "interval": <int second query interval>}
-        Is intended to be ran in a loop, with each
+        Query the fields that are input.
+        Expects a list of dicts in the form of:
+        {"name": "<name>", "command": "<python OBD command>", "interval": <int query interval>}
+
+        In
         """
         if self.__connection and len(QUERIED_FIELDS) > 0:
             field_index = 0
@@ -119,11 +123,13 @@ class Vehicle(AbstractService):
                             resp_tuple = (
                                 resp.value.to_tuple()
                             )  # Convert to a tuple to get units & magnitude
+                            # pint converts tuples a little odd,
+                            # values come back as"(<quantity>, (('<unit>', <magnitude>),))"
                             value = {
                                 "quantity": resp_tuple[0],
                                 "units": resp_tuple[1][0][0],
                                 "magnitude": resp_tuple[1][0][1],
-                            }  # pint converts tuples a little odd, as values come back as in the form of "(<quantity>, (('<unit>', <magnitude>),))" - lots of nesting.
+                            }
                             if len(self.stats) == field_index:
                                 self.stats.append({"name": field_name, "value": value})
                             else:
@@ -157,7 +163,8 @@ class Vehicle(AbstractService):
                 except InvalidPortException as err:
                     if not connection_error_logged:  # Don't spam the log
                         self.logger.error(
-                            msg=f'Invalid serial port specified: "{err}", will continue to attempt a connection.'
+                            msg=f"""Invalid serial port specified: "{err}",
+                             will continue to attempt a connection."""
                         )
                         connection_error_logged = True
                     time.sleep(

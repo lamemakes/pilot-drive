@@ -3,7 +3,7 @@ import socketserver
 
 from pilot_drive.constants import absolute_path
 from pilot_drive.master_logging.master_logger import MasterLogger
-from pilot_drive.master_queue.MasterEventQueue import MasterEventQueue, EventType
+from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 
 class Web:

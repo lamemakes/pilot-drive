@@ -1,1 +1,1 @@
-from .phone_constants import PHONE_STATES
+from .phone_constants import PhoneStates

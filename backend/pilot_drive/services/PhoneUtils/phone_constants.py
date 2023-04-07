@@ -1,3 +1,7 @@
+"""
+Constants for the phone service
+"""
+
 from dataclasses import dataclass, field
 from enum import Enum, StrEnum
 from typing import List, Optional
@@ -8,7 +12,12 @@ ADB_PACKAGE_NAMES = "adb_packages.json"
 
 
 # Set of phone types
-class PHONE_TYPES(Enum):
+class PhoneTypes(Enum):
+    """
+    The phone types for the phone service
+    """
+
+    @classmethod
     def __contains__(cls, item):
         try:
             cls(item)
@@ -20,19 +29,25 @@ class PHONE_TYPES(Enum):
     ANDROID = "android"
 
 
-class PHONE_STATES(Enum):
+class PhoneStates(Enum):
+    """
+    All of the PILOT Drive phone states
+    """
+
     CONNECTED = "connected"
     DISCONNECTED = "disconnected"
-    LOCKED = "locked"  # This state is currently for ADB, as if a locked device is connected ADB can't access it.
-    UNTRUSTED = (
-        "untrusted"  # This is also for ADB, when the device hasn't trusted the host.
-    )
+    LOCKED = "locked"  # For ADB, device cannot be accessed if locked
+    UNTRUSTED = "untrusted"  # For ADB, when the device hasn't trusted the host.
     BLUETOOTH_DISABLED = "bluetooth-disabled"
 
 
 @dataclass
 class Notification:
-    id: int
+    """
+    Data class used to store a phone notification
+    """
+
+    id: int  # pylint: disable=invalid-name
     device: str
     app_id: str
     app_name: str
@@ -56,35 +71,55 @@ class Notification:
 
 @dataclass
 class PhoneContainer:
+    """
+    Data class used to store phone info
+    """
+
     enabled: bool
     type: Optional[str] = None
-    state: Optional[PHONE_STATES] = PHONE_STATES.DISCONNECTED
+    state: Optional[PhoneStates] = PhoneStates.DISCONNECTED
     notifications: Optional[List[Notification]] = field(default_factory=lambda: [])
 
 
-class ADB_COMMANDS(StrEnum):
+class AdbCommands(StrEnum):
+    """
+    The commands that are used by ADB
+    """
+
     ADB = "adb"
     ADB_GET_STATE = "adb get-state"
     ADB_DUMP_NOTIFICATIONS = "adb shell dumpsys notification --noredact"
-    ADB_GET_PACKAGE_PATH = "adb shell pm path "  # Intended to be combined with the package, hence the space
+    ADB_GET_PACKAGE_PATH = (
+        "adb shell pm path "  # Combined with the package hence the space
+    )
     ADB_PULL_PACKAGE = (
-        "adb pull "  # Intended to be combined with the package path, hence the space
+        "adb pull "  # Intended to be combined with the package path hence the space
     )
     ADB_DEVICE_NAME = "adb shell dumpsys bluetooth_manager"
     AAPT_HELP = "aapt2 -h"  # Used to test and see if aapt is installed
-    AAPT_DUMP_BADGING = "aapt2 dump badging "  # Intended to be combined with the package path, hence the space
+    AAPT_DUMP_BADGING = (
+        "aapt2 dump badging "  # Combine with the package path, hence the space
+    )
 
 
-class ADB_STATE(StrEnum):
-    ADB_NOT_TRUSTED = "error: device unauthorized."  #  Occurs when the adb host hasn't been trusted by the android system.
-    ADB_NO_PERMISSIONS = "error: insufficient permissions for device"  # Occurs when the device is locked and ADB persmissions havent been granted
+class AdbState(StrEnum):
+    """
+    The different ADB responses to determine state
+    """
+
+    ADB_NOT_TRUSTED = "error: device unauthorized."
+    ADB_NO_PERMISSIONS = "error: insufficient permissions for device"
     ADB_NOT_CONNECTED = "error: no devices/emulators found"
-    ADB_DEVICE = "device"  # The only state that indicated an actual connection
+    ADB_DEVICE = "device"
     ADB_OFFLINE = "offline"
     ADB_BOOTLOADER = "bootloader"
 
 
-class ADB_NOTIFICATION_ATTRIBUTES(Enum):
+class AdbNotificationAttributes(Enum):
+    """
+    The prefixes of the notification dump
+    """
+
     UID = "^ {6}uid="
     OP_PACKAGE = "^ {6}opPkg="
     TITLE = "^ {16}android.title="

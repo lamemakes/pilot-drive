@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from .phone_constants import PHONE_STATES
+from .phone_constants import PhoneStates
 
 
 class AbstractManager(ABC):
@@ -14,7 +14,7 @@ class AbstractManager(ABC):
 
     @property
     @abstractmethod
-    def state(self) -> PHONE_STATES:
+    def state(self) -> PhoneStates:
         pass
 
     @property
