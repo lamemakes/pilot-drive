@@ -4,10 +4,10 @@ pilot\_drive.web package
 Submodules
 ----------
 
-pilot\_drive.web.Web module
+pilot\_drive.web.web module
 ---------------------------
 
-.. automodule:: pilot_drive.web.Web
+.. automodule:: pilot_drive.web.web
    :members:
    :undoc-members:
    :show-inheritance:

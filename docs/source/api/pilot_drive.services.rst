@@ -7,72 +7,64 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   pilot_drive.services.BluetoothUtils
-   pilot_drive.services.PhoneUtils
+   pilot_drive.services.bluetooth_utils
+   pilot_drive.services.phone_utils
 
 Submodules
 ----------
 
-pilot\_drive.services.AbstractService module
---------------------------------------------
-
-.. automodule:: pilot_drive.services.AbstractService
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pilot\_drive.services.Bluetooth module
---------------------------------------
-
-.. automodule:: pilot_drive.services.Bluetooth
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pilot\_drive.services.Camera module
------------------------------------
-
-.. automodule:: pilot_drive.services.Camera
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pilot\_drive.services.Phone module
-----------------------------------
-
-.. automodule:: pilot_drive.services.Phone
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pilot\_drive.services.ServiceExceptions module
+pilot\_drive.services.abstract\_service module
 ----------------------------------------------
 
-.. automodule:: pilot_drive.services.ServiceExceptions
+.. automodule:: pilot_drive.services.abstract_service
    :members:
    :undoc-members:
    :show-inheritance:
 
-pilot\_drive.services.Settings module
--------------------------------------
+pilot\_drive.services.bluetooth module
+--------------------------------------
 
-.. automodule:: pilot_drive.services.Settings
+.. automodule:: pilot_drive.services.bluetooth
    :members:
    :undoc-members:
    :show-inheritance:
 
-pilot\_drive.services.System module
+pilot\_drive.services.camera module
 -----------------------------------
 
-.. automodule:: pilot_drive.services.System
+.. automodule:: pilot_drive.services.camera
    :members:
    :undoc-members:
    :show-inheritance:
 
-pilot\_drive.services.Vehicle module
+pilot\_drive.services.phone module
+----------------------------------
+
+.. automodule:: pilot_drive.services.phone
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pilot\_drive.services.service\_exceptions module
+------------------------------------------------
+
+.. automodule:: pilot_drive.services.service_exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pilot\_drive.services.settings module
+-------------------------------------
+
+.. automodule:: pilot_drive.services.settings
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pilot\_drive.services.vehicle module
 ------------------------------------
 
-.. automodule:: pilot_drive.services.Vehicle
+.. automodule:: pilot_drive.services.vehicle
    :members:
    :undoc-members:
    :show-inheritance:
