@@ -1,6 +1,6 @@
-'''
+"""
 The services of PILOT Drive
-'''
+"""
 
 from .abstract_service import AbstractService
 from .settings import Settings

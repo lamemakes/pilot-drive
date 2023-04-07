@@ -6,9 +6,10 @@ import os
 
 from pilot_drive import constants
 from pilot_drive.master_logging.master_logger import MasterLogger
-from pilot_drive.services import AbstractService
 from pilot_drive.master_queue import MasterEventQueue, EventType
 from .service_exceptions import InvalidAttributeException, FailedToReadSettingsException
+
+from .abstract_service import AbstractService
 
 
 class Settings(AbstractService):

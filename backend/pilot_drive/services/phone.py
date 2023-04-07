@@ -6,9 +6,9 @@ from typing import List
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.services.settings import Settings
-from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
+from .abstract_service import AbstractService
 from .phone_utils.android_manager import AndroidManager
 from .phone_utils.phone_constants import (
     PhoneTypes,

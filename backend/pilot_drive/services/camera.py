@@ -1,9 +1,12 @@
 """
 Module that allowsd for utilization of PiCamera for backup camera functionality
 """
+
 from pilot_drive.master_logging.master_logger import MasterLogger
-from pilot_drive.services import AbstractService, service_exceptions
+from pilot_drive.services import service_exceptions
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
+
+from .abstract_service import AbstractService
 
 
 class Camera(AbstractService):

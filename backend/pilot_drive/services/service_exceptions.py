@@ -1,10 +1,11 @@
-'''
+"""
 Service exceptions
-'''
+"""
 
 #
 # Settings Exceptions
 #
+
 
 class InvalidAttributeException(Exception):
     """
@@ -21,6 +22,7 @@ class FailedToReadSettingsException(Exception):
 #
 # Camera Exceptions
 #
+
 
 class FailedToInstatiateCamera(Exception):
     """

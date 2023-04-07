@@ -7,8 +7,9 @@ import obd
 
 from pilot_drive.constants import QUERIED_FIELDS
 from pilot_drive.master_logging.master_logger import MasterLogger
-from pilot_drive.services import AbstractService
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
+
+from .abstract_service import AbstractService
 
 
 class InvalidPortException(Exception):
