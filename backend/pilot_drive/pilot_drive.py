@@ -174,11 +174,8 @@ class PilotDrive:
         :param websocket: the WebSocket the UI is connected to
         """
         while True:
-            try:
-                message = await websocket.recv()
-                self.handle_message(message=message)
-            except websockets.WebSocketException.ConnectionClosedOK:
-                break
+            message = await websocket.recv()
+            self.handle_message(message=message)
 
     async def producer(self, websocket) -> None:
         """
@@ -188,13 +185,10 @@ class PilotDrive:
         """
         self.refresh()  # When the app is started/UI is refreshed, send a settings event on the bus
         while True:
-            try:
-                if self.master_queue.is_new_event():
-                    event = self.master_queue.get()
-                    await websocket.send(json.dumps(event))
-                await asyncio.sleep(0.05)
-            except websockets.WebSocketException.ConnectionClosedOK:
-                break
+            if self.master_queue.is_new_event():
+                event = self.master_queue.get()
+                await websocket.send(json.dumps(event))
+            await asyncio.sleep(0.05)
 
     async def handler(self, websocket) -> None:
         """
