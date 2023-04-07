@@ -177,7 +177,7 @@ class PilotDrive:
             try:
                 message = await websocket.recv()
                 self.handle_message(message=message)
-            except websockets.ConnectionClosedOK:
+            except websockets.WebSocketException.ConnectionClosedOK:
                 break
 
     async def producer(self, websocket) -> None:
@@ -193,7 +193,7 @@ class PilotDrive:
                     event = self.master_queue.get()
                     await websocket.send(json.dumps(event))
                 await asyncio.sleep(0.05)
-            except websockets.ConnectionClosedOK:
+            except websockets.WebSocketException.ConnectionClosedOK:
                 break
 
     async def handler(self, websocket) -> None:
@@ -212,6 +212,7 @@ class PilotDrive:
         """
         try:
             self.logging.info(msg="Initializing PILOT Drive main loop!")
+            #pylint: disable=no-member
             async with websockets.serve(self.handler, "", constants.WS_PORT):
                 self.logging.info(msg="Starting WebSocket server!")
                 await asyncio.Future()  # run forever
