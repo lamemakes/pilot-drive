@@ -4,7 +4,7 @@ Module for the Bluetooth service
 import socket
 import dbus.mainloop.glib
 import dbus
-from gi.repository import GLib
+from gi.repository import GLib  # pylint: disable=import-error
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
