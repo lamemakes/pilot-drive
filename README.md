@@ -1,7 +1,7 @@
 # PILOT Drive ✨v(0.)2.0✨    
 [![Documentation Status](https://readthedocs.org/projects/pilot-drive/badge/?version=latest)](https://pilot-drive.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-![Pylint Status](https://github.com/lamemakes/pilot-drive/blob/0.2.0/.github/workflows/pylint.yml/badge.svg)
+[![Pylint](https://github.com/lamemakes/pilot-drive/actions/workflows/pylint.yml/badge.svg)](https://github.com/lamemakes/pilot-drive/actions/workflows/pylint.yml)
 
 ## What is PILOT Drive?
 PILOT Drive is a fully open-source head unit/infotainment system built in Python 3.11 + Vue 3. It is intended to be ran on a Single Board Computer (SBC), such as the Raspberry Pi 4.
