@@ -1,5 +1,5 @@
 """
-The main PILOT Drive module that contains the class thar starts the services and runs the 
+The main PILOT Drive module that contains the class that starts the services and runs the 
 websockets logic.
 """
 

@@ -21,14 +21,6 @@ pilot\_drive.services.abstract\_service module
    :undoc-members:
    :show-inheritance:
 
-pilot\_drive.services.bluetooth module
---------------------------------------
-
-.. automodule:: pilot_drive.services.bluetooth
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 pilot\_drive.services.camera module
 -----------------------------------
 
