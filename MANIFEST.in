@@ -1,4 +1,0 @@
-include .gitignore
-graft pilot_drive/web/templates/
-graft pilot_drive/web/static/ 
-prune pilot_drive/web/static/icons/adb_icons/ 

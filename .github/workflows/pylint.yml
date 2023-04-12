@@ -1,0 +1,25 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt install build-essential libdbus-glib-1-dev libgirepository1.0-dev
+        python -m pip install --upgrade pip
+        pip install pylint obd websockets dbus-python==1.2.16 PyGObject 
+    - name: Analysing the code with pylint
+      run: |
+        pylint backend/pilot_drive
+
