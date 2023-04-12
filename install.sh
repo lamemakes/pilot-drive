@@ -68,7 +68,7 @@ fi
 
 # Handle phone enabling
 prompt_yn "${blue}Setup Android/iOS notification support? [y/N]:${endc}" "n"
-if [ "$?" -eq 1 ]; then # enable picam via raspi-config non-interactive mode
+if [ "$?" -eq 1 ]; then
     echo -e "${blue}Attemtping install of Android ADB...${endc}"
     echo
 

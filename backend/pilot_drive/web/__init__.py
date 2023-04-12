@@ -1,2 +1,2 @@
-#pylint: disable=missing-module-docstring
+# pylint: disable=missing-module-docstring
 from .web import Web

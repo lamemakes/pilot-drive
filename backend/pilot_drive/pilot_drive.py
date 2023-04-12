@@ -206,7 +206,7 @@ class PilotDrive:
         """
         try:
             self.logging.info(msg="Initializing PILOT Drive main loop!")
-            #pylint: disable=no-member
+            # pylint: disable=no-member
             async with websockets.serve(self.handler, "", constants.WS_PORT):
                 self.logging.info(msg="Starting WebSocket server!")
                 await asyncio.Future()  # run forever

@@ -53,7 +53,7 @@ class MasterEventQueue:
 
     def get(self):
         """
-        Used to push a new event to the Master Event Queue
+        Remove and return an item from the queue
 
         :returns: event dict object of {"type": <type>, <type>: <event_json>}, or None if the queue
             is empty.
