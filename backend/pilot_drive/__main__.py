@@ -29,9 +29,9 @@ parser.add_argument(
 
 
 def start() -> None:
-    '''
+    """
     Entrypoint for PILOT Drive. Handle arguments and determine to run main, or install.
-    '''
+    """
     if os.geteuid() != 0:
         sys.exit(
             """You need to have root privileges to run PILOT Drive.\n

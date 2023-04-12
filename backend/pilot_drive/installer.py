@@ -97,15 +97,16 @@ class FailedToDetectDistroManagerException(Exception):
 
 
 class Installer:
-    '''
+    """
     The installer used to install and configure PILOT Drive
-    '''
+    """
+
     def __init__(self, use_default: bool = True) -> None:
-        '''
+        """
         Initialize the PILOT Drive installer
 
         :param use_default: use all the preset default values to allow for a non-interactive setup.
-        '''
+        """
         # Requried to know sys architecture for certain operations (ie. installing AAPT2)
         try:
             self.current_arch = CommonArchs(platform.uname().machine)
@@ -248,15 +249,9 @@ class Installer:
         yum_to_apt: Dict[str, str] = {v: k for k, v in apt_to_yum.items()}
 
         for count, package in enumerate(packages):
-            if (
-                self.distro_manager == DistroManagers.YUM
-                and package in apt_to_yum
-            ):
+            if self.distro_manager == DistroManagers.YUM and package in apt_to_yum:
                 packages[count] = apt_to_yum[package]
-            elif (
-                self.distro_manager == DistroManagers.APT
-                and package in yum_to_apt
-            ):
+            elif self.distro_manager == DistroManagers.APT and package in yum_to_apt:
                 packages[count] = yum_to_apt[package]
 
         packages_str = " ".join(packages)
@@ -320,12 +315,10 @@ class Installer:
         # Copy hooks into proper directory
         os.makedirs(bt_speaker_hook_dir, exist_ok=True)
         shutil.copy(
-            f"{bt_speaker_dir}/config.ini.default",
-            "/etc/bt_speaker/config.ini"
+            f"{bt_speaker_dir}/config.ini.default", "/etc/bt_speaker/config.ini"
         )
         shutil.copy(
-            f"{bt_speaker_dir}/hooks.default/connect",
-            f"{bt_speaker_hook_dir}/connect"
+            f"{bt_speaker_dir}/hooks.default/connect", f"{bt_speaker_hook_dir}/connect"
         )
         shutil.copy(
             f"{bt_speaker_dir}/hooks.default/disconnect",
@@ -394,7 +387,9 @@ class Installer:
                     # it SHOULD agree with the URL structure on it's own.
                     aapt2_arch = self.current_arch
 
-            aapt2_bin = requests.get(f"{appt2_url}/{aapt2_arch}/aapt2", timeout=3000).content
+            aapt2_bin = requests.get(
+                f"{appt2_url}/{aapt2_arch}/aapt2", timeout=3000
+            ).content
             with open(f"{BIN_DIR}/aapt2", "wb") as aapt2_file:
                 aapt2_file.write(aapt2_bin)
 
@@ -460,9 +455,9 @@ class Installer:
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
 
     def for_production(self):
-        '''
+        """
         Run PILOT Drive for production, configure the systemctl service, auto-start mozilla, etc.
-        '''
+        """
 
         pilot_service_path = "/etc/systemd/system/pilot-drive.service"
         print(
@@ -474,7 +469,7 @@ class Installer:
         )
 
         # Create and enable the PILOT Drive systemctl service
-        with open(pilot_service_path, "w", encoding='utf-8') as pilot_service:
+        with open(pilot_service_path, "w", encoding="utf-8") as pilot_service:
             pilot_service.write(PILOT_SERVICE)
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} enable pilot-drive")
@@ -507,7 +502,7 @@ class Installer:
             )
 
             lxde_contents = ""
-            with open(autostart_path, "r", encoding='utf-8') as lxde_file:
+            with open(autostart_path, "r", encoding="utf-8") as lxde_file:
                 lxde_contents = lxde_file.read()
 
             if not lxde_contents or lxde_contents == "":
@@ -533,7 +528,7 @@ class Installer:
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
-                with open(autostart_path, "w", encoding='utf-8') as lxde_file:
+                with open(autostart_path, "w", encoding="utf-8") as lxde_file:
                     lxde_file.writelines(new_lxde_contents)
 
     def rpi_setup(self):
@@ -631,15 +626,15 @@ class Installer:
         return user_in
 
     def main(self) -> None:
-        '''
+        """
         Run the PILOT Drive installer/config
-        '''
+        """
         settings = DEFAULT_BACKEND_SETTINGS
 
         self.is_production = self.prompt_yes_no(
             prompt=(
-                '''Setup for production (create system process,
-                 auto-start firefox in kiosk mode, etc)?'''
+                """Setup for production (create system process,
+                 auto-start firefox in kiosk mode, etc)?"""
             ),
             default_in="y",
         )
