@@ -14,7 +14,7 @@ build:
 python:
   install:
     - method: pip
-      path: ./backend/pilot_drive
+      path: ./backend
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
