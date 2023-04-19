@@ -5,11 +5,10 @@ websockets logic.
 
 import json
 from multiprocessing import Process
-from typing import List, Tuple
+from typing import Generic, List, Tuple, TypeVar
 import asyncio
 import websockets
 
-from pilot_drive import constants
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue import MasterEventQueue, EventType
 from pilot_drive.web import Web
@@ -20,8 +19,10 @@ from pilot_drive.services import (
     Phone,
     AbstractService,
     Camera,
-    service_exceptions,
 )
+from pilot_drive.services.settings.exceptions import FailedToReadSettingsException
+
+from . import constants
 
 
 class FailedToCreateServiceException(Exception):
@@ -45,11 +46,11 @@ class PilotDrive:
         # Logging initialization
         try:
             log_settings = Settings.get_raw_settings()["logging"]
-        except service_exceptions.FailedToReadSettingsException:
+        except FailedToReadSettingsException:
             log_settings = constants.DEFAULT_LOG_SETTINGS
 
         self.logging = MasterLogger(log_settings=log_settings)
-        self.logger_proc = Process(target=self.logging.main)
+        self.logger_proc = Process(target=self.logging.main, daemon=True)
         self.logger_proc.start()
 
         # Queue initialization
@@ -61,9 +62,9 @@ class PilotDrive:
         self.web = Web(
             logger=self.logging,
             port=constants.STATIC_WEB_PORT,
-            relative_directory=constants.STATIC_WEB_PORT,
+            relative_directory=constants.STATIC_WEB_PATH,
         )
-        web_process = Process(target=self.web.main())
+        web_process = Process(target=self.web.main, daemon=True)
         web_process.start()
 
         self.settings: Settings = self.service_factory(service=Settings)
@@ -86,14 +87,14 @@ class PilotDrive:
         # Set message handlers for your services, ie. if there is a new "settings" type recieved
         # from the websocket, pass it to settings.set_web_settings as it is a settings change event.
         self.service_msg_handlers = {
-            EventType.SETTINGS.value: self.settings.set_web_settings,
-            EventType.BLUETOOTH.value: Bluetooth.bluetooth_control,
+            EventType.SETTINGS: self.settings.set_web_settings,
+            EventType.BLUETOOTH: Bluetooth.bluetooth_control,
         }
 
+    T = TypeVar("T", bound=AbstractService)
+
     # pylint: disable=anomalous-backslash-in-string
-    def service_factory(
-        self, service: type[AbstractService], **kwargs
-    ) -> AbstractService:
+    def service_factory(self, service: Generic[T], **kwargs) -> AbstractService:
         """
         Creates a new service, and automatically passes master queue, event type, and logger. Takes
             arguments of the service class, followed by all of the specified service's keyword
@@ -116,7 +117,7 @@ class PilotDrive:
                 **kwargs,
             )
 
-            service_process = Process(target=new_service.main)
+            service_process = Process(target=new_service.main, daemon=True)
             service_process.start()
 
             self.__services.append((new_service, service_process))
@@ -174,8 +175,11 @@ class PilotDrive:
         :param websocket: the WebSocket the UI is connected to
         """
         while True:
-            message = await websocket.recv()
-            self.handle_message(message=message)
+            try:
+                message = await websocket.recv()
+                self.handle_message(message=message)
+            except websockets.exceptions.ConnectionClosedOK:
+                break
 
     async def producer(self, websocket) -> None:
         """
@@ -185,10 +189,13 @@ class PilotDrive:
         """
         self.refresh()  # When the app is started/UI is refreshed, send a settings event on the bus
         while True:
-            if self.master_queue.is_new_event():
-                event = self.master_queue.get()
-                await websocket.send(json.dumps(event))
-            await asyncio.sleep(0.05)
+            try:
+                if self.master_queue.is_new_event():
+                    event = self.master_queue.get()
+                    await websocket.send(json.dumps(event))
+                await asyncio.sleep(0.05)
+            except websockets.exceptions.ConnectionClosedOK:
+                break
 
     async def handler(self, websocket) -> None:
         """

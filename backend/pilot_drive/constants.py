@@ -21,7 +21,7 @@ absolute_path = (
 # Constants for the static frontend
 #
 
-STATIC_WEB_PORT = 8002
+STATIC_WEB_PORT = 8001
 STATIC_WEB_PATH = "web/files/"  # A relative filepath from the root project directory
 
 #
@@ -53,8 +53,6 @@ WEB_SETTINGS_ATTRIBUTE = "webSettings"  # The attribute of the webSettings in th
 DEFAULT_WEB_SETTINGS = {
     "tfHourTime": False,
     "metricUnits": False,
-    "phoneEnabled": False,
-    "vehicleEnabled": False,
     "selectedTheme": "sherbet",
     "themes": [
         {

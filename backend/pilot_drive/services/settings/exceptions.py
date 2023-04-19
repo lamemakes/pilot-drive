@@ -1,10 +1,6 @@
 """
-Service exceptions
+Exceptions of the Settings service
 """
-
-#
-# Settings Exceptions
-#
 
 
 class InvalidAttributeException(Exception):
@@ -16,15 +12,4 @@ class InvalidAttributeException(Exception):
 class FailedToReadSettingsException(Exception):
     """
     Raised when the settings could not be read
-    """
-
-
-#
-# Camera Exceptions
-#
-
-
-class FailedToInstatiateCamera(Exception):
-    """
-    Raised when the camera service failed
     """

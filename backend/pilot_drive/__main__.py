@@ -6,7 +6,7 @@ import os
 import sys
 import asyncio
 import argparse
-from pilot_drive.pilot_drive import PilotDrive
+from pilot_drive.pd_manager import PilotDrive
 from pilot_drive.installer import Installer
 
 parser = argparse.ArgumentParser(

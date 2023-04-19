@@ -7,9 +7,9 @@ import os
 from pilot_drive import constants
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue import MasterEventQueue, EventType
-from .service_exceptions import InvalidAttributeException, FailedToReadSettingsException
+from .exceptions import InvalidAttributeException, FailedToReadSettingsException
 
-from .abstract_service import AbstractService
+from ..abstract_service import AbstractService
 
 
 class Settings(AbstractService):
@@ -94,6 +94,8 @@ class Settings(AbstractService):
         # in the backend.
         return {
             "version": constants.VERSION,
+            "phoneEnabled": self.get_setting("phone")["enabled"],
+            "vehicleEnabled": self.get_setting("vehicle")["enabled"],
             **self.__settings.get(constants.WEB_SETTINGS_ATTRIBUTE),
         }
 
@@ -106,7 +108,11 @@ class Settings(AbstractService):
         """
         setting_changed = False
         for key in web_settings.keys():
-            if key != "version":
+            if key not in {
+                "version",
+                "phoneEnabled",
+                "vehicleEnabled",
+            }:  # These are all derived
                 try:
                     self.set_setting(attribute=key, value=web_settings[key], web=True)
                     setting_changed = True

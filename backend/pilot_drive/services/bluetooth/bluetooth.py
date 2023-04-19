@@ -9,11 +9,12 @@ from gi.repository import GLib  # pylint: disable=import-error
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
-from .abstract_service import AbstractService
-from .bluetooth_utils.constants import (
+from ..abstract_service import AbstractService
+from .constants import (
     AdapterAttributes,
     MediaSources,
     IFaceTypes,
+    PowerStates,
     TrackAttributes,
     TrackControl,
     TrackStatus,
@@ -41,7 +42,6 @@ class Bluetooth(AbstractService):
         self.__enabled = False
         self.bus = None
         self.mgr = None
-        self.__reset_vars()
 
     @property
     def enabled(self):
@@ -61,7 +61,7 @@ class Bluetooth(AbstractService):
 
         enabled = None
         enabled = self.__get_iface_items(IFaceTypes.ADAPTER_1, mgr=mgr)[0]
-        enabled = bool(enabled.get(AdapterAttributes.POWERED))
+        enabled = bool(enabled.get(AdapterAttributes.POWER_STATE) == PowerStates.ON)
 
         try:
             if self.__enabled != enabled:  # state change
@@ -104,8 +104,9 @@ class Bluetooth(AbstractService):
         Cleanses the diffent internal states. Intended to prevent leaching of values.
         """
 
+        # pylint: disable=attribute-defined-outside-init
         self.bluetooth = {
-            "enabled": False,
+            "enabled": self.enabled,
             "connected": False,
             "connectedName": None,
             "localHostname": self.__local_hostname,
@@ -445,6 +446,7 @@ class Bluetooth(AbstractService):
         """
         Run the main bluetooth DBus loop
         """
+
         # Start the main loop
         dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
@@ -455,6 +457,8 @@ class Bluetooth(AbstractService):
         self.mgr = dbus.Interface(
             self.bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager"
         )
+
+        self.__reset_vars()  # Initialize vars
 
         # Create a receiver to monitor for a newly connected device
         self.bus.add_signal_receiver(
@@ -490,10 +494,8 @@ class Bluetooth(AbstractService):
         """
         The refresh method to re-push the current bluetooth & media objects to the mast queue.
         """
-        print("REFRESH PUSHING BLUETOOTH TO QUEUE")
         self.push_to_queue(event=self.bluetooth)
         if self.bluetooth["connected"]:
-            print("REFRESH PUSHING MEDIA TO QUEUE")
             self.__push_media_to_queue()
 
     def terminate(self):
