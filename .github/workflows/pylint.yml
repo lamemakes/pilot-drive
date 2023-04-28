@@ -18,7 +18,7 @@ jobs:
       run: |
         sudo apt install build-essential libdbus-glib-1-dev libgirepository1.0-dev
         python -m pip install --upgrade pip
-        pip install pylint obd websockets dbus-python==1.2.16 PyGObject requests
+        pip install pylint obd websockets dasbus PyGObject requests
     - name: Analysing the code with pylint
       run: |
         pylint backend/pilot_drive

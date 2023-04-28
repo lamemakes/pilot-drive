@@ -10,7 +10,7 @@ export interface Song {
     album: string | undefined,
     duration: number | undefined,
     position: number | undefined,
-    isPlaying: boolean,
+    playing: boolean,
     cover: Blob | undefined
 }
 

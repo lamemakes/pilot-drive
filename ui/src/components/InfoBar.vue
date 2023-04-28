@@ -1,8 +1,8 @@
 <template>
     <div id="top-row">
         <div id="connected-device">
-            <span v-if="bluetoothStore.connected && bluetoothStore.connectedName">
-                {{ bluetoothStore.connectedName }}
+            <span v-if="getConnectedDevices(bluetoothStore.devices).length > 0"> <!-- using the first item in the array is temporary-->
+                {{ getConnectedDevices(bluetoothStore.devices)[0].name }}
             </span>
         </div>
         <div id="clock">
@@ -15,6 +15,7 @@
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
 import { BluetoothDevice } from '../types/Bluetooth.interface';
+import { getConnectedDevices } from '../utils/bluetooth';
 import LiveClock from './LiveClock.vue';
 
 export default defineComponent({
@@ -22,7 +23,7 @@ export default defineComponent({
     setup () {
         const bluetoothStore = ref(inject("bluetoothStore") as BluetoothDevice);
 
-        return {bluetoothStore}
+        return {bluetoothStore, getConnectedDevices}
     }
 })
 </script>

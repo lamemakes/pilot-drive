@@ -2,13 +2,13 @@
     <div v-if="mediaStore && mediaStore.song" id="song-info-container">
         <div id="song-info">
             <div id="title">
-                <span>{{ mediaStore.song.title }}</span>
+                <span>{{ formatTitleAlbum(mediaStore.song.title) }}</span>
             </div>
             <div v-if="mediaStore.song.artist" id="artist">
                 <span>{{ mediaStore.song.artist }}</span>
             </div>
             <div v-if="mediaStore.song.album" id="album">
-                <span>{{ mediaStore.song.album }}</span>
+                <span>{{ formatTitleAlbum(mediaStore.song.album) }}</span>
             </div>
         </div>
         <div class="progressbar" v-if="mediaStore.song.duration && mediaStore.song.position">
@@ -40,14 +40,24 @@ export default defineComponent({
             if (mediaStore.value.song && mediaStore.value.song.duration && mediaStore.value.song.position){
                 const percent = (mediaStore.value.song.position / mediaStore.value.song.duration) * 100
                 progress.value = percent > 100 ? 100 : percent // Confirm it doesn't get larger than 100%
-                if (mediaStore.value.song.isPlaying) {
+                if (mediaStore.value.song.playing) {
                     mediaStore.value.song.position += progInterval;
                 }
                 console.log(mediaStore.value.song.position)
             }
         }, progInterval)
 
-        return {mediaStore, progress}
+        const formatTitleAlbum = (titleOrAlbum: string | undefined): string | undefined => {
+            // if a track is too long, remove the features in the title using common characteristics of titles
+            const MAX_LEN = 40 // Max length of song title, ideally this will be dynamic in the future
+            const feature_regex = /((\(|\[|\{)(feat|prod|ft).*(\)|\]|\}))/gi
+            if (titleOrAlbum && titleOrAlbum.length > MAX_LEN) {
+                return titleOrAlbum.replace(feature_regex, '')
+            }
+            return titleOrAlbum
+        }
+
+        return {mediaStore, progress, formatTitleAlbum}
     }
 })
 </script>
@@ -62,6 +72,10 @@ export default defineComponent({
 
 #title {
     color: var(--accent-color);
+}
+
+#album, #artist {
+    font-size: 32px;
 }
 
 #song-ctl {

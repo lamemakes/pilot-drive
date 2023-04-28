@@ -1,5 +1,5 @@
 <template>
-    <div id="media-container" v-if="((mediaStore.source === 'bluetooth' && bluetoothStore.connected) || mediaStore.source === 'files')">
+    <div id="media-container" v-if="((mediaStore.source === 'bluetooth' && getConnectedDevices(bluetoothStore.devices).length > 0) || mediaStore.source === 'files')">
         <SongInfo />
     </div>
     <div id="no-media-container" v-else>
@@ -17,6 +17,7 @@ import { defineComponent, inject, ref } from 'vue'
 import { Media } from '../types/Media.interface';
 import SongInfo from '../components/SongInfo.vue'
 import { BluetoothDevice } from '../types/Bluetooth.interface';
+import { getConnectedDevices } from '../utils/bluetooth'
 import { NotConnectedDisplay } from '../types/NotConnectedDisplay.interface';
 import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg'
 
@@ -29,21 +30,22 @@ export default defineComponent({
         // TODO: Make these string keys Enums
         const noMediaMessageMap = new Map<string, NotConnectedDisplay>([
             ['bluetooth-disabled', {message: '<p>Enable & connect bluetooth to start playing audio!</p>', icon: bluetoothDisabled}],
-            ['bluetooth-disconnected', {message: (bluetoothStore.value.localHostname) ? `<p>To connect, look for <span id=hostname>${bluetoothStore.value.localHostname}</span> in your bluetooth settings</p>` : '<p>Connect a bluetooth device to start playing audio!</p>', icon: bluetoothDisabled}],
+            ['bluetooth-disconnected', {message: (bluetoothStore.value.hostname) ? `<p>To connect, look for <span id=hostname>${bluetoothStore.value.hostname}</span> in your bluetooth settings</p>` : '<p>Connect a bluetooth device to start playing audio!</p>', icon: bluetoothDisabled}],
         ])
 
         const getNotConnectedMessage = () => {
             if (mediaStore.value.source == 'bluetooth') {
-                if (!bluetoothStore.value.enabled){
+                if (!bluetoothStore.value.powered){
                     return noMediaMessageMap.get('bluetooth-disabled')
                 }
-                if (!bluetoothStore.value.connected) {
+                if (!(getConnectedDevices(bluetoothStore.value.devices).length > 0)) {
+                    console.log(bluetoothStore.value.hostname)
                     return noMediaMessageMap.get('bluetooth-disconnected')
                 }
             }
         }
 
-        return {mediaStore, bluetoothStore, getNotConnectedMessage}
+        return {mediaStore, bluetoothStore, getConnectedDevices, getNotConnectedMessage}
     }
 })
 </script>

@@ -9,7 +9,7 @@ export let MediaStore:Media = reactive({
         album: undefined,
         duration: undefined,
         position: undefined,
-        isPlaying: false,
+        playing: false,
         cover: undefined,
     },
     radio: {

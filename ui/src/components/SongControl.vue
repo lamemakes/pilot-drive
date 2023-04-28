@@ -4,7 +4,7 @@
             <img class="control-icon" :src="iconMap.get(TrackActions.PREV)">
         </div>
         <div class="song-ctl-btn" id="status-btn" @click="changeState">
-            <img class="control-icon" :src="(songStore.song.isPlaying) ? iconMap.get(TrackActions.PAUSE) : iconMap.get(TrackActions.PLAY)">
+            <img class="control-icon" :src="(songStore.song.playing) ? iconMap.get(TrackActions.PAUSE) : iconMap.get(TrackActions.PLAY)">
         </div>
         <div class="song-ctl-btn" id="skip-next-btn" @click="skipTrack(TrackActions.NEXT);">
             <img class="control-icon" :src="iconMap.get(TrackActions.NEXT)">
@@ -48,7 +48,7 @@ export default defineComponent({
                 websocket.value.send(
                     JSON.stringify(
                         {
-                            type: songStore.value.source,
+                            type: 'media',
                             [songStore.value.source.toString()]: action
                         }
                     )
@@ -58,8 +58,8 @@ export default defineComponent({
 
         const changeState = () => {
             if (songStore.value.song) {
-                songStore.value.song.isPlaying = !songStore.value.song.isPlaying;
-                pushControl(songStore.value.song.isPlaying ? TrackActions.PLAY : TrackActions.PAUSE)
+                songStore.value.song.playing = !songStore.value.song.playing;
+                pushControl(songStore.value.song.playing ? TrackActions.PLAY : TrackActions.PAUSE)
             }
         }
 

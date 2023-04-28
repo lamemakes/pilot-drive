@@ -1,8 +1,13 @@
 export interface BluetoothDevice {
-    enabled: boolean;
+    powered: boolean;
+    address: string | undefined;
+    hostname: string | undefined;
+    devices: Device[];
+}
+
+export interface Device {
+    name: string;
+    address: string;
     connected: boolean;
-    connectedName: string | undefined,
-    localHostname?: string | undefined,
-    battery?: number | undefined,
-    address?: string | undefined
+    isMediaSource: boolean;
 }
