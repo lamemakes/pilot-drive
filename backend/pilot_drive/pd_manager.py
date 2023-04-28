@@ -19,6 +19,7 @@ from pilot_drive.services import (
     Phone,
     AbstractService,
     Camera,
+    Media,
 )
 from pilot_drive.services.settings.exceptions import FailedToReadSettingsException
 
@@ -69,6 +70,8 @@ class PilotDrive:
 
         self.settings: Settings = self.service_factory(service=Settings)
         self.bluetooth: Bluetooth = self.service_factory(service=Bluetooth)
+        self.media: Media = self.service_factory(service=Media)
+
         if self.settings.get_setting("phone")["enabled"]:
             self.phone: Phone = self.service_factory(
                 service=Phone, settings=self.settings
@@ -88,7 +91,7 @@ class PilotDrive:
         # from the websocket, pass it to settings.set_web_settings as it is a settings change event.
         self.service_msg_handlers = {
             EventType.SETTINGS: self.settings.set_web_settings,
-            EventType.BLUETOOTH: Bluetooth.bluetooth_control,
+            EventType.MEDIA: self.media.track_control,
         }
 
     T = TypeVar("T", bound=AbstractService)
@@ -140,6 +143,7 @@ class PilotDrive:
             like settings
         """
         self.settings.refresh()
+        self.bluetooth.refresh()
 
     def handle_message(self, message: str) -> None:
         """

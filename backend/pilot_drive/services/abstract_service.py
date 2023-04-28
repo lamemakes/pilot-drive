@@ -3,6 +3,7 @@ Module contains an abstract service used as a template for other service impleme
 """
 
 from abc import ABC, abstractmethod
+from typing import Optional
 from pilot_drive.master_queue import MasterEventQueue, EventType
 from pilot_drive.master_logging import MasterLogger
 
@@ -32,7 +33,7 @@ class AbstractService(ABC):
         self.logger = logger
         self.logger.info(msg=f"Initializing {service_type} service!")
 
-    def push_to_queue(self, event: dict, event_type: dict = None) -> None:
+    def push_to_queue(self, event: dict, event_type: Optional[dict] = None) -> None:
         """
         Push a new event to the master queue.
 
@@ -56,10 +57,4 @@ class AbstractService(ABC):
     def main(self) -> None:
         """
         runs servce main loop and logic
-        """
-
-    @abstractmethod
-    def terminate(self) -> None:
-        """
-        Attempts to clean up the service's resources
         """

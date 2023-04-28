@@ -8,3 +8,4 @@ from .bluetooth import Bluetooth
 from .vehicle import Vehicle
 from .phone import Phone
 from .camera import Camera
+from .media import Media

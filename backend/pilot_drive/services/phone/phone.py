@@ -212,8 +212,3 @@ class Phone(AbstractService):
                 notifications=self.__notifications,
             )
             self.push_to_queue(event=notif_refresh.__dict__)
-
-    def terminate(self):
-        self.logger.info(
-            msg=f"Stop signal recieved, terminating service: {self.service_type}"
-        )

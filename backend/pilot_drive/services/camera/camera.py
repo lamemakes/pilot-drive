@@ -65,12 +65,6 @@ class Camera(AbstractService):
     def refresh(self):
         pass
 
-    def terminate(self):
-        try:
-            self.gpio.cleanup()
-        except AttributeError:  # Most likely indicating that the camera failed to start
-            return
-
     def show_camera(self, channel):
         """
         A callback or add_event_detect, open/close the camera based on the newly detected state
