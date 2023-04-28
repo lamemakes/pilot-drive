@@ -31,11 +31,11 @@ The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/e
     - __Testing__: More unit testing & E2E testing could be used at any level of the stack!
     - __Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, explanations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
     - __Media types__: More audio types, such as software defined radio, local audio files, etc.
-    - __Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing
+    - ~~__Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing~~
     - __Bluetooth features__: More in-depth bluetooth implementations, giving the user access to more functionality to the connected device
     - __UI enhancements__: More intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features.
     - __Navigation__: GPS & OpenStreetMap integration.
     - __Optimizations__: More efficiencies & better resource management (ie. multiprocessing fixes). 
     
 ## Notes
-- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unoranized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how premature it still is. 
+- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unorganized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how premature it still is. 
