@@ -5,6 +5,8 @@ Module used to track and display
 import json
 from enum import StrEnum
 from multiprocessing import Manager
+from types import NoneType
+from typing import Union, Dict
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 
@@ -30,13 +32,13 @@ class MasterEventQueue:
         main loop will use the is_new_event() and pop_event() methods to handle new events.
     """
 
-    def __init__(self, logging: MasterLogger):
+    def __init__(self, logging: MasterLogger) -> None:
         manager = Manager()
         self.__queue = manager.Queue()
         self.__new_event = manager.Value("i", 0)
         self.__logging = logging
 
-    def push_event(self, event_type: EventType, event: str):
+    def push_event(self, event_type: EventType, event: str) -> None:
         """
         Used to push a new event to the Master Event Queue
 
@@ -51,7 +53,7 @@ class MasterEventQueue:
         self.__queue.put(event)
         self.__new_event.value = 1
 
-    def get(self):
+    def get(self) -> Union[Dict, NoneType]:
         """
         Remove and return an item from the queue
 
@@ -69,7 +71,8 @@ class MasterEventQueue:
 
         return queue_return
 
-    def is_new_event(self):
+    @property
+    def is_new_event(self) -> bool:
         """
         Check if there is a new event on the event queue
 

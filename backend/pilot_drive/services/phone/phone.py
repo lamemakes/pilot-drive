@@ -2,15 +2,24 @@
 The module that handles the phone connectivity to PILOT Drive
 """
 import time
-from typing import List
+from typing import Dict, List
+from dasbus.loop import EventLoop  # type: ignore # missing
+from dasbus.typing import ObjPath, Str, Variant
+from dasbus.connection import (  # type: ignore # missing
+    SystemMessageBus,
+)
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 from ..settings import Settings
+from ..bluetooth import Bluetooth
 from ..abstract_service import AbstractService
+from ..shared.bluez_api import BluezDevice
 from .android_manager import AndroidManager
-from .phone_constants import (
+from .ios_manager import IOSManager
+from .ancs_api import ANCSObserver
+from .constants import (
     PhoneTypes,
     PhoneStates,
     Notification,
@@ -66,8 +75,16 @@ class Phone(AbstractService):
             match self.__type:
                 case PhoneTypes.ANDROID:
                     self.__phone_manager = AndroidManager(logger=self.logger)
-                # case PhoneTypes.IOS:
-                #     self.__phone_manager = IOSManager(logger=self.logger)
+                case PhoneTypes.IOS:
+                    self.bus = SystemMessageBus()
+                    bluetooth = Bluetooth(
+                        master_event_queue=self.event_queue,
+                        service_type=EventType.BLUETOOTH,
+                        logger=self.logger,
+                    )
+                    self.__phone_manager = IOSManager(
+                        logger=self.logger, bluetooth=bluetooth
+                    )
                 case _:
                     raise FailedToReadSettingsException("Unrecognized phone type!")
         else:
@@ -93,7 +110,7 @@ class Phone(AbstractService):
                 f'Invalid phone type provided: {self.__settings.get_setting("phone")["type"]}'
             ) from exc
 
-        settings_enabled = phone_settings.get("enabled") is None
+        settings_enabled = phone_settings.get("enabled") is True
         self.__enabled = settings_enabled
 
         return settings_enabled
@@ -168,6 +185,115 @@ class Phone(AbstractService):
 
             time.sleep(1)
 
+    def __ios__loop(self, manager: IOSManager):
+        """
+        The loop used for an IOS connected device
+
+        :param manager: an instantiated IOSManager object
+        """
+
+        self.push_to_queue(
+            PhoneContainer(
+                enabled=self.__enabled, type=self.__type.value, state=self.state.value
+            ).__dict__
+        )
+
+        loop = EventLoop()
+        # manager.initialize_observers()
+        ancs = ANCSObserver.connect(bus=self.bus)
+
+        def interfaces_added(path: ObjPath, interface: str) -> None:
+            if BluezDevice.interface in interface:
+                bt_device = manager.bluetooth.get_bluez_device(
+                    path=path, props_changed_callback=properties_changed
+                )
+                bt_device.bluez_device.PropertiesChanged.connect(bt_device.prop_changed)
+                manager.device_added(bt_device)
+                phone_container = PhoneContainer(
+                    enabled=self.__enabled,
+                    type=self.__type.value,
+                    state=self.state.value,
+                    notifications=self.__notifications,
+                )
+                self.push_to_queue(event=phone_container.__dict__)
+
+        def interfaces_removed(
+            self, path: ObjPath, interfaces: List[Str]
+        ) -> None:  # pylint: disable=unused-argument
+            """
+            Callback utilized when an interface is removed
+
+            :param path: DBus path to the new interface
+            :param interface: list of names of interfaces that were removed
+            """
+            manager.interfaces_removed(path=path, interfaces=interfaces)
+            phone_container = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
+            self.push_to_queue(event=phone_container.__dict__)
+
+        def properties_changed(
+            interface: str,
+            changes: Dict[str, Variant],  # pylint: disable=unused-argument
+            invalidated_properties: List[str],  # pylint: disable=unused-argument
+        ) -> None:
+            """
+            Callback utilized when an interface's properties change
+
+            :param interface: names of interface that had a property change
+            :param changes: a dict of changes on the properties of the interface
+            :param invalidated_properties: a list of properties that were invalidated
+            """
+            manager.properties_changed(
+                interface=interface,
+                changes=changes,
+                invalidated_properties=invalidated_properties,
+            )
+            phone_container = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
+            self.push_to_queue(event=phone_container.__dict__)
+
+        def show_ios_notification(notification_json: str) -> None:
+            manager.show_notification(notification_json=notification_json)
+            self.__notifications = manager.notifications
+            phone_container = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
+            self.push_to_queue(event=phone_container.__dict__)
+
+        def dismiss_ios_notification(notification_id: int) -> None:
+            manager.dismiss_notification(notification_id=notification_id)
+            self.__notifications = manager.notifications
+            phone_container = PhoneContainer(
+                enabled=self.__enabled,
+                type=self.__type.value,
+                state=self.state.value,
+                notifications=self.__notifications,
+            )
+            self.push_to_queue(event=phone_container.__dict__)
+
+        # Initialize observers
+        for path, services in manager.bluetooth.bluez_root.GetManagedObjects().items():
+            interfaces_added(path, services)
+
+        manager.bluetooth.bluez_root.InterfacesAdded.connect(interfaces_added)
+        manager.bluetooth.bluez_root.InterfacesRemoved.connect(interfaces_removed)
+
+        ancs.ShowNotification.connect(show_ios_notification)
+        ancs.DismissNotification.connect(dismiss_ios_notification)
+
+        loop.run()
+
     def push_to_queue(self, event: dict, event_type: dict = None):
         """
         Push a new event to the master queue.
@@ -196,6 +322,8 @@ class Phone(AbstractService):
         match self.__type:
             case PhoneTypes.ANDROID:
                 self.__android_loop(self.__phone_manager)
+            case PhoneTypes.IOS:
+                self.__ios__loop(self.__phone_manager)
             case _:
                 self.logger.error(
                     msg="Failed to get phone type, exiting phone manager!"

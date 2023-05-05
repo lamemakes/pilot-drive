@@ -1,10 +1,10 @@
 """
-Module containing the abstract manager used for phone connectivity
+The abstract manager used for phone connectivity
 """
 
 from abc import ABC, abstractmethod
 from typing import List
-from .phone_constants import PhoneStates
+from .constants import PhoneStates
 
 
 class AbstractManager(ABC):

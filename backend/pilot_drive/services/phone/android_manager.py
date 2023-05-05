@@ -10,7 +10,7 @@ import typing
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from .abstract_manager import AbstractManager
-from .phone_constants import (
+from .constants import (
     SETTINGS_PATH,
     ADB_PACKAGE_NAMES,
     AdbCommands,

@@ -8,7 +8,7 @@ from pilot_drive.master_queue import MasterEventQueue, EventType
 
 from .bluetooth_media import BluetoothMedia
 from .constants import MediaSources, TrackControl
-from ..bluetooth import Bluetooth
+from ..bluetooth import Bluetooth, NoPlayerException
 from ..abstract_service import AbstractService
 
 
@@ -50,7 +50,7 @@ class Media(AbstractService):
                     service_type=EventType.BLUETOOTH,
                     logger=self.logger,
                 )
-                if bluetooth.av_devices:
+                try:
                     media_player = bluetooth.bluez_media_player
                     match action:
                         case TrackControl.PLAY:
@@ -61,6 +61,10 @@ class Media(AbstractService):
                             media_player.Next()
                         case TrackControl.PREV:
                             media_player.Previous()
+                except NoPlayerException:
+                    self.logger.warning(
+                        f'Track control "{action}" issued but there is no active media player!'
+                    )
 
     def refresh(self) -> None:
         """
@@ -81,8 +85,6 @@ class Media(AbstractService):
                     service_type=EventType.BLUETOOTH,
                     logger=self.logger,
                 )
-                print("bluetooth")
-                print(bluetooth.bluez_adapter)
                 media = BluetoothMedia(
                     push_to_queue_callback=self.__push_media_to_queue,
                     bluetooth=bluetooth,

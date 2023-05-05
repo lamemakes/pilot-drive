@@ -194,7 +194,7 @@ class PilotDrive:
         self.refresh()  # When the app is started/UI is refreshed, send a settings event on the bus
         while True:
             try:
-                if self.master_queue.is_new_event():
+                if self.master_queue.is_new_event:
                     event = self.master_queue.get()
                     await websocket.send(json.dumps(event))
                 await asyncio.sleep(0.05)

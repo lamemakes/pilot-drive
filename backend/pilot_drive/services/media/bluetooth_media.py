@@ -1,7 +1,8 @@
 """
 The Bluetooth media manager
 """
-from typing import Any, Callable, Dict, List
+from types import NoneType
+from typing import Any, Callable, Dict, List, Union
 from dasbus.loop import EventLoop  # type: ignore # missing
 from dasbus.typing import ObjPath, Variant, Str
 from dasbus.error import DBusError
@@ -10,7 +11,7 @@ from pilot_drive.master_logging import MasterLogger
 
 from .abstract_media_source import BaseMediaSource, TrackProps
 from .constants import TrackStatus
-from ..bluetooth import Bluetooth
+from ..bluetooth import Bluetooth, BluetoothDevice
 from ..shared.bluez_api import BluezDevice, BluezMediaPlayer, BluezAdapter
 
 
@@ -36,7 +37,8 @@ class BluetoothMedia(BaseMediaSource):
         super().__init__(push_to_queue_callback, logger)
         self.bluetooth = bluetooth
         self.adapter = self.bluetooth.bluez_adapter
-        self.media_player: BluezMediaPlayer = None
+        self.media_player: Union[BluezMediaPlayer, NoneType] = None
+        self.__devices: List[BluetoothDevice] = []
 
     def __get_track_property_failed(
         self, prop: str, exc: DBusError, default: Any
@@ -64,13 +66,11 @@ class BluetoothMedia(BaseMediaSource):
             return self.bluetooth.bluez_media_player.Position
         except DBusError as exc:
             default = 0
-            self.__get_track_property_failed(
-                prop="position", exc=exc, default=default
-            )
+            self.__get_track_property_failed(prop="position", exc=exc, default=default)
             return default
 
     @property
-    def track(self) -> TrackProps:
+    def track(self) -> Union[TrackProps, Dict[str, NoneType]]:
         """
         Get the track metadata
 
@@ -78,7 +78,6 @@ class BluetoothMedia(BaseMediaSource):
         """
         try:
             track = self.bluetooth.bluez_media_player.Track
-            print(track)
         except DBusError as exc:
             default = {"Title": None, "Artist": None, "Album": None, "Duration": None}
             self.__get_track_property_failed(prop="track", exc=exc, default=default)
@@ -100,7 +99,6 @@ class BluetoothMedia(BaseMediaSource):
             else:
                 converted_dict[key] = value
 
-        print(converted_dict)
         return converted_dict
 
     @property
@@ -114,19 +112,33 @@ class BluetoothMedia(BaseMediaSource):
             return self.bluetooth.bluez_media_player.Status == TrackStatus.PLAYING
         except DBusError as exc:
             default = False
-            self.__get_track_property_failed(
-                prop="playing", exc=exc, default=default
-            )
+            self.__get_track_property_failed(prop="playing", exc=exc, default=default)
             return default
+
+    @property
+    def active_av_devices(self) -> List[BluetoothDevice]:
+        """
+        Get a list of connected devices that have media capabilities
+
+        :return: A list of connected & media capable BluetoothDevice instances
+        """
+        av_list = []
+        for device in self.__devices:
+            if device.connected and device.media:
+                av_list.append(device)
+
+        return av_list
 
     def __metadata_changed(self) -> None:
         """
         Metadata (BlueZ MediaPlayer1) callback when properties change
         """
-        if len(self.bluetooth.av_devices) > 0:
+        if len(self.active_av_devices) > 0:
             self.push_media_to_queue()
 
-    def __interfaces_added(self, path: ObjPath, interface: str) -> None:    # pylint: disable=unused-argument
+    def __interfaces_added(
+        self, path: ObjPath, interface: str
+    ) -> None:  # pylint: disable=unused-argument
         """
         Callback utilized when a new interface is added
 
@@ -135,25 +147,39 @@ class BluetoothMedia(BaseMediaSource):
         """
 
         if BluezMediaPlayer.interface in interface:
-            self.bluetooth.push_bluetooth_to_queue()
+            self.bluetooth.push_bluetooth_to_queue(devices=self.__devices)
             self.push_media_to_queue()
             self.bluetooth.bluez_media_player.PropertiesChanged.connect(
                 self.__properties_changed
             )
+        elif BluezDevice.interface in interface:
+            bt_device = self.bluetooth.get_bluez_device(
+                path=path, props_changed_callback=self.__properties_changed
+            )
+            self.__devices.append(bt_device)
+            bt_device.bluez_device.PropertiesChanged.connect(bt_device.prop_changed)
 
-    def __interfaces_removed(self, path: ObjPath, interfaces: List[Str]) -> None:  # pylint: disable=unused-argument
+    def __interfaces_removed(
+        self, path: ObjPath, interfaces: List[Str]
+    ) -> None:  # pylint: disable=unused-argument
         """
         Callback utilized when an interface is removed
 
         :param path: DBus path to the new interface
         :param interface: list of names of interfaces that were removed
         """
-        self.bluetooth.push_bluetooth_to_queue()
+        if BluezDevice.interface in interfaces:
+            for count, device in enumerate(self.__devices):
+                if device.path == path:
+                    self.__devices.pop(count)
+                    break
+
+        self.bluetooth.push_bluetooth_to_queue(devices=self.__devices)
 
     def __properties_changed(
         self,
         interface: str,
-        changes: Dict[str, Variant],        # pylint: disable=unused-argument
+        changes: Dict[str, Variant],  # pylint: disable=unused-argument
         invalidated_properties: List[str],  # pylint: disable=unused-argument
     ) -> None:
         """
@@ -164,12 +190,20 @@ class BluetoothMedia(BaseMediaSource):
         :param invalidated_properties: a list of properties that were invalidated
         """
         match interface:
-            case BluezDevice.interface:
-                self.bluetooth.push_bluetooth_to_queue()
             case BluezAdapter.interface:
-                self.bluetooth.push_bluetooth_to_queue()
+                self.bluetooth.push_bluetooth_to_queue(devices=self.__devices)
+            case BluezDevice.interface:
+                self.bluetooth.push_bluetooth_to_queue(devices=self.__devices)
             case BluezMediaPlayer.interface:
                 self.__metadata_changed()
+
+    def __initialize_observers(self) -> None:
+        for path, services in self.bluetooth.bluez_root.GetManagedObjects().items():
+            self.__interfaces_added(path, services)
+
+        self.bluetooth.bluez_root.InterfacesAdded.connect(self.__interfaces_added)
+        self.bluetooth.bluez_root.InterfacesRemoved.connect(self.__interfaces_removed)
+        self.adapter.PropertiesChanged.connect(self.__properties_changed)
 
     def main(self) -> None:
         """
@@ -178,12 +212,11 @@ class BluetoothMedia(BaseMediaSource):
         """
         loop = EventLoop()
 
-        self.bluetooth.push_bluetooth_to_queue()
+        self.__initialize_observers()
 
-        self.bluetooth.bluez_root.InterfacesAdded.connect(self.__interfaces_added)
-        self.bluetooth.bluez_root.InterfacesRemoved.connect(self.__interfaces_removed)
-        self.adapter.PropertiesChanged.connect(self.__properties_changed)
-        if len(self.bluetooth.av_devices) > 0:
+        self.bluetooth.push_bluetooth_to_queue(devices=self.__devices)
+
+        if len(self.active_av_devices) > 0:
             self.bluetooth.bluez_media_player.PropertiesChanged.connect(
                 self.__properties_changed
             )

@@ -105,7 +105,7 @@ class BluezAdapter(BluezBaseApi, PropertiesAPI, ABC):
         """
 
     @abstractmethod
-    def SetDiscoveryFilter( # pylint: disable=invalid-name
+    def SetDiscoveryFilter(  # pylint: disable=invalid-name
         self, filter_in: Dict
     ) -> None:
         """
@@ -475,6 +475,9 @@ class BluezMediaItem(BluezBaseApi, PropertiesAPI, ABC):
     https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L464
     """
 
+    name = "org.bluez"
+    interface = "org.bluez.MediaItem1"
+
     @classmethod
     def connect(cls, bus: MessageBus, path: ObjPath) -> "BluezMediaItem":
         """
@@ -483,12 +486,9 @@ class BluezMediaItem(BluezBaseApi, PropertiesAPI, ABC):
         :param bus: an instance of the DBus system bus
         :param path: an ObjPath to intended object
 
-        :return: an instance of BluezItem
+        :return: an instance of BluezMediaItem
         """
         return cast(BluezMediaItem, bus.get_proxy(cls.name, path))
-
-    name = "org.bluez"
-    interface = "org.bluez.MediaItem1"
 
     @abstractmethod
     def Play(self) -> None:  # pylint: disable=invalid-name
@@ -508,3 +508,28 @@ class BluezMediaItem(BluezBaseApi, PropertiesAPI, ABC):
     FolderType: Str
     Playable: Bool
     Metadata: Dict
+
+
+class BluezGattCharacteristic(BluezBaseApi, PropertiesAPI, ABC):
+    """
+    Type wrapper for the org.bluez.GattCharacteristic1
+
+    https://github.com/bluez/bluez/blob/master/doc/gatt-api.txt#L68
+    """
+
+    interface = "org.bluez.GattCharacteristic1"
+
+    @classmethod
+    def connect(cls, bus: MessageBus, path: ObjPath) -> "BluezGattCharacteristic":
+        """
+        Get a proxy for the BlueZ GattCharacteristic1
+
+        :param bus: an instance of the DBus system bus
+        :param path: an ObjPath to intended object
+
+        :return: an instance of BluezGattCharacteristic
+        """
+        return cast(BluezGattCharacteristic, bus.get_proxy(cls.name, path))
+
+    UUID: Str
+    Service: ObjPath
