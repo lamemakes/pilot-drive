@@ -7,7 +7,9 @@ export interface BluetoothDevice {
 
 export interface Device {
     name: string;
+    alias: string;
     address: string;
     connected: boolean;
-    isMediaSource: boolean;
+    media: boolean;
+    ancs: boolean;
 }

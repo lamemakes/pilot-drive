@@ -36,6 +36,8 @@ export default defineComponent({
 
         const progInterval = 1000
 
+
+        // TODO: This needs updating - more often than not timing is way off
         const progbarUpdate = setInterval( () => {
             if (mediaStore.value.song && mediaStore.value.song.duration && mediaStore.value.song.position){
                 const percent = (mediaStore.value.song.position / mediaStore.value.song.duration) * 100
@@ -43,7 +45,6 @@ export default defineComponent({
                 if (mediaStore.value.song.playing) {
                     mediaStore.value.song.position += progInterval;
                 }
-                console.log(mediaStore.value.song.position)
             }
         }, progInterval)
 

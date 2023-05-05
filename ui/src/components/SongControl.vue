@@ -49,7 +49,7 @@ export default defineComponent({
                     JSON.stringify(
                         {
                             type: 'media',
-                            [songStore.value.source.toString()]: action
+                            'media': action
                         }
                     )
                 )

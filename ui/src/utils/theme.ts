@@ -39,7 +39,6 @@ export function getRgbString(color: number[]): string {
  *
  */
 export function setGlobalTheme(newTheme: string): void {
-    console.log("SETTING THEME: " + newTheme);
     let root = document.querySelector(':root') as HTMLElement;
 
     let selectedTheme = SettingsStore.themes.find(theme => theme.name == newTheme);
@@ -52,11 +51,6 @@ export function setGlobalTheme(newTheme: string): void {
     root.style.setProperty(ColorVars.ACCENT, getRgbString(selectedTheme.accent));
     root.style.setProperty(ColorVars.PRIMARY, getRgbString(selectedTheme.primary));
     root.style.setProperty(ColorVars.SECONDARY, getRgbString(selectedTheme.secondary))
-
-    console.log("PRIMARY LUMIN")
-    console.log(getContrastingColor(selectedTheme.primary))
-    console.log("SECONDARY LUMIN")
-    console.log(getContrastingColor(selectedTheme.secondary))
 
     root.style.setProperty(ColorVars.PRIMARY_LUMIN, getRgbString(getContrastingColor(selectedTheme.primary)));
     root.style.setProperty(ColorVars.SECONDARY_LUMIN, getRgbString(getContrastingColor(selectedTheme.secondary)));
@@ -73,8 +67,6 @@ export function handleIconLumin(className: string, intendedLumin: ColorVars): vo
     let isDarkLumin = true; // Fallback value is root can't be queried for some reason.
 
     const icons = Array.from(document.getElementsByClassName(className));
-    console.log("ICONS:");
-    console.log(icons)
     const root = document.querySelector(':root');
 
     if (root) {
@@ -83,7 +75,6 @@ export function handleIconLumin(className: string, intendedLumin: ColorVars): vo
     }
 
     for (let i = 0; i < icons.length; i++){
-        console.log("IS DARK LUMIN: " + isDarkLumin);
         if (isDarkLumin) {
             (icons[i] as HTMLImageElement).style.webkitFilter = "invert(0%)";
         } else {

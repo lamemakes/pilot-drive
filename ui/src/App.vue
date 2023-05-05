@@ -61,7 +61,6 @@ export default defineComponent({
                   break;
                 case 'settings':
                   if (dataObj.settings) {
-                    console.log(dataObj.settings.selectedTheme)
                     settingsStore.value = dataObj.settings;
                     setGlobalTheme(settingsStore.value.selectedTheme);
                   }

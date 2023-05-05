@@ -39,7 +39,6 @@ export default defineComponent({
                     return noMediaMessageMap.get('bluetooth-disabled')
                 }
                 if (!(getConnectedDevices(bluetoothStore.value.devices).length > 0)) {
-                    console.log(bluetoothStore.value.hostname)
                     return noMediaMessageMap.get('bluetooth-disconnected')
                 }
             }

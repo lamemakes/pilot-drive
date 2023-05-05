@@ -11,8 +11,6 @@ routes.forEach((route) => {
   })
 })
 
-console.log(populateRoutes);
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [

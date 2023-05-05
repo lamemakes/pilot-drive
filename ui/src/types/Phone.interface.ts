@@ -15,3 +15,8 @@ export interface PhoneNotification {
     time: number,
     body?: string
 }
+
+export interface NoNotificationMessage {
+    message: string,
+    icon: string
+}
