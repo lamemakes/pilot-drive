@@ -31,10 +31,10 @@ pilot\_drive.installer module
    :undoc-members:
    :show-inheritance:
 
-pilot\_drive.pilot\_drive module
---------------------------------
+pilot\_drive.pd\_manager module
+-------------------------------
 
-.. automodule:: pilot_drive.pilot_drive
+.. automodule:: pilot_drive.pd_manager
    :members:
    :undoc-members:
    :show-inheritance:
