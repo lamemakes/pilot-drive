@@ -25,13 +25,15 @@ from ..abstract_service import AbstractService
 
 
 @dataclass
-class BluetoothDevice: # pylint: disable=too-many-instance-attributes
+class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
     """
     Dataclass used to store information and states on BlueZ devices.
     """
+
     bluez_device: BluezDevice = field(repr=False)
     path: ObjPath = field(repr=False)
     props_changed_callback: Callable = field(repr=False)
+    logger: MasterLogger = field(repr=False)
     name: str = field(init=False)
     alias: str = field(init=False)
     address: str = field(init=False)
@@ -75,7 +77,19 @@ class BluetoothDevice: # pylint: disable=too-many-instance-attributes
         :invalidated_properties: a list of invalidated properties
         """
         if "Connected" in changes:
+            prev_state = self.connected
             self.connected = changes["Connected"].unpack()
+            if self.connected != prev_state:
+                if self.connected is True:
+                    self.logger.info(
+                        msg=f"""Bluetooth Device "{self.name}"
+                         with address {self.address} has connected."""
+                    )
+                elif self.connected is False:
+                    self.logger.info(
+                        msg=f"""Bluetooth Device "{self.name}"
+                         with address {self.address} has disconnected."""
+                    )
 
         self.props_changed_callback(interface, changes, invalidated_properties)
 
@@ -86,7 +100,7 @@ class BluetoothDevice: # pylint: disable=too-many-instance-attributes
         :return: a dict of the device's informational attributes.
         """
         # Attributes to removed as they aren't informational/serializable.
-        attrs_to_remove = {"bluez_device", "path", "props_changed_callback"}
+        attrs_to_remove = {"bluez_device", "path", "props_changed_callback", "logger"}
         device_dict = self.__dict__.copy()
         for attribute in attrs_to_remove:
             device_dict.pop(attribute)
@@ -126,8 +140,17 @@ class Bluetooth(AbstractService):
             temporary and will likely be integrated into the Bluetooth service itself soon.
         """
         bluetooth_adapter = self.bluez_adapter
+
+        if (
+            bluetooth_adapter.Alias
+            and bluetooth_adapter.Alias != bluetooth_adapter.Name
+        ):
+            hostname = bluetooth_adapter.Alias
+        else:
+            hostname = bluetooth_adapter.Name
+
         bluetooth_event = {
-            "hostname": bluetooth_adapter.Name,
+            "hostname": hostname,
             "address": bluetooth_adapter.Address,
             "powered": bluetooth_adapter.Powered,
             "devices": self.__serialize_devices(devices),
@@ -195,17 +218,18 @@ class Bluetooth(AbstractService):
     def get_bluez_device(
         self, path: ObjPath, props_changed_callback: Callable
     ) -> BluetoothDevice:
-        '''
+        """
         Create a new BluetoothDevice instace from a BlueZ device path
 
         :param path: The path to the BlueZ device
         :param props_changed_callback: the callback to connect for when device properties change
-        '''
+        """
         bluez_device = BluezDevice.connect(self.bus, path)
         device = BluetoothDevice(
             path=path,
             bluez_device=bluez_device,
             props_changed_callback=props_changed_callback,
+            logger=self.logger,
         )
         return device
 
@@ -265,7 +289,7 @@ class Bluetooth(AbstractService):
     #     return av_list
 
     @property
-    def ancs_devices(self) -> List[str]:
+    def active_ancs_devices(self) -> List[str]:
         """
         Get a list of all connected devices that have Apple Notification Center Service (ANCS)
             capabilities
@@ -280,7 +304,8 @@ class Bluetooth(AbstractService):
                 if uuid in ANCS_CHARS:
                     device_path = "/".join(path.split("/")[:-2])
                     device = BluezDevice.connect(bus=self.bus, path=device_path)
-                    ancs_devices.append(device.Address)
+                    if device.Connected and device.Address not in ancs_devices:
+                        ancs_devices.append(device.Address)
 
         return ancs_devices
 

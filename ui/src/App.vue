@@ -35,7 +35,7 @@ export default defineComponent({
     const websocket = initializeWebSocket();
     websocket.onmessage = (message) => {
         const dataObj = JSON.parse(message.data) as Data;
-        console.error(dataObj);
+        console.debug(dataObj);
         if (dataObj.hasOwnProperty('type')){
 
             switch (dataObj.type) {

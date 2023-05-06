@@ -54,6 +54,7 @@ export default defineComponent({
         ])
 
         const iosMessageMap = new Map<string, NotConnectedDisplay>([
+            ['bluetooth-disabled', {message: 'Enable Bluetooth and connect an iOS device to see notifications!', icon: bluetoothDisabled}],
             ['disconnected', {message: 'Connect an iOS device via bluetooth to see notifications!', icon: bluetoothDisabled}],
             ['no-notifications', {message: `Awaiting new iOS notifications...`, icon: noNotifs}]
         ])
@@ -64,12 +65,16 @@ export default defineComponent({
                     const androidMessage = androidMessageMap.get(state)
                     if (androidMessage){
                         return androidMessage
+                    } else {
+                        console.error('Failed to get Android message based on state!')
                     }
                 }
                 case 'ios': {
                     const iosMessage = iosMessageMap.get(state)
                     if (iosMessage){
                         return iosMessage
+                    } else {
+                        console.error('Failed to get iOS message based on state!')
                     }
                 }
                 default: {

@@ -6,6 +6,8 @@ function getTwelveHourFormat(hours:number): string[] {
         suffix = "PM"
     } else if (hours === 0)  {
         hours = 12;
+        suffix = "AM"
+    } else if (hours === 12) {
         suffix = "PM"
     } else {
         suffix = "AM";

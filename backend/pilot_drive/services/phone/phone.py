@@ -218,7 +218,7 @@ class Phone(AbstractService):
                 self.push_to_queue(event=phone_container.__dict__)
 
         def interfaces_removed(
-            self, path: ObjPath, interfaces: List[Str]
+            path: ObjPath, interfaces: List[Str]
         ) -> None:  # pylint: disable=unused-argument
             """
             Callback utilized when an interface is removed
@@ -288,6 +288,7 @@ class Phone(AbstractService):
 
         manager.bluetooth.bluez_root.InterfacesAdded.connect(interfaces_added)
         manager.bluetooth.bluez_root.InterfacesRemoved.connect(interfaces_removed)
+        manager.bluetooth.bluez_adapter.PropertiesChanged.connect(properties_changed)
 
         ancs.ShowNotification.connect(show_ios_notification)
         ancs.DismissNotification.connect(dismiss_ios_notification)

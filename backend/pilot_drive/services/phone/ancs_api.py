@@ -30,7 +30,7 @@ class ANCSObserver(PropertiesAPI):
         return cast(ANCSObserver, bus.get_proxy(cls.name, cls.path))
 
     @abstractmethod
-    def InvokeDeviceAction( # pylint: disable=invalid-name
+    def InvokeDeviceAction(  # pylint: disable=invalid-name
         self, device_handle: Str, notification_id: UInt32, is_positive: Bool
     ):
         """

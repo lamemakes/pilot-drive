@@ -31,7 +31,7 @@ class IOSManager:
 
         :return: a list of notifications collected by the manager
         """
-        if self.bluetooth.ancs_devices:
+        if self.bluetooth.active_ancs_devices:
             return self.__notifications
 
         raise NoANCSDeviceConnectedException(
@@ -51,7 +51,7 @@ class IOSManager:
         # Get a list of connected devices
         connected_devices = [device for device in self.__devices if device.connected]
 
-        if self.bluetooth.ancs_devices and connected_devices:
+        if self.bluetooth.active_ancs_devices and connected_devices:
             return PhoneStates.CONNECTED
 
         return PhoneStates.DISCONNECTED
@@ -63,7 +63,7 @@ class IOSManager:
 
         :return: the name of the connected device
         """
-        ancs_devices = self.bluetooth.ancs_devices
+        ancs_devices = self.bluetooth.active_ancs_devices
 
         if not ancs_devices:
             raise NoANCSDeviceConnectedException(
@@ -96,7 +96,7 @@ class IOSManager:
 
         :param path: DBus path to the new interface
         :param interface: list of names of interfaces that were removed
-        """ # pylint: disable=duplicate-code
+        """  # pylint: disable=duplicate-code
         if BluezDevice.interface in interfaces:
             for count, device in enumerate(self.__devices):
                 if device.path == path:
