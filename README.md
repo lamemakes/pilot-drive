@@ -28,14 +28,14 @@ The _WIP_ documentation can be found [here](https://pilot-drive.readthedocs.io/e
 - Found a bug or have an idea for an improvement? Raise a new [issue](https://github.com/lamemakes/pilot-drive/issues)!
 - Want to contribute to the codebase? Create a fork and make a PR when you're all said and done!
 - Contribution ideas/PILOT Drive roadmap:
-    - __Testing__: More unit testing & E2E testing could be used at any level of the stack!
-    - __Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, explanations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
-    - __Media types__: More audio types, such as software defined radio, local audio files, etc.
-    - ~~__Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing~~
-    - __Bluetooth features__: More in-depth bluetooth implementations, giving the user access to more functionality to the connected device
-    - __UI enhancements__: More intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features.
-    - __Navigation__: GPS & OpenStreetMap integration.
-    - __Optimizations__: More efficiencies & better resource management (ie. multiprocessing fixes). 
+    - [ ]__Testing__: More unit testing & E2E testing could be used at any level of the stack!
+    - [ ]__Documentation__: Current docs are very immature, and can better implement the the [tutorials, guides, explanations & references](https://www.writethedocs.org/conf/eu/2017/speakers/#speaker-daniele-procida) of docs.
+    - [ ]__Media types__: More media integration! (ie. Software Defined Radio, local audio files, videos, and DOOM!)
+    - [x]__Migration from [dbus-python](https://dbus.freedesktop.org/doc/dbus-python/index.html)__: to [dasbus](https://dasbus.readthedocs.io/en/latest/) for more reliable and clean DBus interfacing
+    - [ ]__Bluetooth features__: More in-depth bluetooth implementations, giving the user access to more functionality to the connected device. (ie. Transferring of playing album cover via BIP, taking/making calls, sending texts, etc)
+    - [ ]__UI enhancements__: More intuitive and interactive vehicle interfacing. Currently this is only data guages, but the scope is vehicle diagnostics and other useful features. Also more UI customizability would be a plus.
+    - [ ]__Navigation__: GPS & OpenStreetMap integration.
+    - [ ]__Optimizations__: More efficiencies & better resource management. (ie. multiprocessing processes cleanly exit)
     
 ## Notes
-- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unorganized PILOT Drive v1. This version of PILOT is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how premature it still is. 
+- __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unorganized PILOT Drive v1. This version is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how much it will still likely change and be refactored. 
