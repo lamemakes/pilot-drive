@@ -38,3 +38,4 @@ PILOT Drive was built with tweaking and hacking in mind, via:
 
    Installation <installation>
    API Reference <api/pilot_drive>
+   Roadmap/Contribution Ideas <roadmap>

@@ -120,8 +120,8 @@ class AdbNotificationAttributes(Enum):
     The prefixes of the notification dump
     """
 
-    UID = "^ {6}uid="
-    OP_PACKAGE = "^ {6}opPkg="
-    TITLE = "^ {16}android.title="
-    TEXT = "^ {16}android.text="
-    TIME = "^ {6}mRankingTimeMs="
+    UID = r"^ {6}uid=(.\S*)"
+    OP_PACKAGE = r"^ {6}opPkg=(.\S*)"
+    TITLE = r"^ {16}android.title=.*String \((.*)\)"
+    TEXT = r"^ {16}android.text=.*String \((.*)\)"
+    TIME = r"^ {6}mRankingTimeMs=([0-9]*)"

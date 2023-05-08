@@ -6,8 +6,6 @@ import os
 import sys
 import asyncio
 import argparse
-from pilot_drive.pd_manager import PilotDrive
-from pilot_drive.installer import Installer
 
 parser = argparse.ArgumentParser(
     prog="pilot-drive", description="An open source vehicle headunit"
@@ -34,11 +32,16 @@ def start() -> None:
     """
     if os.geteuid() != 0:
         sys.exit(
-            """You need to have root privileges to run PILOT Drive.\n
-            Please try again, this time using 'sudo'. Exiting."""
+            """\nYou need to have root privileges to run PILOT Drive.
+            \nPlease try again, this time using 'sudo'. Exiting.\n"""
         )
     args = parser.parse_args()
+    print(f"Install is {args.install}!")
     if args.install is True:
+        from pilot_drive.installer import ( # pylint: disable=import-outside-toplevel
+            Installer,
+        )
+
         pilot_drive_install = Installer(use_default=args.default)
         pilot_drive_install.main()
 
@@ -48,6 +51,10 @@ def run() -> None:
     The main entrypoint method for PILOT Drive. This initializes the PILOT Drive class in an
     asyncio event loop.
     """
+    from pilot_drive.pd_manager import ( # pylint: disable=import-outside-toplevel
+        PilotDrive,
+    )
+
     pilot_drive = PilotDrive()
     signal.signal(signalnum=signal.SIGINT, handler=pilot_drive.terminate)
     signal.signal(signalnum=signal.SIGTERM, handler=pilot_drive.terminate)
@@ -63,4 +70,4 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    start()

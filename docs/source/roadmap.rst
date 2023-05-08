@@ -1,0 +1,42 @@
+Roadmap
+====================
+
+"Big picture" features
+----------------------
+
+| ☐ More media integration!
+|    ☐ Software Defined Radio
+|    ☐ Local audio files
+|    ☐ Videos
+|    ☐ Run DOOM!
+| ☐ Navigation implementations
+|    ☐ Utilize external GPS module
+|    ☐ Implement OpenStreetMap, allow for offline navigation.
+| ☐ More Bluetooth features
+|    ☐ Pull bluetooth audio album cover from connected device (via BIP)
+|    ☐ Take calls
+|    ☐ Send texts
+|    ☐ Display other potentially useful connvected device info (cell service, battery, etc)
+|    ☐ Allow for enabling/pairing/discovery within the UI
+
+Frontend/UI
+----------------------
+
+| ☐ Implement a color picker to allow for custom theme creation in settings
+| ☐ Add widgets/drag and drop UI components (needs to be saveable)
+| ☐ More intuitive and quick-access menus (drag down, small buttons in info bar, etc)
+| ☐ Refactor Vue SFC to organize components based on feature/function
+| ☐ Full implementation of Jest unit tests
+| ☐ Better "quick glance" info in top bar (connected bluetooth/usb devices, wifi connectivity, etc)
+| ☐ Support for dark/tinted mode. Allowing setting for automatic detection (using headlights and the PILOT Drive HAT), and manual enabling.
+
+
+Backend
+----------------------
+
+| ☐ Refactor Bluetooth Service to allow for less complexity betweet ANCS & Bluetooth Media
+| ☐ Full implementation of Pytest unit tests, along with github actions implementation
+| ☐ Full implementation of typing via mypy, along with github actions implementation
+| ☑ Implement dasbus to replace the depreciated python-dbus
+| ☐ Optimization of multiprocessing Processes. Currently processes are not exiting properly or cleaning up when done.
+| ☐ Remote updates. When connected to wifi, PILOT Drive should be able to self-update. This was previously supported in earlier PILOT versions, but not reliably.

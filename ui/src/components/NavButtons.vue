@@ -19,7 +19,6 @@ export default defineComponent({
         const isEnabled = (route:route) => {
             if (route.conditional === true) {
                 const enabledString = `${route.name}Enabled`
-                console.error(enabledString)
                 const checkEnabled = settingsStore.value[enabledString as keyof Settings] as boolean
                 return checkEnabled
             } else {

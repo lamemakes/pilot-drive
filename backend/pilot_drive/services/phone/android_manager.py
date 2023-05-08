@@ -270,13 +270,8 @@ class AndroidManager(AbstractManager):
                 notif_lines, AdbNotificationAttributes
             ):
                 if re.match(notif_attr.value, line):
-                    re_string = (
-                        rf"{notif_attr.value}(.\S*)"
-                        if (
-                            not "String (" in line and not "SpannableString (" in line
-                        )  # Title & body can be Strings or SpannableStrings
-                        else rf"{notif_attr.value}.*String \((.*)\)"
-                    )
+                    re_string = notif_attr.value
+
                     try:
                         result = (
                             re.compile(re_string).search(line).group(1)

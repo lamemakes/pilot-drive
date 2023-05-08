@@ -1,6 +1,7 @@
 """
 The installer/setup wizard for PILOT Drive
 """
+import json
 import subprocess
 import os
 import shutil
@@ -10,7 +11,12 @@ from enum import StrEnum
 from typing import List, Dict
 import requests
 
-from pilot_drive.constants import STATIC_WEB_PORT, DEFAULT_BACKEND_SETTINGS
+from pilot_drive.constants import (
+    STATIC_WEB_PORT,
+    DEFAULT_BACKEND_SETTINGS,
+    SETTINGS_PATH,
+    SETTINGS_FILE_NAME,
+)
 
 
 # Executables directory
@@ -105,15 +111,15 @@ class Installer:
         """
         Initialize the PILOT Drive installer
 
-        :param use_default: use all the preset default values to allow for a non-interactive setup.
+        :param use_default: use all the preset default values to allow for a non-interactive setup
         """
         # Requried to know sys architecture for certain operations (ie. installing AAPT2)
         try:
             self.current_arch = CommonArchs(platform.uname().machine)
         except ValueError:
             sys.exit(
-                f"""Failed to detect system architecture, "{platform.uname().machine}"
-                 is not recognized by the installer at this time."""
+                f'Failed to detect system architecture, "{platform.uname().machine}"'
+                f"is not recognized by the installer at this time."
             )
 
         self.distro_manager = self.detect_distro_manager()
@@ -183,27 +189,27 @@ class Installer:
         :return: the index of the user's selected option
         """
 
-        options = []
-
+        disp_options = []
+        print()
         print(f"{Colors.BLUE}{Colors.BOLD}{prompt}: {Colors.ENDC}")
         for count, option in enumerate(options):
             option_str = f"[ {count} ] {option}"
             print(f"{Colors.CYAN}{Colors.BOLD}{option_str}{Colors.ENDC}")
-            options.append(str(count))
+            disp_options.append(str(count))
 
         user_in = ""
-        while user_in not in options:
+        while user_in not in disp_options:
             print()
             user_in = input(
-                f"""{Colors.BLUE}{Colors.BOLD}{prompt}Make a selection
-                [{options[0]}-{options[-1]}], or press enter for the default [{default_in}]:
-                 {Colors.ENDC}"""
+                f"{Colors.BLUE}{Colors.BOLD}Make a selection "
+                f"[0-{len(options) - 1}], or press enter for the default [{default_in}]: "
+                f"{Colors.ENDC}"
             )
 
             if user_in == "":
                 user_in = default_in
 
-            if user_in not in options:
+            if str(user_in) not in disp_options:
                 print(
                     f'{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}"!{Colors.ENDC}'
                 )
@@ -263,8 +269,8 @@ class Installer:
                 self.exec_cmd(f"{Cmd.YUM_INSTALL} {packages_str}")
             case _:
                 sys.exit(
-                    f"""{Colors.FAIL}{Colors.BOLD}Package manger:
-                     "{self.distro_manager}" not recognized, exiting!"""
+                    f"{Colors.FAIL}{Colors.BOLD}Package manger: "
+                    f'{self.distro_manager}" not recognized, exiting!'
                 )
 
     def install_bt_speaker(self) -> None:
@@ -276,9 +282,9 @@ class Installer:
         """
 
         print(
-            rf"""{Colors.GREEN}{Colors.BOLD}Attempting to install
-            \e]8;;https://github.com/lukasjapan/bt-speaker\alukasjapan's bt-speaker\e]8;;\a...
-            {Colors.ENDC}"""
+            rf"{Colors.GREEN}{Colors.BOLD}Attempting to install"
+            rf"\e]8;;https://github.com/lukasjapan/bt-speaker\alukasjapan\'s bt-speaker\e]8;;\a..."
+            rf"{Colors.ENDC}"
         )
         bt_speaker_dir = f"{OPT_DIR}/bt-speaker"
         bt_speaker_url = "https://github.com/lukasjapan/bt-speaker.git"
@@ -286,21 +292,23 @@ class Installer:
 
         # Install dependencies
         subprocess.check_output(
-            f"""{Cmd.APT_INSTALL} git bluez python3 libasound2-dev python3-gi
-            python3-gi-cairo python3-cffi python3-dbus python3-alsaaudio
-            sound-theme-freedesktop vorbis-tools""",
+            f"{Cmd.APT_INSTALL} git bluez python3 libasound2-dev python3-gi"
+            "python3-gi-cairo python3-cffi python3-dbus python3-alsaaudio"
+            "sound-theme-freedesktop vorbis-tools",
             shell=True,
         )
         self.exec_cmd("python3 -m pip install cffi pyalsaaudio")
 
         # Create user groups
         subprocess.check_output(
-            """id -u btspeaker &>/dev/null ||
-             useradd btspeaker -G audio -d {OPT_DIR}/bt_speaker""",
+            (
+                "id -u btspeaker &>/dev/null || "
+                "useradd btspeaker -G audio -d {OPT_DIR}/bt_speaker"
+            ),
             shell=True,
         )
         subprocess.check_output(
-            """getent group bluetooth &>/dev/null && usermod -a -G bluetooth btspeaker""",
+            "getent group bluetooth &>/dev/null && usermod -a -G bluetooth btspeaker",
             shell=True,
         )
 
@@ -355,7 +363,9 @@ class Installer:
         """
         Install ADB and it's needed dependencies
         """
-        appt2_url = "https://github.com/lamemakes/pilot-drive/blob/master/bin/aapt2"
+        appt2_url = (
+            "https://raw.githubusercontent.com/lamemakes/pilot-drive/master/bin/aapt2"
+        )
 
         # Check if ADB is already accessible to subprocess
         try:
@@ -418,24 +428,24 @@ class Installer:
 
         # Install as a service
         self.exec_cmd(
-            f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.service
-             /usr/lib/systemd/system/ancs4linux-observer.service"""
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.service"
+            f"/usr/lib/systemd/system/ancs4linux-observer.service"
         )
         self.exec_cmd(
-            f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.xml
-             /etc/dbus-1/system.d/ancs4linux-observer.conf"""
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.xml"
+            f"/etc/dbus-1/system.d/ancs4linux-observer.conf"
         )
         self.exec_cmd(
             f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.service
              /usr/lib/systemd/system/ancs4linux-advertising.service"""
         )
         self.exec_cmd(
-            f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.xml
-             /etc/dbus-1/system.d/ancs4linux-advertising.conf"""
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.xml"
+            f"/etc/dbus-1/system.d/ancs4linux-advertising.conf"
         )
         self.exec_cmd(
-            f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-desktop-integration.service
-             /etc/dbus-1/system.d/ancs4linux-desktop-integration.service"""
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-desktop-integration.service"
+            f"/etc/dbus-1/system.d/ancs4linux-desktop-integration.service"
         )  # Maybe not needed?
 
         self.exec_cmd(f"cd {ancs_dir} && pip3 install .")
@@ -482,13 +492,13 @@ class Installer:
                 configure_firefox = True
             else:
                 print(
-                    f"""{Colors.WARNING}{Colors.BOLD}Firefox was not detected,
-                     autostart in kiosk mode will not be configured!{Colors.ENDC}"""
+                    f"{Colors.WARNING}{Colors.BOLD}Firefox was not detected, "
+                    f"autostart in kiosk mode will not be configured!{Colors.ENDC}"
                 )
         except FailedToExecuteCommandException:
             print(
-                f"""{Colors.WARNING}{Colors.BOLD}Firefox was not detected,
-                 autostart in kiosk mode will not be configured!{Colors.ENDC}"""
+                f"{Colors.WARNING}{Colors.BOLD}Firefox was not detected, "
+                f"autostart in kiosk mode will not be configured!{Colors.ENDC}"
             )
 
         if configure_firefox:
@@ -497,8 +507,8 @@ class Installer:
 
             # Configure Firefox to launch in kiosk mode on boot
             print(
-                f"""{Colors.GREEN}{Colors.BOLD}Attempting to configure LXDE
-                 to auto-launch Firefox on boot...{Colors.ENDC}"""
+                f"{Colors.GREEN}{Colors.BOLD}Attempting to configure LXDE "
+                f"to auto-launch Firefox on boot...{Colors.ENDC}"
             )
 
             lxde_contents = ""
@@ -507,8 +517,8 @@ class Installer:
 
             if not lxde_contents or lxde_contents == "":
                 print(
-                    f"""{Colors.WARNING}{Colors.BOLD}Failed to read LXDE file,
-                    Firefox ESR autostart will not be set!{Colors.ENDC}"""
+                    f"{Colors.WARNING}{Colors.BOLD}Failed to read LXDE file, "
+                    f"Firefox ESR autostart will not be set!{Colors.ENDC}"
                 )
 
             write_contents = False
@@ -542,8 +552,8 @@ class Installer:
             self.exec_cmd(f"{Cmd.RASPI_CONFIG_NOINT} do_blanking 1")
         except FailedToExecuteCommandException as exc:
             print(
-                f"""{Colors.WARNING}{Colors.BOLD}Failed to execute raspi-config: "{exc}",
-                 skipping Raspberry Pi configuration!{Colors.ENDC}"""
+                f'{Colors.WARNING}{Colors.BOLD}Failed to execute raspi-config: "{exc}", '
+                f"skipping Raspberry Pi configuration!{Colors.ENDC}"
             )
             return
 
@@ -553,8 +563,8 @@ class Installer:
             self.exec_cmd(f"{Cmd.RASPI_CONFIG_NOINT} do_overscan 1")
         except FailedToExecuteCommandException as exc:
             print(
-                f"""{Colors.WARNING}{Colors.BOLD}Failed to execute raspi-config: "{exc}",
-                 skipping Raspberry Pi configuration!{Colors.ENDC}"""
+                f'{Colors.WARNING}{Colors.BOLD}Failed to execute raspi-config: "{exc}", '
+                f"skipping Raspberry Pi configuration!{Colors.ENDC}"
             )
             return
 
@@ -605,20 +615,20 @@ class Installer:
         user_in: int = 0
         while user_in not in valid_gpios:
             pin = input(
-                f"""{Colors.BLUE}{Colors.BOLD}Input a camera button GPIO pin (board format) or
-                 press enter for the PILOT Drive HAT default [{pd_hat_default}]: {Colors.ENDC}"""
+                f"{Colors.BLUE}{Colors.BOLD}Input a camera button GPIO pin (board format) or "
+                f"press enter for the PILOT Drive HAT default [{pd_hat_default}]: {Colors.ENDC}"
             )
             try:
                 user_in = int(pin) if pin != "" else pd_hat_default
                 if user_in not in valid_gpios:
                     print(
-                        f"""{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}",
-                         not a valid Raspberry Pi board GPIO pin!{Colors.ENDC}"""
+                        f'{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}",'
+                        f"not a valid Raspberry Pi board GPIO pin!{Colors.ENDC}"
                     )
             except ValueError:
                 print(
-                    f"""{Colors.FAIL}{Colors.BOLD}Invalid input "{pin}",
-                     was expecting an integer!{Colors.ENDC}"""
+                    f'{Colors.FAIL}{Colors.BOLD}Invalid input "{pin}", '
+                    f"was expecting an integer!{Colors.ENDC}"
                 )
 
         self.exec_cmd(f"{Cmd.RASPI_CONFIG_NOINT} nonint do_camera 0")
@@ -633,8 +643,8 @@ class Installer:
 
         self.is_production = self.prompt_yes_no(
             prompt=(
-                """Setup for production (create system process,
-                 auto-start firefox in kiosk mode, etc)?"""
+                "Setup for production (create system process "
+                "auto-start firefox in kiosk mode, etc)?"
             ),
             default_in="y",
         )
@@ -651,14 +661,11 @@ class Installer:
             )
 
         # Distro manager prompt
-        distro_list = [DistroManagers.APT.value, DistroManagers.YUM.value]
-        self.distro_manager = DistroManagers(
-            self.prompt_list(
-                prompt="Select your distribution manager",
-                options=distro_list,
-                default_in=0,
-            )
+        distro_list = [DistroManagers.APT, DistroManagers.YUM]
+        selection = self.prompt_list(
+            prompt="Select your distribution manager", options=distro_list, default_in=0
         )
+        self.distro_manager = DistroManagers(distro_list[selection])
 
         # Firefox prompt
         if self.prompt_yes_no(prompt="Attempt Firefox install?", default_in="y"):
@@ -711,3 +718,6 @@ class Installer:
                 self.rpi_setup()
 
             self.for_production()
+
+        with open(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "w", encoding="utf-8") as config:
+            json.dump(obj=settings, fp=config, indent=2)
