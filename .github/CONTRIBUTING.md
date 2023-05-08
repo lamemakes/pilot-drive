@@ -7,9 +7,9 @@ There are two primary mediums for contributions to PILOT Drive.
 1. Suggestions & bug reports.
     - Have a feature in mind you'd like to see? Found a problem with the latest package cut? Pop over to the [issues](https://github.com/signalapp/Signal-Desktop/issues) tab and follow the template based on your request.
 1. Donations!
-    - Are you enjoying PILOT Drive? Want to see it really blosom into something beautiful? You can donate via [Github Sponsors]() to ensure that I can continue to dedicate time and resources to this entirely free and open source project. 
+    - Are you enjoying PILOT Drive? Want to see it really blosom into something beautiful? You can donate via [Github Sponsors](https://github.com/sponsors/lamemakes) to ensure that I can continue to dedicate time and resources to this entirely free and open source project. 
 1. Code contributions!
-    - Enjoy Python/TypeScript? Hop in! You can pickup a new bug/feature, work on a [roadmap]() goal, or (after raising a feature proposal in issues) develop your own feature!
+    - Enjoy Python/TypeScript? Hop in! You can pickup a new bug/feature, work on a [roadmap](https://pilot-drive.readthedocs.io/en/latest/roadmap.html) goal, or (after raising a feature proposal in issues) develop your own feature!
 
 
 ## Setting up your environment
@@ -17,7 +17,7 @@ There are two primary mediums for contributions to PILOT Drive.
 So far, PILOT Drive has only been tested and developed on Linux (Raspberry Pi OS, Ubuntu, and Fedora) so these instructions are strictly for Linux users. (But a good contribution idea is to provide some cross platform abilities to Windows/MacOS users!)
 
 ### Clone PILOT Drive
-- `git clone git@github.com:lamemakes/pilot-drive.git`
+- `git clone git@github.com:lamemakes/pilot-drive.git` (or your own fork of the repo)
 
 ### Install PILOT Drive & required dependencies
 1. Install Python v3.11+
