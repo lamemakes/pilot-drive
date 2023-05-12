@@ -36,14 +36,15 @@ def start() -> None:
             \nPlease try again, this time using 'sudo'. Exiting.\n"""
         )
     args = parser.parse_args()
-    print(f"Install is {args.install}!")
     if args.install is True:
-        from pilot_drive.installer import ( # pylint: disable=import-outside-toplevel
+        from pilot_drive.installer import (  # pylint: disable=import-outside-toplevel
             Installer,
         )
 
         pilot_drive_install = Installer(use_default=args.default)
         pilot_drive_install.main()
+    else:
+        run()
 
 
 def run() -> None:
@@ -51,7 +52,7 @@ def run() -> None:
     The main entrypoint method for PILOT Drive. This initializes the PILOT Drive class in an
     asyncio event loop.
     """
-    from pilot_drive.pd_manager import ( # pylint: disable=import-outside-toplevel
+    from pilot_drive.pd_manager import (  # pylint: disable=import-outside-toplevel
         PilotDrive,
     )
 

@@ -416,9 +416,8 @@ class BluezNetwork(BluezBaseApi, PropertiesAPI, ABC):
 
 class BluezMediaTransport(BluezBaseApi, PropertiesAPI, ABC):
     """
-        Type wrapper for org.bluez.MediaTransport1
-    getall
-        https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L718
+    Type wrapper for org.bluez.MediaTransport1
+        getall https://github.com/bluez/bluez/blob/master/doc/media-api.txt#L718
     """
 
     name = "org.bluez"

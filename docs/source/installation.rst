@@ -8,11 +8,25 @@ Due to the latest Python features being implemented, Python 3.11 is required. Se
 .. code-block:: sh
 
    wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz
-   sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev git
+   sudo apt-get -y install build-essential gdb lcov pkg-config \
+      libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
+      libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
+      lzma lzma-dev tk-dev uuid-dev zlib1g-dev
    tar -xzvf Python-3.11.2.tgz
    cd Python-3.11.2/
    ./configure --enable-optimizations
    sudo make altinstall
+
+
+and then to set it as the default ``python3`` via:
+
+.. code-block:: sh
+
+   cd /usr/bin
+   sudo rm python3
+   tar -xzvf Python-3.11.2.tgz
+   sudo ln -s /usr/local/bin/python3.11 python3
+   python --version  #Confirm proper versioning
 
 
 Quick Start

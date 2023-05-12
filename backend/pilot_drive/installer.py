@@ -4,11 +4,12 @@ The installer/setup wizard for PILOT Drive
 import json
 import subprocess
 import os
+import re
 import shutil
 import platform
 import sys
 from enum import StrEnum
-from typing import List, Dict
+from typing import List, Dict, Optional
 import requests
 
 from pilot_drive.constants import (
@@ -62,7 +63,7 @@ class Cmd(StrEnum):
     """
 
     SYSTEMCTL = "/bin/systemctl"
-    APT_INSTALL = "apt --yes --force-yes install"
+    APT_INSTALL = "apt-get -y install"
     YUM_INSTALL = "yum --assumeyes install"
     GIT_CWD = "git -C"  # Using git and changing the wroking dir
     INSTALL_W_READ = "install -m 644"  # Used to install ANCS with read perms
@@ -143,7 +144,7 @@ class Installer:
                 f'Execution of command: "{command}" returned and error of: "{bash_result.stderr}"'
             )
 
-        if bash_result.stdout[-1] == "\n":
+        if bash_result.stdout and bash_result.stdout[-1] == "\n":
             return bash_result.stdout[:-1]  # Remove the last newline
 
         return bash_result.stdout
@@ -152,8 +153,8 @@ class Installer:
         """
         Handle y/n prompts in terminal as the user configures PILOT Drive
 
-        :param prompt: The message/question to prompt the user with
-        :param default_in: The default option ("y" or "n")
+        :param prompt: the message/question to prompt the user with
+        :param default_in: the default option ("y" or "n")
         :return: True if user input matches the default
         """
         options = ["Y", "N"]
@@ -178,19 +179,18 @@ class Installer:
                     f'{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}"!{Colors.ENDC}'
                 )
 
-        return user_in == default_in
+        return user_in == default_in.upper()
 
     def prompt_list(self, prompt: str, options: List[str], default_in: int) -> int:
         """
         Handle list prompts in terminal
 
-        :param prompt: The prompt for the user
+        :param prompt: the prompt for the user
         :param options: the list of options to present to the user
         :return: the index of the user's selected option
         """
 
         disp_options = []
-        print()
         print(f"{Colors.BLUE}{Colors.BOLD}{prompt}: {Colors.ENDC}")
         for count, option in enumerate(options):
             option_str = f"[ {count} ] {option}"
@@ -199,7 +199,6 @@ class Installer:
 
         user_in = ""
         while user_in not in disp_options:
-            print()
             user_in = input(
                 f"{Colors.BLUE}{Colors.BOLD}Make a selection "
                 f"[0-{len(options) - 1}], or press enter for the default [{default_in}]: "
@@ -207,14 +206,38 @@ class Installer:
             )
 
             if user_in == "":
-                user_in = default_in
+                user_in = str(default_in)
 
-            if str(user_in) not in disp_options:
+            if user_in not in disp_options:
                 print(
                     f'{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}"!{Colors.ENDC}'
                 )
 
         return int(user_in)
+
+    def prompt_input(
+        self, prompt: str, regex_validator: str, example: Optional[str] = None
+    ) -> str:
+        """
+        Handle general string prompts in terminal
+
+        :param prompt: the prompt for the user
+        :param regex_validator: the regex string to validate the user input
+        :param example: an optional example string to be provided to the user
+        :return: the user's input string
+        """
+        prompt_str = f'{prompt} (ie. "{example}")' if example is not None else prompt
+
+        user_in = ""
+        while re.search(regex_validator, user_in) is None:
+            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+
+            if re.search(regex_validator, user_in) is None:
+                print(
+                    f'{Colors.FAIL}{Colors.BOLD}Invalid input "{user_in}"!{Colors.ENDC}'
+                )
+
+        return user_in
 
     def detect_distro_manager(self) -> DistroManagers:
         """
@@ -249,7 +272,10 @@ class Installer:
         Installs a specified package from the distribution manager depending on the OS/manager used
         """
         # Mappings for apt packages -> yum
-        apt_to_yum: Dict[str, str] = {"python3-gi": "python36-gobject"}
+        apt_to_yum: Dict[str, str] = {
+            "python3-gi": "python36-gobject",
+            "firefox-esr": "firefox",
+        }
 
         # Reverse the apt_to_yum mappings to allow for mapping of yum -> map
         yum_to_apt: Dict[str, str] = {v: k for k, v in apt_to_yum.items()}
@@ -357,7 +383,7 @@ class Installer:
         # Install Firefox ESR
         self.install_from_distro_manager(["firefox"])
 
-        print(f"{Colors.GREEN}Completed Firefox install!{Colors.ENDC}")
+        print(f"{Colors.GREEN}{Colors.BOLD}Completed Firefox install!{Colors.ENDC}")
 
     def install_adb(self) -> None:
         """
@@ -372,8 +398,8 @@ class Installer:
             self.exec_cmd("adb")
         except FailedToExecuteCommandException:
             print(
-                f"""{Colors.GREEN}{Colors.BOLD}Attempting to install
-                 Android Debug Bridge...{Colors.ENDC}"""
+                f"{Colors.GREEN}{Colors.BOLD}Attempting to install "
+                f"Android Debug Bridge...{Colors.ENDC}"
             )
 
             self.install_from_distro_manager(["adb"])
@@ -482,7 +508,11 @@ class Installer:
         with open(pilot_service_path, "w", encoding="utf-8") as pilot_service:
             pilot_service.write(PILOT_SERVICE)
 
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} enable pilot-drive")
+        try:
+            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable pilot-drive")
+        except FailedToExecuteCommandException:
+            # systemctl doesn't conform to Unix "standards" and outputs to stderr for some reason.
+            pass
 
         # Configure firefox kiosk mode
         configure_firefox = False
@@ -503,7 +533,7 @@ class Installer:
 
         if configure_firefox:
             autostart_path = "/etc/xdg/lxsession/LXDE-pi/autostart"
-            autostart_string = "firefox -kiosk localhost:"
+            autostart_string = f"firefox -kiosk localhost:{STATIC_WEB_PORT}"
 
             # Configure Firefox to launch in kiosk mode on boot
             print(
@@ -532,14 +562,12 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split("\n") + [
-                    f"{autostart_string}{STATIC_WEB_PORT}"
-                ]
+                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
                 with open(autostart_path, "w", encoding="utf-8") as lxde_file:
-                    lxde_file.writelines(new_lxde_contents)
+                    lxde_file.write("\n".join(new_lxde_contents))
 
     def rpi_setup(self):
         """
@@ -569,10 +597,13 @@ class Installer:
             return
 
         # Remove the piwiz file to prevent allowing GUI prompts
-        print(
-            f"{Colors.GREEN}Attempting to disable RPi setup wizard prompts...{Colors.ENDC}"
-        )
-        os.remove("/etc/xdg/autostart/piwiz.desktop")
+        pi_desktop_wizard = "/etc/xdg/autostart/piwiz.desktop"
+
+        if os.path.exists(pi_desktop_wizard):
+            print(
+                f"{Colors.GREEN}Attempting to disable RPi setup wizard prompts...{Colors.ENDC}"
+            )
+            os.remove(pi_desktop_wizard)
 
     def install_rpi_camera(self) -> int:
         """
@@ -635,7 +666,7 @@ class Installer:
 
         return user_in
 
-    def main(self) -> None:
+    def main(self) -> None:  # pylint: disable=too-many-statements
         """
         Run the PILOT Drive installer/config
         """
@@ -648,6 +679,7 @@ class Installer:
             ),
             default_in="y",
         )
+        print()
 
         # Architecture prompt
         if self.current_arch in [
@@ -661,15 +693,37 @@ class Installer:
             )
 
         # Distro manager prompt
-        distro_list = [DistroManagers.APT, DistroManagers.YUM]
+        distro_list = list(DistroManagers)
+
+        try:
+            manager_guess = self.detect_distro_manager()
+            default = distro_list.index(manager_guess)
+        except FailedToDetectDistroManagerException:
+            manager_guess = None
+            default = 0  # Default the first item if guess fails
+
+        if manager_guess is not None:
+            prompt_str = (
+                f"Detected distribution manager of {Colors.GREEN}{manager_guess}{Colors.BLUE}! "
+                "Press enter to use the detected, or select another"
+            )
+        else:
+            prompt_str = "Failed to detect distribution manager, select one"
+
         selection = self.prompt_list(
-            prompt="Select your distribution manager", options=distro_list, default_in=0
+            prompt=prompt_str, options=distro_list, default_in=default
         )
         self.distro_manager = DistroManagers(distro_list[selection])
+        print(
+            f"{Colors.GREEN}{Colors.BOLD}Distribution manager "
+            f"set to {self.distro_manager}{Colors.ENDC}"
+        )
+        print()
 
         # Firefox prompt
         if self.prompt_yes_no(prompt="Attempt Firefox install?", default_in="y"):
             self.install_firefox()
+        print()
 
         # Phone prompt
         phone_list = ["None/Disable", "iOS", "Android"]
@@ -692,13 +746,24 @@ class Installer:
                     f"""{Colors.WARNING}{Colors.BOLD}Selection not recognized,
                      phone will not be configured.{Colors.ENDC}"""
                 )
+        print()
 
         # Vehicle/OBDII prompt
         vehicle_prompt = self.prompt_yes_no(
             prompt="Enable OBDII functionality?", default_in="n"
         )
         if not vehicle_prompt:
+            port = self.prompt_input(
+                prompt="Enter the path to the OBDII serial port",
+                regex_validator=r"^\/(.+)\/([^\/]+)$",
+                example="/dev/ttyUSB0",
+            )
             settings["vehicle"]["enabled"] = True
+            settings["vehicle"]["port"] = port
+            print(
+                f'{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, '
+                f'and port set to "{port}"{Colors.ENDC}'
+            )
 
         if self.is_rpi:
             camera_prompt = self.prompt_yes_no(
@@ -706,18 +771,35 @@ class Installer:
             )
             if not camera_prompt:
                 try:
-                    settings["camera"]["pin"] = self.install_rpi_camera()
+                    settings["camera"]["buttonPin"] = self.install_rpi_camera()
                     settings["camera"]["enabled"] = True
                 except KeyboardInterrupt:
                     print(
                         f"{Colors.FAIL}{Colors.BOLD}Cancelling RPi Camera Setup!{Colors.ENDC}"
                     )
 
+        print()
+        print(
+            f"{Colors.BLUE}{Colors.BOLD}Attempting to setup for production...{Colors.ENDC}"
+        )
         if self.is_production:
             if self.is_rpi:
                 self.rpi_setup()
 
             self.for_production()
 
-        with open(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "w", encoding="utf-8") as config:
+        print()
+        print(
+            f'{Colors.BLUE}{Colors.BOLD}Attempting to writing PILOT Drive settings to '
+            f'"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"...{Colors.ENDC}'
+        )
+        os.makedirs(name=SETTINGS_PATH, exist_ok=True)
+        with open(
+            f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "w", encoding="utf-8"
+        ) as config:
             json.dump(obj=settings, fp=config, indent=2)
+
+        print()
+        print(
+            f"{Colors.GREEN}{Colors.BOLD}PILOT Drive install has been completed!{Colors.ENDC}"
+        )
