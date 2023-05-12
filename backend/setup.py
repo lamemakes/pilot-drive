@@ -18,7 +18,7 @@ setup(
         "Documentation": "https://pilot-drive.readthedocs.org",
         "Bug Tracker": "https://github.com/lamemakes/pilot-drive/issues",
     },
-    install_requires=["websockets", "obd", "requests", "dasbus", "PyGObject"],
+    install_requires=["websockets", "pint==0.21.0", "obd", "requests", "dasbus", "PyGObject"],
     entry_points={"console_scripts": ["pilot-drive = pilot_drive.__main__:run"]},
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,

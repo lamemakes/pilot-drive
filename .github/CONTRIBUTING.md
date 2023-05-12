@@ -49,10 +49,10 @@ So far, PILOT Drive has only been tested and developed on Linux (Raspberry Pi OS
 
 ## Ready to merge your changes?
 1. First, make sure your changes are ready to be integrated and pass tests/linting.
-    - `cd pilot-drive                                           # enter the repo yet again`
-    - `python3 -m black backend/pilot_drive                     # format the backend with black`
-    - `python3 -m pylint backend/pilot_drive                    # confirm code passes pylint`
-    - `sphinx-apidoc ./backend/pilot_drive -o ./docs/source/    # generate api docs` 
+    - `cd pilot-drive`
+    - `python3 -m black backend/pilot_drive`
+    - `python3 -m pylint backend/pilot_drive`
+    - `sphinx-apidoc ./backend/pilot_drive -o ./docs/source/` 
 2. Put up a Pull Request referencing the issue/feature being fixed
 
 ## Thank you!

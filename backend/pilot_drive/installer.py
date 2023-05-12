@@ -17,6 +17,8 @@ from pilot_drive.constants import (
     DEFAULT_BACKEND_SETTINGS,
     SETTINGS_PATH,
     SETTINGS_FILE_NAME,
+    WEB_SETTINGS_ATTRIBUTE,
+    DEFAULT_WEB_SETTINGS,
 )
 
 
@@ -670,7 +672,10 @@ class Installer:
         """
         Run the PILOT Drive installer/config
         """
-        settings = DEFAULT_BACKEND_SETTINGS
+        settings = {
+            **DEFAULT_BACKEND_SETTINGS,
+            WEB_SETTINGS_ATTRIBUTE: {**DEFAULT_WEB_SETTINGS},
+        }
 
         self.is_production = self.prompt_yes_no(
             prompt=(
@@ -761,7 +766,7 @@ class Installer:
             settings["vehicle"]["enabled"] = True
             settings["vehicle"]["port"] = port
             print(
-                f'{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, '
+                f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, "
                 f'and port set to "{port}"{Colors.ENDC}'
             )
 
@@ -790,7 +795,7 @@ class Installer:
 
         print()
         print(
-            f'{Colors.BLUE}{Colors.BOLD}Attempting to writing PILOT Drive settings to '
+            f"{Colors.BLUE}{Colors.BOLD}Attempting to writing PILOT Drive settings to "
             f'"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"...{Colors.ENDC}'
         )
         os.makedirs(name=SETTINGS_PATH, exist_ok=True)
