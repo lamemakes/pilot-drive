@@ -14,12 +14,12 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
-import { Media } from '../types/Media.interface';
-import SongInfo from '../components/SongInfo.vue'
-import { BluetoothDevice } from '../types/Bluetooth.interface';
-import { getConnectedDevices } from '../utils/bluetooth'
-import { NotConnectedDisplay } from '../types/NotConnectedDisplay.interface';
-import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg'
+import { Media } from '../../types/Media.interface';
+import SongInfo from './Song/SongInfo.vue'
+import { BluetoothDevice } from '../../types/Bluetooth.interface';
+import { getConnectedDevices } from '../../utils/bluetooth'
+import { NotConnectedDisplay } from '../../types/NotConnectedDisplay.interface';
+import bluetoothDisabled from '../../assets/icons/bluetooth_disabled.svg'
 
 export default defineComponent({
     components: {SongInfo},

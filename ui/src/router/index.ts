@@ -7,7 +7,7 @@ routes.forEach((route) => {
   populateRoutes.push({
     path: `/${route.name}`,
     name: `${route.name}`,
-    component: () => import(`../views/${route.name.charAt(0).toUpperCase()}${route.name.slice(1)}.vue`)
+    component: () => import(`../components/${route.name.charAt(0).toUpperCase()}${route.name.slice(1)}/${route.name.charAt(0).toUpperCase()}${route.name.slice(1)}.vue`)
   })
 })
 

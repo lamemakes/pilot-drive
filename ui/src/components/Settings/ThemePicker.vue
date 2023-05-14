@@ -14,8 +14,8 @@
 <script lang="ts">
 
 import { defineComponent, inject, ref } from 'vue'
-import { Settings } from '../types/Settings.interface';
-import { getRgbString } from '../utils/theme';
+import { Settings } from '../../types/Settings.interface';
+import { getRgbString } from '../../utils/theme';
 
 export default defineComponent({
     props: {

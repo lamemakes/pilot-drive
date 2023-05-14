@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { PhoneNotification } from '../types/Phone.interface'
+import { PhoneNotification } from '../../types/Phone.interface'
 
 export default defineComponent({
     props: {

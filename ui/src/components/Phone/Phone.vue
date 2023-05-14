@@ -26,16 +26,16 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref, watch } from 'vue'
-import PhoneNotification from '../components/PhoneNotification.vue';
-import { Phone } from '../types/Phone.interface';
-import { NotConnectedDisplay } from '../types/NotConnectedDisplay.interface';
-import { Settings } from '../types/Settings.interface';
-import { ColorVars, handleIconLumin } from '../utils/theme';
-import usbDisabled from '../assets/icons/usb_disabled.svg';
-import phoneLock from '../assets/icons/phone_lock.svg';
-import bluetoothDisabled from '../assets/icons/bluetooth_disabled.svg';
-import mobileDisabled from '../assets/icons/mobile_disabled.svg';
-import noNotifs from '../assets/icons/notifications_off.svg';
+import PhoneNotification from './PhoneNotification.vue';
+import { Phone } from '../../types/Phone.interface';
+import { NotConnectedDisplay } from '../../types/NotConnectedDisplay.interface';
+import { Settings } from '../../types/Settings.interface';
+import { ColorVars, handleIconLumin } from '../../utils/theme';
+import usbDisabled from '../../assets/icons/usb_disabled.svg';
+import phoneLock from '../../assets/icons/phone_lock.svg';
+import bluetoothDisabled from '../../assets/icons/bluetooth_disabled.svg';
+import mobileDisabled from '../../assets/icons/mobile_disabled.svg';
+import noNotifs from '../../assets/icons/notifications_off.svg';
 
 export default defineComponent({
     components: {

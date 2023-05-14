@@ -8,9 +8,9 @@
 
 <script lang="ts">
 import { defineComponent, inject, onMounted, Ref, ref, watch, watchEffect } from 'vue'
-import { routes, route } from "../constants/routes"
-import { Settings } from '../types/Settings.interface';
-import { ColorVars, handleIconLumin} from '../utils/theme';
+import { routes, route } from "../../constants/routes"
+import { Settings } from '../../types/Settings.interface';
+import { ColorVars, handleIconLumin} from '../../utils/theme';
 
 export default defineComponent({
     setup () {

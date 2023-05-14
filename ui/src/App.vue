@@ -8,8 +8,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, provide, ref, watch } from "vue";
-import NavButtons from "./components/NavButtons.vue";
-import InfoBar from "./components/InfoBar.vue";
+import NavButtons from "./components/Navigation/NavButtons.vue";
+import InfoBar from "./components/InfoBar/InfoBar.vue";
 import { BluetoothStore } from "./stores/BluetoothStore";
 import { SettingsStore } from "./stores/SettingsStore";
 import { setGlobalTheme } from "./utils/theme";

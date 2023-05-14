@@ -14,10 +14,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, inject, watch } from 'vue'
-import DataGauge from '../components/DataGauge.vue';
-import { Settings } from '../types/Settings.interface';
-import { Vehicle } from '../types/Vehicle.interface';
-import { kilometerToMile } from '../utils/convert';
+import DataGauge from './DataGauge.vue';
+import { Settings } from '../../types/Settings.interface';
+import { Vehicle } from '../../types/Vehicle.interface';
+import { kilometerToMile } from '../../utils/convert';
 
 // The type used in the STATS_LUT to hardcode mins/maxes, warn values, and unit converters.
 type GaugeVals = {

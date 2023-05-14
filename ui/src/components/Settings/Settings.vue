@@ -23,9 +23,9 @@
 
 <script lang="ts">
 import { defineComponent, inject, ref } from 'vue'
-import ThemePicker from '../components/ThemePicker.vue';
-import { Settings } from '../types/Settings.interface';
-import { setGlobalTheme } from '../utils/theme';
+import ThemePicker from './ThemePicker.vue';
+import { Settings } from '../../types/Settings.interface';
+import { setGlobalTheme } from '../../utils/theme';
 
 export default defineComponent({
     components: {ThemePicker},

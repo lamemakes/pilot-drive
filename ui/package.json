@@ -6,15 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path ../.gitignore"
   },
   "dependencies": {
     "vue": "^3.2.45",
     "vue-router": "4"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^5.0.0",
     "@types/node": "^18.14.1",
     "@vitejs/plugin-vue": "^4.0.0",
+    "eslint": "^8.40.0",
+    "eslint-plugin-vue": "^9.12.0",
     "node-sass": "^8.0.0",
     "sass": "^1.58.3",
     "sass-loader": "^13.2.0",
