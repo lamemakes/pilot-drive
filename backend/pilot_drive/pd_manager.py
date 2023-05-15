@@ -238,5 +238,7 @@ class PilotDrive:
             service_obj, process = service
             self.logging.debug(msg=f"Terminating: {service_obj} process")
             process.terminate()
+            process.join()
 
         self.logger_proc.terminate()
+        self.logger_proc.join()

@@ -37,5 +37,6 @@ PILOT Drive was built with tweaking and hacking in mind, via:
    :caption: Contents:
 
    Installation <installation>
+   How To's <how_to>
    API Reference <api/pilot_drive>
    Roadmap/Contribution Ideas <roadmap>

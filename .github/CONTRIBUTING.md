@@ -52,7 +52,7 @@ So far, PILOT Drive has only been tested and developed on Linux (Raspberry Pi OS
     - `cd pilot-drive`
     - `python3 -m black backend/pilot_drive`
     - `python3 -m pylint backend/pilot_drive`
-    - `sphinx-apidoc ./backend/pilot_drive -o ./docs/source/` 
+    - `sphinx-apidoc ./backend/pilot_drive -o ./docs/source/api/` 
 2. Put up a Pull Request referencing the issue/feature being fixed
 
 ## Thank you!

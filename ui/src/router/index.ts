@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { inject } from 'vue';
+import {Settings} from '../types/Settings.interface'
 import { routes } from "../constants/routes";
 
 const populateRoutes:RouteRecordRaw[] = []
@@ -17,7 +19,7 @@ const router = createRouter({
     {
       path: "/",
       redirect: () => {
-        return { name: "media" };
+        return { name: (inject("settingsStore") as Settings).home };
       },
     },
     ...populateRoutes
