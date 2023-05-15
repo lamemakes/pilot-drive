@@ -18,16 +18,15 @@ setup(
         "Documentation": "https://pilot-drive.readthedocs.org",
         "Bug Tracker": "https://github.com/lamemakes/pilot-drive/issues",
     },
-    install_requires=["websockets", "obd", "requests", "dasbus", "PyGObject"],
+    install_requires=["websockets", "obd @ git+https://github.com/brendan-w/python-OBD#egg=obd", "requests", "dasbus", "PyGObject"],
     entry_points={"console_scripts": ["pilot-drive = pilot_drive.__main__:run"]},
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
-    python_requires=">=3.9",
+    python_requires=">=3.11",
     classifiers=[
         "Environment :: Web Environment",
         "Intended Audience :: End Users/Desktop",
         "Programming Language :: Python :: 3.11"
-        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX :: Linux",
     ],
