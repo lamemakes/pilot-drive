@@ -5,7 +5,6 @@ export interface Settings {
     phoneEnabled: boolean,
     vehicleEnabled: boolean,
     selectedTheme: string,
-    home: string,
     themes: Theme[]
 }
 
