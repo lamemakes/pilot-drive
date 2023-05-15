@@ -2,8 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/pilot-drive/badge/?version=latest)](https://pilot-drive.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Pylint](https://github.com/lamemakes/pilot-drive/actions/workflows/pylint.yml/badge.svg)](https://github.com/lamemakes/pilot-drive/actions/workflows/pylint.yml)
-[![Pytest](https://github.com/lamemakes/pilot-drive/actions/workflows/pytest.yml/badge.svg)](https://github.com/lamemakes/pilot-drive/actions/workflows/pytest.yml)
+[![CI](https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml/badge.svg)](https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml)
 
 
 ## What is PILOT Drive?

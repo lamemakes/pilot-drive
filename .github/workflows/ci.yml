@@ -1,4 +1,4 @@
-name: Pytest
+name: CI
 
 on: [push]
 
@@ -18,9 +18,13 @@ jobs:
       run: |
         sudo apt install build-essential libdbus-glib-1-dev libgirepository1.0-dev libcairo2-dev
         python -m pip install --upgrade pip
-        python -m pip install pytest
+        python -m pip install pylint
         pip install backend/
-    - name: Analyzing the code with pylint
+    - name: Analyzing the backend with pylint
+      run: |
+        python -m pylint backend/pilot_drive
+    - name: Testing the backend with pytest
       run: |
         python -m pytest backend/
+
 
