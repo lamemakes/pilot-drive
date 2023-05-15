@@ -57,5 +57,5 @@ The project can always use an assist! You can contribute via...
 
 ## Notes
 - __Version__: PILOT Drive _is_ version 0.2.0, but in my heart it's v2.0. This is because I jumped the gun on my previous iteration - labeling a totally unstable and unorganized PILOT Drive v1. This version is the definition of a second iteration, but [semver](https://github.com/semver/semver) says different because of how much it will still likely change and be refactored.
-- __Stability__: It's likely there's quite a few bugs within this release of PILOT Drive, and a lot will change as features are added, and existing ones are refined. Please have patience with all of this, and if there is something you want fixed or added, feel free to take a stab at adding it!
+- __Stability__: It's likely there's quite a few bugs within this release of PILOT Drive. A lot will change as features are added and existing ones are refined. Please have patience with all of this, and if there is something you want fixed or added, feel free to take a stab at adding it!
 - __Legal Disclaimer__: Be aware of your local laws regarding in-vehicle entertainment/infotainment. Be safe! lamemakes and any other PILOT Drive contributors are **not** responsible for any unsafe driving due to the headunit.
