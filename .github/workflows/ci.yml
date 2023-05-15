@@ -18,7 +18,7 @@ jobs:
       run: |
         sudo apt install build-essential libdbus-glib-1-dev libgirepository1.0-dev libcairo2-dev
         python -m pip install --upgrade pip
-        python -m pip install pylint
+        python -m pip install pylint pytest
         pip install backend/
     - name: Analyzing the backend with pylint
       run: |
