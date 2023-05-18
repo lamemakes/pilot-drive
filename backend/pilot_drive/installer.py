@@ -1,6 +1,7 @@
 """
 The installer/setup wizard for PILOT Drive
 """
+from argparse import Namespace
 import json
 import subprocess
 import os
@@ -8,6 +9,7 @@ import re
 import shutil
 import platform
 import sys
+import argparse
 from enum import StrEnum
 from typing import List, Dict, Optional
 import requests
@@ -21,6 +23,8 @@ from pilot_drive.constants import (
     DEFAULT_WEB_SETTINGS,
 )
 
+from pilot_drive.services.phone.constants import PhoneTypes
+from pilot_drive.services.vehicle.constants import PORT_PATH_VALIDATOR
 
 # Executables directory
 BIN_DIR = "/usr/local/bin"
@@ -105,6 +109,12 @@ class FailedToDetectDistroManagerException(Exception):
     """
 
 
+class FailedToDetectSysArchException(Exception):
+    """
+    Raised when the system architecture could not be detected
+    """
+
+
 class Installer:
     """
     The installer used to install and configure PILOT Drive
@@ -150,6 +160,41 @@ class Installer:
             return bash_result.stdout[:-1]  # Remove the last newline
 
         return bash_result.stdout
+
+    def get_settings(self) -> Dict:
+        """
+        Get current settings or create a new
+
+        :return: A settings dict of either an existing or created settings
+        """
+        if os.path.exists(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"):
+            with open(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "r") as settings_file:
+                try:
+                    settings = json.load(fp=settings_file)
+                except json.JSONDecodeError:
+                    settings = {
+                        **DEFAULT_BACKEND_SETTINGS,
+                        WEB_SETTINGS_ATTRIBUTE: {**DEFAULT_WEB_SETTINGS},
+                    }
+        else:
+            settings = {
+                **DEFAULT_BACKEND_SETTINGS,
+                WEB_SETTINGS_ATTRIBUTE: {**DEFAULT_WEB_SETTINGS},
+            }
+
+        return settings
+
+    def write_settings(self, settings: Dict) -> None:
+        """
+        Write to the settings file
+
+        :param settings: the settings dict that has been modified to be written
+        """
+        os.makedirs(name=SETTINGS_PATH, exist_ok=True)
+        with open(
+            f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "w", encoding="utf-8"
+        ) as config:
+            json.dump(obj=settings, fp=config, indent=2)
 
     def prompt_yes_no(self, prompt: str, default_in: str) -> bool:
         """
@@ -232,7 +277,8 @@ class Installer:
 
         user_in = ""
         while re.search(regex_validator, user_in) is None:
-            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+            user_in = input(
+                f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
 
             if re.search(regex_validator, user_in) is None:
                 print(
@@ -268,6 +314,21 @@ class Installer:
             )
 
         return manager
+
+    def detect_current_arch(self) -> CommonArchs:
+        """
+        Detect the distribution manager used by the host
+
+        :return: DistroManager Enum item with the detected distribution manager
+        :raise: FailedToDetectSysArchException if system arch could not be detected
+        """
+        try:
+            return CommonArchs(platform.uname().machine)
+        except ValueError:
+            raise FailedToDetectSysArchException(
+                f'Failed to detect system architecture, "{platform.uname().machine}"'
+                f"is not recognized by the installer at this time."
+            )
 
     def install_from_distro_manager(self, packages: List[str]) -> None:
         """
@@ -387,9 +448,12 @@ class Installer:
 
         print(f"{Colors.GREEN}{Colors.BOLD}Completed Firefox install!{Colors.ENDC}")
 
-    def install_adb(self) -> None:
+    def install_adb(self, settings: Dict) -> Dict:
         """
         Install ADB and it's needed dependencies
+
+        :param settings: A dict of the settings to be written to
+        :return: a modified settings dict
         """
         appt2_url = (
             "https://raw.githubusercontent.com/lamemakes/pilot-drive/master/bin/aapt2"
@@ -433,12 +497,20 @@ class Installer:
 
             print(f"{Colors.GREEN}Completed AAPT2 install!{Colors.ENDC}")
 
-    def install_ancs(self) -> None:
+        settings["phone"]["enabled"] = True
+        settings["phone"]["type"] = "android"
+
+        return settings
+
+    def install_ancs(self, settings: Dict) -> Dict:
         """
         Install ANCS4Linux to get iOS/iPadOS notifications
 
         Based off of the shell script here:
         https://github.com/pzmarzly/ancs4linux/blob/master/autorun/install.sh
+
+        :param settings: A dict of the settings to be written to
+        :return: a modified settings dict
         """
         ancs_repo = "https://github.com/pzmarzly/ancs4linux"
         ancs_dir = f"{OPT_DIR}/ancs4linux"
@@ -447,33 +519,36 @@ class Installer:
 
         # Clone the repo & install dependencies
         self.install_from_distro_manager(["python3-gi"])
-        self.exec_cmd(f"{Cmd.GIT_CWD} {OPT_DIR}/ clone {ancs_repo}")
+        try:
+            self.exec_cmd(f"{Cmd.GIT_CWD} {OPT_DIR}/ clone {ancs_repo}")
+        except FailedToExecuteCommandException:
+            pass  # Git seems to output to stderr
 
         # Create ancs4linux user
         self.exec_cmd("groupadd -f ancs4linux")
-        root_user = self.exec_cmd("${SUDO_USER:-root}")
+        root_user = self.exec_cmd("echo ${SUDO_USER:-root}")
         self.exec_cmd(f'usermod -a -G ancs4linux "{root_user}"')
 
         # Install as a service
         self.exec_cmd(
-            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.service"
-            f"/usr/lib/systemd/system/ancs4linux-observer.service"
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.service "
+            "/usr/lib/systemd/system/ancs4linux-observer.service"
         )
         self.exec_cmd(
-            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.xml"
-            f"/etc/dbus-1/system.d/ancs4linux-observer.conf"
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-observer.xml "
+            "/etc/dbus-1/system.d/ancs4linux-observer.conf"
         )
         self.exec_cmd(
-            f"""{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.service
-             /usr/lib/systemd/system/ancs4linux-advertising.service"""
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.service "
+            "/usr/lib/systemd/system/ancs4linux-advertising.service"
         )
         self.exec_cmd(
-            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.xml"
-            f"/etc/dbus-1/system.d/ancs4linux-advertising.conf"
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-advertising.xml "
+            "/etc/dbus-1/system.d/ancs4linux-advertising.conf"
         )
         self.exec_cmd(
-            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-desktop-integration.service"
-            f"/etc/dbus-1/system.d/ancs4linux-desktop-integration.service"
+            f"{Cmd.INSTALL_W_READ} {ancs_dir}/autorun/ancs4linux-desktop-integration.service "
+            "/etc/dbus-1/system.d/ancs4linux-desktop-integration.service"
         )  # Maybe not needed?
 
         self.exec_cmd(f"cd {ancs_dir} && pip3 install .")
@@ -481,16 +556,52 @@ class Installer:
         self.exec_cmd(f"{Cmd.SYSTEMCTL} daemon-reload")
 
         # Enable & start the ANCS service
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
-        self.exec_cmd(
-            f"{Cmd.SYSTEMCTL} --global enable ancs4linux-desktop-integration.service"
-        )  # Maybe not needed?
+        try:
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
+        except FailedToExecuteCommandException:
+            pass
+
+        try:
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
+        except FailedToExecuteCommandException:
+            pass
+
+        try:
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} --global enable ancs4linux-desktop-integration.service"
+            )  # Maybe not needed?
+        except FailedToExecuteCommandException:
+            pass
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-observer.service")
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
+        self.exec_cmd(
+            f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
 
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
+
+        settings["phone"]["enabled"] = True
+        settings["phone"]["type"] = "ios"
+
+        return settings
+
+    def configure_obd(self, settings: Dict, port: str) -> Dict:
+        """
+        Configure an OBD port in settings
+
+        :param port: A validated port in string
+        :param settings: A dict of the settings to be written to
+        :return: a modified settings dict
+        """
+        settings["vehicle"]["enabled"] = True
+        settings["vehicle"]["port"] = port
+        print(
+            f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, "
+            f'and port set to "{port}"{Colors.ENDC}'
+        )
+
+        return settings
 
     def for_production(self):
         """
@@ -564,7 +675,8 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
+                new_lxde_contents = lxde_contents.split(
+                    "\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
@@ -668,14 +780,13 @@ class Installer:
 
         return user_in
 
-    def main(self) -> None:  # pylint: disable=too-many-statements
+    def interactive_install(  # pylint: disable=too-many-statements
+        self, args: Namespace
+    ) -> None:
         """
         Run the PILOT Drive installer/config
         """
-        settings = {
-            **DEFAULT_BACKEND_SETTINGS,
-            WEB_SETTINGS_ATTRIBUTE: {**DEFAULT_WEB_SETTINGS},
-        }
+        settings = self.get_settings()
 
         self.is_production = self.prompt_yes_no(
             prompt=(
@@ -739,13 +850,9 @@ class Installer:
             case 0:
                 pass  # Don't configure the phone
             case 1:
-                settings["phone"]["enabled"] = True
-                settings["phone"]["type"] = phone_list[phone_prompt].lower()
-                self.install_ancs()
+                settings = self.install_ancs(settings=settings)
             case 2:
-                settings["phone"]["enabled"] = True
-                settings["phone"]["type"] = phone_list[phone_prompt].lower()
-                self.install_adb()
+                settings = self.install_adb(settings=settings)
             case _:
                 print(
                     f"""{Colors.WARNING}{Colors.BOLD}Selection not recognized,
@@ -760,15 +867,10 @@ class Installer:
         if not vehicle_prompt:
             port = self.prompt_input(
                 prompt="Enter the path to the OBDII serial port",
-                regex_validator=r"^\/(.+)\/([^\/]+)$",
+                regex_validator=PORT_PATH_VALIDATOR,
                 example="/dev/ttyUSB0",
             )
-            settings["vehicle"]["enabled"] = True
-            settings["vehicle"]["port"] = port
-            print(
-                f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, "
-                f'and port set to "{port}"{Colors.ENDC}'
-            )
+            settings = self.configure_obd(settings=settings, port=port)
 
         if self.is_rpi:
             camera_prompt = self.prompt_yes_no(
@@ -798,13 +900,162 @@ class Installer:
             f"{Colors.BLUE}{Colors.BOLD}Attempting to writing PILOT Drive settings to "
             f'"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"...{Colors.ENDC}'
         )
-        os.makedirs(name=SETTINGS_PATH, exist_ok=True)
-        with open(
-            f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "w", encoding="utf-8"
-        ) as config:
-            json.dump(obj=settings, fp=config, indent=2)
+        self.write_settings(settings=settings)
 
         print()
         print(
             f"{Colors.GREEN}{Colors.BOLD}PILOT Drive install has been completed!{Colors.ENDC}"
         )
+
+    def non_interactive_install(self, args: Namespace) -> None:
+        """
+        Run a non-interactive installer based on command line arguments
+
+        :param args: argparser args
+        """
+        settings = self.get_settings()
+
+        if args.obd:
+            settings = self.configure_obd(settings=settings, port=args.obd)
+
+        if args.phone:
+            match args.phone:
+                case PhoneTypes.IOS:
+                    settings = self.install_ancs(settings=settings)
+                case PhoneTypes.ANDROID:
+                    settings = self.install_adb(settings=settings)
+
+        self.write_settings(settings=settings)
+
+    def main(self, args: Namespace) -> None:
+        self.distro_manager = (
+            args.distroman if args.distroman else self.detect_distro_manager()
+        )
+        self.current_arch = args.arch if args.arch else self.detect_current_arch()
+
+        if args.phone or args.obd:
+            self.non_interactive_install(args=args)
+        else:
+            self.interactive_install(args=args)
+
+
+def installer_arguments(parser: argparse.ArgumentParser) -> None:
+    """
+    Initialize the command line arguments of the installer
+
+    :param parser: An initalized argparse.ArgumentParser to populate with arguments
+    """
+    parser.add_argument(
+        "-s",
+        "--setup",
+        action="store_true",
+        help="Run the PILOT Drive configuration & installation tool",
+    )
+
+    parser.add_argument(
+        "-d",
+        "--default",
+        action="store_true",
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "runs a non-interactive installer to setup and install PILOT Drive with default settings."
+        ),
+    )
+
+    def validate_obd(port: str) -> str:
+        """
+        Validator for phone inputs
+
+        :param port: the path to the serial port
+        :return: the valid path to the serial port
+        :raises: argparse.ArgumentTypeError if invalid
+        """
+        if re.search(PORT_PATH_VALIDATOR, port) is None:
+            raise argparse.ArgumentTypeError(f'Invalid OBD port "{port}"!')
+
+        return port
+
+    parser.add_argument(
+        "-o",
+        "--obd",
+        type=validate_obd,
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "runs a non-interactive installer to only setup the OBD port in PILOT Drive"
+        ),
+    )
+
+    def validate_phone(type: str) -> PhoneTypes:
+        """
+        Validator for phone inputs
+
+        :param type: phone type input to be checked
+        :return: the valid phone type string in lowercase
+        :raises: argparse.ArgumentTypeError if invalid
+        """
+        type = type.lower()
+        try:
+            return PhoneTypes(type)
+        except ValueError:
+            raise argparse.ArgumentTypeError(f'Invalid phone type "{type}"!')
+
+    parser.add_argument(
+        "--phone",
+        type=validate_phone,
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "runs a non-interactive installer to only setup and install notification services "
+            "for the specified device"
+        ),
+    )
+
+    def validate_distro_manager(man: str) -> DistroManagers:
+        """
+        Validator for distribution manager input
+
+        :param man: phone type input to be checked
+        :return: the valid phone type string in lowercase
+        :raises: argparse.ArgumentTypeError if invalid
+        """
+        man = man.lower()
+        try:
+            return DistroManagers(man)
+        except ValueError:
+            raise argparse.ArgumentTypeError(
+                f'Invalid distribution manger "{man}"!')
+
+    parser.add_argument(
+        "--distroman",
+        type=validate_distro_manager,
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "allows the user to specify what distro manager to use ('apt' or 'yum'), "
+            "if not specified, auto-detect is used"
+        ),
+    )
+
+    def validate_sys_arch(arch: str) -> CommonArchs:
+        """
+        Validator for distribution manager input
+
+        :param man: phone type input to be checked
+        :return: the valid phone type string in lowercase
+        :raises: argparse.ArgumentTypeError if invalid
+        """
+        arch = arch.lower()
+        try:
+            return CommonArchs(arch)
+        except ValueError:
+            raise argparse.ArgumentTypeError(
+                f'Invalid distribution manger "{arch}"!')
+
+    parser.add_argument(
+        "--arch",
+        type=validate_sys_arch,
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "allows the user to specify what system architecture to use "
+            "('aarch64', 'arm64', 'armv7l', 'x86' or 'x86_64'), "
+            "if not specified, auto-detect is used"
+        ),
+    )

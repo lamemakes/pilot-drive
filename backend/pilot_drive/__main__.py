@@ -6,23 +6,9 @@ import os
 import sys
 import asyncio
 import argparse
-
-parser = argparse.ArgumentParser(
-    prog="pilot-drive", description="An open source vehicle headunit"
-)
-
-parser.add_argument(
-    "-i",
-    "--install",
-    action="store_true",
-    help="Run the PILOT Drive configuration & installation tool",
-)
-parser.add_argument(
-    "-d",
-    "--default",
-    action="store_true",
-    help="""When used alongside the -i/--install argument,
-     uses all preset default values to configure PILOT Drive""",
+from pilot_drive.installer import (  # pylint: disable=import-outside-toplevel
+    Installer,
+    installer_arguments,
 )
 
 
@@ -30,19 +16,21 @@ def start() -> None:
     """
     Entrypoint for PILOT Drive. Handle arguments and determine to run main, or install.
     """
+    parser = argparse.ArgumentParser(
+        prog="pilot-drive", description="An open source vehicle headunit"
+    )
+
+    installer_arguments(parser=parser)
+
     if os.geteuid() != 0:
         sys.exit(
             """\nYou need to have root privileges to run PILOT Drive.
             \nPlease try again, this time using 'sudo'. Exiting.\n"""
         )
     args = parser.parse_args()
-    if args.install is True:
-        from pilot_drive.installer import (  # pylint: disable=import-outside-toplevel
-            Installer,
-        )
-
+    if args.setup is True:
         pilot_drive_install = Installer(use_default=args.default)
-        pilot_drive_install.main()
+        pilot_drive_install.main(args=args)
     else:
         run()
 

@@ -3,28 +3,45 @@ Installation
 
 Installing Python 3.11
 ----------------------
-Due to the latest Python features being implemented, Python 3.11 is required. See the following guide to install it on Debian:
+Due to the latest Python features being implemented in PILOT Drive, Python 3.11 is required. 
+
+Install dependencies for... 
+
+**Debian**:
 
 .. code-block:: sh
 
-   wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz
    sudo apt-get -y install build-essential gdb lcov pkg-config \
       libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
       libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
       lzma lzma-dev tk-dev uuid-dev zlib1g-dev
+
+
+**Fedora/CentOS**
+
+.. code-block:: sh
+
+   sudo yum install yum-utils
+   sudo yum-builddep python3
+
+
+**Build and Install Python 3.11**
+
+.. code-block:: sh
+
+   wget https://www.python.org/ftp/python/3.11.2/Python-3.11.2.tgz
    tar -xzvf Python-3.11.2.tgz
    cd Python-3.11.2/
    ./configure --enable-optimizations
    sudo make altinstall
 
 
-and then to set it as the default ``python3`` via:
+*(optional)* **Set it as the default** ``python3`` **via:**
 
 .. code-block:: sh
 
    cd /usr/bin
    sudo rm python3
-   tar -xzvf Python-3.11.2.tgz
    sudo ln -s /usr/local/bin/python3.11 python3
    python3 --version  #Confirm proper versioning
 

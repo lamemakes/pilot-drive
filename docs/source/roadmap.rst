@@ -33,7 +33,8 @@ Frontend/UI
 | ☐ Initial implementation of `vitest <https://vitest.dev/>`_ unit tests
 | ☐ Better "quick glance" info in top bar (connected bluetooth/usb devices, wifi connectivity, etc)
 | ☐ Support for dark/tinted mode. Allowing setting for automatic detection (using PILOT Drive HAT headlight detection), and manual enabling.
-
+| ☐ Better state management/stores, implementing Vuex
+| ☐ Documentation & API reference. So far only the backend has gotten documentation love
 
 Backend
 ----------------------

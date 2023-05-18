@@ -3,7 +3,7 @@ RM := rm -fr
 UI_DIR := ui
 BACKEND_DIR := backend
 YARN := yarn --cwd $(UI_DIR)
-PYTHON := python3
+PYTHON := python3.11
 
 # Display vars
 COLOR_LIGHT_PURPLE := '\e[1;35m'
