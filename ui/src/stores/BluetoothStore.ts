@@ -5,5 +5,6 @@ export let BluetoothStore: BluetoothDevice = reactive({
         powered: false,
         address: undefined,
         hostname: undefined,
+        discoverable: false,
         devices: []
 })

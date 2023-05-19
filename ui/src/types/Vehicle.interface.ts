@@ -1,5 +1,6 @@
 export interface Vehicle {
     enabled: boolean, // Is OBD reading enabled?
+    failures: boolean,
     connected: boolean,
     stats: Stats[]
 }

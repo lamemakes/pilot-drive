@@ -1,4 +1,8 @@
-# PILOT Drive ✨v(0.)2.0✨    
+<p align="center">
+  <img src="docs/source/images/pilot_banner.png" alt="PILOT Drive logo" />
+</p> 
+
+<br>
 
 [![Documentation Status](https://readthedocs.org/projects/pilot-drive/badge/?version=latest)](https://pilot-drive.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

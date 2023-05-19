@@ -10,6 +10,14 @@
             :warn="getGaugeVals(stat.name).warn">
         </DataGauge>
     </div>
+    <div v-else id="not-connected">
+        <div id="not-connected-container">
+            <div id="not-connected-icon-container">
+                <img class="not-connected-icon" :src="noCarIcon" />
+            </div>
+            <p>Not connected to vehicle!</p>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -18,6 +26,7 @@ import DataGauge from './DataGauge.vue';
 import { Settings } from '../../types/Settings.interface';
 import { Vehicle } from '../../types/Vehicle.interface';
 import { kilometerToMile } from '../../utils/convert';
+import noCarIcon from '../../assets/icons/car_issue.svg'
 
 // The type used in the STATS_LUT to hardcode mins/maxes, warn values, and unit converters.
 type GaugeVals = {
@@ -62,7 +71,7 @@ export default defineComponent({
         },
         {deep: true})
 
-        return {vehicleStore, stats, getGaugeVals}
+        return {vehicleStore, stats, getGaugeVals, noCarIcon}
     }
 })
 </script>
@@ -76,5 +85,25 @@ export default defineComponent({
 
 .gauge {
     margin-inline: 1vw;
+}
+
+#not-connected {
+    display: grid;
+    justify-items: center;
+}
+
+#not-connected-container, #no-notifs-container {
+    color: var(--primary-lumin);
+    display: grid;
+    justify-items: center;
+    p {
+        font-size: 25px;
+        width: 60%;
+        text-align: center;
+    }
+}
+
+.not-connected-icon, .no-notifs-icon {
+    height: 15vh;
 }
 </style>

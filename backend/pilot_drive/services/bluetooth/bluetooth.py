@@ -7,6 +7,7 @@ from dasbus.connection import (  # type: ignore # missing
     SystemMessageBus,
 )
 from dasbus.typing import ObjPath, Variant, Str
+from dasbus.error import DBusError
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue import MasterEventQueue, EventType
@@ -34,7 +35,7 @@ class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
     path: ObjPath = field(repr=False)
     props_changed_callback: Callable = field(repr=False)
     logger: MasterLogger = field(repr=False)
-    name: str = field(init=False)
+    name: Optional[str] = field(init=False, default=None)
     alias: str = field(init=False)
     address: str = field(init=False)
     connected: bool = field(init=False)
@@ -57,7 +58,10 @@ class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
         return not media_temp_uuids
 
     def __post_init__(self):
-        self.name = self.bluez_device.Name
+        try:
+            self.name = self.bluez_device.Name
+        except DBusError:
+            self.name = None
         self.alias = self.bluez_device.Alias
         self.address = self.bluez_device.Address
         self.connected = self.bluez_device.Connected
@@ -100,7 +104,8 @@ class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
         :return: a dict of the device's informational attributes.
         """
         # Attributes to removed as they aren't informational/serializable.
-        attrs_to_remove = {"bluez_device", "path", "props_changed_callback", "logger"}
+        attrs_to_remove = {"bluez_device", "path",
+                           "props_changed_callback", "logger"}
         device_dict = self.__dict__.copy()
         for attribute in attrs_to_remove:
             device_dict.pop(attribute)
@@ -288,6 +293,24 @@ class Bluetooth(AbstractService):
 
     #     return av_list
 
+    # def handler(self, command: str) -> None:
+    #     print(command)
+    #     match command:
+    #         case WSCommands.START_DISCOVERY:
+    #             print('START DISCOVERY')
+    #             self.bluez_adapter.Discoverable = True
+    #             self.bluez_adapter.Pairable = True
+    #             print(self.bluez_adapter.Discoverable)
+    #         case WSCommands.STOP_DISCOVERY:
+    #             print('STOP DISCOVERY')
+    #             self.bluez_adapter.Discoverable = False
+    #             self.bluez_adapter.Pairable = True
+    #             print(self.bluez_adapter.Discoverable)
+    #         case WSCommands.POWER_OFF:
+    #             self.bluez_adapter.Powered = False
+    #         case WSCommands.POWER_ON:
+    #             self.bluez_adapter.Powered = True
+
     @property
     def active_ancs_devices(self) -> List[str]:
         """
@@ -303,7 +326,8 @@ class Bluetooth(AbstractService):
                 uuid = services[BluezGattCharacteristic.interface]["UUID"].unpack()
                 if uuid in ANCS_CHARS:
                     device_path = "/".join(path.split("/")[:-2])
-                    device = BluezDevice.connect(bus=self.bus, path=device_path)
+                    device = BluezDevice.connect(
+                        bus=self.bus, path=device_path)
                     if device.Connected and device.Address not in ancs_devices:
                         ancs_devices.append(device.Address)
 

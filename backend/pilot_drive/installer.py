@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 The installer/setup wizard for PILOT Drive
 """
@@ -42,7 +43,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User=root
-ExecStart=python3 -m pilot_drive
+ExecStart=python3.11 -m pilot_drive
 
 [Install]
 WantedBy=multi-user.target"""
@@ -167,8 +168,9 @@ class Installer:
 
         :return: A settings dict of either an existing or created settings
         """
-        if os.path.exists(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"):
-            with open(f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}", "r") as settings_file:
+        full_settings_path = f"{SETTINGS_PATH}{SETTINGS_FILE_NAME}"
+        if os.path.exists(full_settings_path):
+            with open(full_settings_path, "r", encoding="utf-8") as settings_file:
                 try:
                     settings = json.load(fp=settings_file)
                 except json.JSONDecodeError:
@@ -324,11 +326,11 @@ class Installer:
         """
         try:
             return CommonArchs(platform.uname().machine)
-        except ValueError:
+        except ValueError as exc:
             raise FailedToDetectSysArchException(
                 f'Failed to detect system architecture, "{platform.uname().machine}"'
                 f"is not recognized by the installer at this time."
-            )
+            ) from exc
 
     def install_from_distro_manager(self, packages: List[str]) -> None:
         """
@@ -780,9 +782,7 @@ class Installer:
 
         return user_in
 
-    def interactive_install(  # pylint: disable=too-many-statements
-        self, args: Namespace
-    ) -> None:
+    def interactive_install(self) -> None:  # pylint: disable=too-many-statements
         """
         Run the PILOT Drive installer/config
         """
@@ -928,6 +928,11 @@ class Installer:
         self.write_settings(settings=settings)
 
     def main(self, args: Namespace) -> None:
+        """
+        The main installer method
+
+        :param args: The given command line arguments
+        """
         self.distro_manager = (
             args.distroman if args.distroman else self.detect_distro_manager()
         )
@@ -936,7 +941,8 @@ class Installer:
         if args.phone or args.obd:
             self.non_interactive_install(args=args)
         else:
-            self.interactive_install(args=args)
+            # The interactive install doesn't currently take arg input.
+            self.interactive_install()
 
 
 def installer_arguments(parser: argparse.ArgumentParser) -> None:
@@ -958,7 +964,8 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         action="store_true",
         help=(
             "When used alongside the -s/--setup argument, "
-            "runs a non-interactive installer to setup and install PILOT Drive with default settings."
+            "runs a non-interactive installer to setup and "
+            "install PILOT Drive with default settings."
         ),
     )
 
@@ -985,7 +992,7 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         ),
     )
 
-    def validate_phone(type: str) -> PhoneTypes:
+    def validate_phone(phone_type: str) -> PhoneTypes:
         """
         Validator for phone inputs
 
@@ -993,11 +1000,12 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         :return: the valid phone type string in lowercase
         :raises: argparse.ArgumentTypeError if invalid
         """
-        type = type.lower()
+        phone_type = phone_type.lower()
         try:
             return PhoneTypes(type)
-        except ValueError:
-            raise argparse.ArgumentTypeError(f'Invalid phone type "{type}"!')
+        except ValueError as exc:
+            raise argparse.ArgumentTypeError(
+                f'Invalid phone type "{phone_type}"!') from exc
 
     parser.add_argument(
         "--phone",
@@ -1020,9 +1028,9 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         man = man.lower()
         try:
             return DistroManagers(man)
-        except ValueError:
+        except ValueError as exc:
             raise argparse.ArgumentTypeError(
-                f'Invalid distribution manger "{man}"!')
+                f'Invalid distribution manger "{man}"!') from exc
 
     parser.add_argument(
         "--distroman",
@@ -1045,9 +1053,9 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         arch = arch.lower()
         try:
             return CommonArchs(arch)
-        except ValueError:
+        except ValueError as exc:
             raise argparse.ArgumentTypeError(
-                f'Invalid distribution manger "{arch}"!')
+                f'Invalid distribution manger "{arch}"!') from exc
 
     parser.add_argument(
         "--arch",

@@ -51,6 +51,7 @@ class Vehicle(AbstractService):
         super().__init__(master_event_queue, service_type, logger)
 
         self.__connected = False
+        self.__failed = False
         self.__connection = None
         self.__max_interval = 0
 
@@ -81,20 +82,31 @@ class Vehicle(AbstractService):
         """
         if self.__obd_port:
             if os.path.exists(self.__obd_port):
-                self.__connection = obd.OBD(self.__obd_port)
+                connection = obd.OBD(self.__obd_port)
+                self.__failed = False
+                if connection != self.__connection:
+                    self.__push_info()
+                self.__connection = connection
                 self.logger.info(f"OBD connection made to {self.__obd_port}.")
             else:
+                if not self.__failed:
+                    self.__push_info()
+                    self.__failed = True
+
                 raise InvalidPortException(
                     f'Specified path: "{self.__obd_port}" does not exist!'
                 )
         else:
             self.__connection = obd.OBD()
 
+        self.__push_info()
+
     def __push_info(self):
         """
         Push the current vehicle data to the frontend
         """
-        vehicle_info = {"connected": self.__connected, "stats": self.stats}
+        vehicle_info = {"connected": self.__connected,
+                        "failures": self.__failed, "stats": self.stats}
         self.push_to_queue(vehicle_info)
 
     def __query_fields(self, queries_made: int):
@@ -134,7 +146,8 @@ class Vehicle(AbstractService):
                             "magnitude": resp_tuple[1][0][1],
                         }
                         if len(self.stats) == field_index:
-                            self.stats.append({"name": field_name, "value": value})
+                            self.stats.append(
+                                {"name": field_name, "value": value})
                         else:
                             self.stats[field_index] = {
                                 "name": field_name,
@@ -143,7 +156,8 @@ class Vehicle(AbstractService):
 
                         field_index += 1
                     else:
-                        self.logger.error(msg=f'Failed to query for "{field_name}"')
+                        self.logger.error(
+                            msg=f'Failed to query for "{field_name}"')
                         continue
 
             if self.stats:

@@ -2,6 +2,7 @@ export interface BluetoothDevice {
     powered: boolean;
     address: string | undefined;
     hostname: string | undefined;
+    discoverable: boolean;
     devices: Device[];
 }
 
