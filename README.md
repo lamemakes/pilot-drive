@@ -1,13 +1,17 @@
 <p align="center">
-  <img src="docs/source/images/pilot_banner.png" alt="PILOT Drive logo" />
+  <img src="docs/source/images/pilot_banner.png" alt="PILOT Drive logo" width="25%"/>
 </p> 
-
-<br>
-
-[![Documentation Status](https://readthedocs.org/projects/pilot-drive/badge/?version=latest)](https://pilot-drive.readthedocs.io/en/latest/?badge=latest)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![CI](https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml/badge.svg)](https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml)
-
+<p align="center">
+  <a href="https://pilot-drive.readthedocs.io/en/latest/?badge=latest">
+    <img src="https://readthedocs.org/projects/pilot-drive/badge/?version=latest" alt="docs status" />
+  </a>&nbsp;
+  <a href="https://github.com/psf/black">
+    <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="code style black" />
+  </a>&nbsp;
+  <a href="https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml">
+    <img src="https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml/badge.svg" alt="Pilot Drive CI" />
+  </a>
+</p>
 
 ## What is PILOT Drive?
 
