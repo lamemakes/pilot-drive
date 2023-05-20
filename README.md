@@ -1,8 +1,8 @@
 <!-- This top foratting was admittedly stolen from Angular's README -->
 <p align="center">
-    <img src="docs/source/images/pilot_text.png" alt="PILOT Drive" width="350px"/>
-    <br>
     <img src="docs/source/images/pilot_icon.png" alt="PILOT Drive icon" height="120px" width="120px"/>
+    <br>
+    <img src="docs/source/images/pilot_text.png" alt="PILOT Drive" width="350px"/>
 </p> 
 <p align="center">
   <a href="https://pilot-drive.readthedocs.io/en/latest/?badge=latest">
