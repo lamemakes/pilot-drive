@@ -1,5 +1,9 @@
+<h1 align="center">PILOT Drive</h1>
 <p align="center">
-  <img src="docs/source/images/pilot_icon.png" alt="PILOT Drive logo" height="120px" width="120px"/>
+  <img src="docs/source/images/pilot_icon.png" alt="PILOT Drive icon" height="120px" width="120px"/>
+</p>
+<p align="center">
+  <img src="docs/source/images/pilot_text.png" alt="PILOT Drive"/>
 </p> 
 <p align="center">
   <a href="https://pilot-drive.readthedocs.io/en/latest/?badge=latest">
@@ -12,6 +16,7 @@
     <img src="https://github.com/lamemakes/pilot-drive/actions/workflows/ci.yml/badge.svg" alt="Pilot Drive CI" />
   </a>
 </p>
+<p align="center">A free and open source vehicle headunit</p>
 
 ## What is PILOT Drive?
 
