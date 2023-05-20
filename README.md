@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/source/images/pilot_banner.png" alt="PILOT Drive logo" width="35%"/>
+  <img src="docs/source/images/pilot_icon.png" alt="PILOT Drive logo" height="120px" width="120px"/>
 </p> 
 <p align="center">
   <a href="https://pilot-drive.readthedocs.io/en/latest/?badge=latest">
