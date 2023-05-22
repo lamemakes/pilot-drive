@@ -37,7 +37,7 @@ PILOT Drive was built with tweaking and hacking in mind, via:
    :caption: Contents:
 
    tutorials/index
-   how_to
+   how-to/index
    explanatory
    API Reference <api/pilot_drive>
    Roadmap/Contribution Ideas <roadmap>

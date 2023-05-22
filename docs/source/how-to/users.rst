@@ -1,7 +1,7 @@
-How do I...
+as a user...
 ====================
 
-How-to's for PILOT Drive
+User How-To's for PILOT Drive
 
 Add new themes
 ----------------------
@@ -70,7 +70,7 @@ Recieve notifications from my Android device
 #. Under the phone view, any **active** notifications from the connected ADB device will be present.
 
 .. _"Allow USB debugging?":
-.. figure:: images/android_adb_prompt.jpg
+.. figure:: ../images/android_adb_prompt.jpg
     :scale: 30%
     :alt: Trust ADB host device prompt on Android
 
@@ -100,7 +100,7 @@ Recieve notifications from my iOS device
 #. Under the phone view, any **new** notifications from the connected iOS device will be present
 
 .. _"Allow <host> to Recieve Your Notifications?":
-.. figure:: images/ios_ancs_prompt.jpg
+.. figure:: ../images/ios_ancs_prompt.jpg
     :scale: 50%
     :alt: Trust ANCS host device prompt on iOS
 
