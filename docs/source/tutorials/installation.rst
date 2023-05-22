@@ -36,16 +36,6 @@ Install dependencies for...
    sudo make altinstall
 
 
-*(optional)* **Set it as the default** ``python3`` **via:**
-
-.. code-block:: sh
-
-   cd /usr/bin
-   sudo rm python3
-   sudo ln -s /usr/local/bin/python3.11 python3
-   python3 --version  #Confirm proper versioning
-
-
 Quick Start
 ----------------------
 Install
@@ -56,7 +46,7 @@ To quick start your installation of PILOT Drive, you can use the included instal
 .. code-block:: sh
 
    python3 -m pip install pilot-drive  # Install from PyPi
-   python3 -m pilot_drive -i           # Run PILOT Drive installer
+   python3 -m pilot_drive --setup      # Run PILOT Drive installer
    
 
 This will lead you through all the configuration steps to ensure PILOT Drive is configured quickly and properly based on the machine it's running on.
@@ -66,7 +56,6 @@ Manual install
 Requirements
 ^^^^^^^^^^^^^^^^^^^^
 
-- Raspberry Pi 4 or other Linux SBC
 - python >= v3.11
 - node   >= v16.16.0
 - npm    >= v8.11.0
