@@ -28,3 +28,25 @@ Making a new service has some basic prerequisites to allow for modularity:
     - This is where the fun happens! Build your services' logic, and make sure it can be leveraged by the frontend.
 
 **NOTE: Do not use the Python logging module in services, only the provided PILOT Drive Logger!**
+
+
+run an OBD/ELM327 emmulator
+---------------------------
+
+It's pretty inconvenient as a developer to walk out to your car every time you want to test a feature. Thankfully, `ELM327-emulator <https://github.com/Ircama/ELM327-emulator>`_ makes this easy!
+
+#. Confirm ELM327-emulator is installed:
+
+    .. code-block:: sh
+
+        python3.11 -m pip install ELM327-emulator
+
+#. Run the ELM327 emulator:
+
+    .. code-block:: sh
+
+        python3 -m elm
+
+#. Note the port provided and `configure PILOT Drive with specified port <https://pilot-drive.readthedocs.io/en/latest/how-to/users.html#connect-my-odbii-elm327-reader>`_
+#. Restart PILOT Drive
+#. You should now see emulated vehicle data under the vehicle tab.

@@ -105,3 +105,23 @@ Recieve notifications from my iOS device
     :alt: Trust ANCS host device prompt on iOS
 
     Trust ANCS host device prompt on iOS
+
+
+Connect my ODBII/ELM327 reader
+-------------------------------
+
+Get that juicy data from your vehicle!
+
+#. Connect either your USB *OR* Bluetooth serial device to the host machine.
+    - While out of scope for this how-to, both transfer mediums should create a serial port at dev/ttyXXXX, but Bluetooth might require more tinkering with RFCOMM
+#. Configure PILOT Drive to work with your connected reader:
+    #. Quick install:
+
+    .. code-block:: sh
+
+        python3.11 -m pilot_drive --setup --obd="<path_to_obd>" # Replace with serial port path fromn step 1
+
+    #. Manual install:
+        #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
+        #. Under ``vehicle`` ensure ``enabled: true`` and ``port: "<path_to_obd>"``
+#. Restart PILOT Drive

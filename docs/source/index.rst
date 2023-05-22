@@ -33,7 +33,7 @@ PILOT Drive was built with tweaking and hacking in mind, via:
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    tutorials/index
