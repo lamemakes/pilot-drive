@@ -122,7 +122,6 @@ export default defineComponent({
     justify-items: center;
     p {
         font-size: 25px;
-        width: 60%;
         text-align: center;
     }
 }

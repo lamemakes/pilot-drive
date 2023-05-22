@@ -84,7 +84,7 @@ Run it!
         
         sudo python3.11 backend/pilot_drive
 
-#. Start the frontend:
+#. Start the frontend (in a new terminal):
 
     .. code-block:: sh
         

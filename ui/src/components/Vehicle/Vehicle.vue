@@ -1,21 +1,23 @@
 <template>
-    <div v-if="vehicleStore.connected" class="vehicle-info">
-        <DataGauge 
-            class="gauge" 
-            v-for="stat in stats"
-            :key="stat.name"
-            :min="getGaugeVals(stat.name).min"
-            :max="getGaugeVals(stat.name).max"
-            :stats="stat"
-            :warn="getGaugeVals(stat.name).warn">
-        </DataGauge>
-    </div>
-    <div v-else id="not-connected">
-        <div id="not-connected-container">
-            <div id="not-connected-icon-container">
-                <img class="not-connected-icon" :src="noCarIcon" />
+    <div>
+        <div v-if="vehicleStore.connected" class="vehicle-info">
+            <DataGauge 
+                class="gauge" 
+                v-for="stat in stats"
+                :key="stat.name"
+                :min="getGaugeVals(stat.name).min"
+                :max="getGaugeVals(stat.name).max"
+                :stats="stat"
+                :warn="getGaugeVals(stat.name).warn">
+            </DataGauge>
+        </div>
+        <div v-else id="not-connected">
+            <div id="not-connected-container">
+                <div id="not-connected-icon-container">
+                    <img class="not-connected-icon" :src="noCarIcon" />
+                </div>
+                <p>Not connected to vehicle!</p>
             </div>
-            <p>Not connected to vehicle!</p>
         </div>
     </div>
 </template>
@@ -90,15 +92,16 @@ export default defineComponent({
 #not-connected {
     display: grid;
     justify-items: center;
+    align-items: center;
+    height: 70vh;
 }
 
-#not-connected-container, #no-notifs-container {
+#not-connected-container {
     color: var(--primary-lumin);
     display: grid;
     justify-items: center;
     p {
         font-size: 25px;
-        width: 60%;
         text-align: center;
     }
 }
