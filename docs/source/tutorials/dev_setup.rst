@@ -90,7 +90,7 @@ Run it!
         
         yarn --cwd ui/ dev
 
-#. In your browser, navigate to ``http://localhost:8002``
+#. In your browser, navigate to the address indicated by the previous step - likely ``http://localhost:5173``
 
 Ready to merge your changes?
 ----------------------------
