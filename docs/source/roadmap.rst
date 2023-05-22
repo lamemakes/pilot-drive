@@ -23,7 +23,7 @@ Roadmap
 |    ☐ Customizable dial display
 |    ☐ Calculate stats on data (ie. MPG, fuel injector efficencies)
 | ☐ Documentation refinement
-|    ☐ Implement more documentation that follows the `Diátaxis framework<https://diataxis.fr/>`_, such as better tutorials and how-to's
+|    ☐ Implement more documentation that follows the `Diátaxis framework <https://diataxis.fr/>`_, such as better tutorials and how-to's
 
 Frontend/UI
 ----------------------

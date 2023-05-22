@@ -16,24 +16,24 @@ This how-to assumes PILOT Drive has been installed, and a settings file was crea
 
 .. _below format:
 .. code-block:: json
-    :caption: Theme format
+    :caption: Theme format (note: each array of zeros should be replaced with [red int, green int, blue int])
 
     {
         "name": "<name>",
         "accent": [
-            <Red Int>,
-            <Green Int>,
-            <Blue Int>
+            0,
+            0,
+            0
         ],
         "primary": [
-            <Red Int>,
-            <Green Int>,
-            <Blue Int>
+            0,
+            0,
+            0
         ],
         "secondary": [
-            <Red Int>,
-            <Green Int>,
-            <Blue Int>
+            0,
+            0,
+            0
         ]
     }
 
@@ -47,7 +47,11 @@ Recieve notifications from my Android device
 
 #. If Android notifications weren't enabled & installed with the PILOT Drive installer:
     #. Quick Install:
-        #. ``python3.11 -m pilot_drive --setup --phone=android``
+
+    .. code-block:: sh
+        
+        python3.11 -m pilot_drive --setup --phone=android
+
     #. Manual Install: 
         #. Install ADB on the PILOT Drive host machine
         #. Pull AAPT2 for the host machine's architecture in the `PILOT Drive bin directory <https://github.com/lamemakes/pilot-drive/tree/master/bin/aapt2>`_
@@ -79,7 +83,11 @@ Recieve notifications from my iOS device
 
 #. If iOS notifications weren't enabled & installed with the PILOT Drive installer:
     #. Quick Install:
-        #. ``python3.11 -m pilot_drive --setup --phone=ios``
+    
+    .. code-block:: sh
+
+        python3.11 -m pilot_drive --setup --phone=ios
+
     #. Manual Install:
         #. `Install ancs4linux <https://github.com/pzmarzly/ancs4linux#running>`_ on the PILOT Drive host machine
         #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
