@@ -30,6 +30,13 @@ Install PILOT Drive & Friends
         sudo python3 -m pip install backend/ pylint black pytest
         sudo python3 -m pip install ELM327-emulator  # emulates OBD functionality
 
+#. Install the needed Node packages:
+
+
+    .. code-block:: sh
+
+        yarn --cwd ui/ install --frozen-lockfile
+
 #. *(Optional)* Use `my fork of lukasjapan's bt-speaker <https://github.com/lamemakes/bt-speaker/blob/master/install.sh>`_ to install bt-speaker for bluetooth audio. **Raspberry Pi Only!**
 #. *(Optional)* Install `ancs4linux <https://github.com/pzmarzly/ancs4linux#running>`_ for iOS notification integration
 #. *(Optional)* Install `Android Debug Bridge (ADB) <https://developer.android.com/studio/command-line/adb>`_ and `Android Asset Packaging Tool 2 (AAPT2) <https://developer.android.com/tools/aapt2>`_ for Android notification integration
@@ -64,14 +71,26 @@ Build PILOT Drive
 
     .. code-block:: sh
 
-        sudo python -m pip uninstall pilot-drive
-        sudo python -m pip install ./dist/pilot_drive-X.X.X-py3-none-any.whl    # replace "X.X.X" with current version
+        sudo python3.11 -m pip uninstall pilot-drive
+        sudo python3.11 -m pip install ./dist/pilot_drive-X.X.X-py3-none-any.whl    # replace "X.X.X" with current version
 
-#. Confirm the install was successful:
+
+Run it!
+-----------
+
+#. Start the backend:
 
     .. code-block:: sh
         
-        sudo pilot-drive
+        sudo python3.11 backend/pilot_drive
+
+#. Start the frontend:
+
+    .. code-block:: sh
+        
+        yarn --cwd ui/ dev
+
+#. In your browser, navigate to ``http://localhost:8002``
 
 Ready to merge your changes?
 ----------------------------
