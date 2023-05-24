@@ -5,10 +5,7 @@
                 class="gauge" 
                 v-for="stat in stats"
                 :key="stat.name"
-                :min="getGaugeVals(stat.name).min"
-                :max="getGaugeVals(stat.name).max"
-                :stats="stat"
-                :warn="getGaugeVals(stat.name).warn">
+                :stats="stat">
             </DataGauge>
         </div>
         <div v-else id="not-connected">
@@ -27,16 +24,13 @@ import { defineComponent, ref, inject, watch } from 'vue'
 import DataGauge from './DataGauge.vue';
 import { Settings } from '../../types/Settings.interface';
 import { Vehicle } from '../../types/Vehicle.interface';
-import { kilometerToMile } from '../../utils/convert';
+import { kilometerToMile, celsiusToFahrenheit, literToGallon, gramToOunce} from '../../utils/convert';
 import noCarIcon from '../../assets/icons/car_issue.svg'
 
-// The type used in the STATS_LUT to hardcode mins/maxes, warn values, and unit converters.
-type GaugeVals = {
-    min: number,
-    max: number,
-    warn: number[][],
-    imperialConverter?: Function,    // All data comes in as metric, and is then converted based on settings.
-    imperialUnit?: string
+// The type used when a value needs to be converted from metric to customary
+type ConvertUnit = {
+    unit: string,
+    converter?: Function
 }
 
 export default defineComponent({
@@ -45,27 +39,36 @@ export default defineComponent({
         const vehicleStore = ref(inject('vehicleStore') as Vehicle);
         const settingsStore = ref(inject('settingsStore') as Settings)
 
-        // Lookup table for the stats and their mins/maxes/warning ranges
-        // warning ranges are expected as an array of number arrays. ie. for a warning range of 0-10 AND 15-18, it would be specified as [[0, 10], [15, 18]]
-        const STATS_LUT = {
-            speed: {min: 0, max: 130, warn: [[90, 130]], imperialConverter: kilometerToMile, imperialUnit: 'mph'},
-            voltage: {min: 0, max: 20, warn: [[0, 11], [15, 20]]},
-            rpm: {min: 0, max: 10000, warn: [[7000, 10000]]},
-        }
+        // Lookup table for metric units to customary
+        const unitLookupTable = {
+            kilometer_per_hour: {unit: 'miles_per_hour', converter: kilometerToMile},
+            kilometer: {unit: 'mile', converter: kilometerToMile},
+            degree_celsius: {unit: 'degree_fahrenheit', converter: celsiusToFahrenheit},
+            liter_per_hour: {unit: 'gallon_per_hour', converter: literToGallon},
+            liter: {unit: 'gallon', converter: literToGallon},
+            gram_per_second: {unit: 'ounce_per_second', converter: gramToOunce},
+            gram: {unit: 'ounce', converter: gramToOunce}
+        } as const;
 
-        const getGaugeVals = (name: string): GaugeVals => {
-            const gaugeVals = (STATS_LUT as {[index: string]: GaugeVals})[name.toLowerCase()];
-            return gaugeVals
+        const getGaugeConverter = (unitIn: string): ConvertUnit => {
+            if (Object.keys(unitLookupTable).includes(unitIn.toLowerCase())) {
+                if (!settingsStore.value.metricUnits){
+                    const convert = (unitLookupTable as {[index: string]: ConvertUnit})[unitIn.toLowerCase()];
+                    return convert
+                }
+            }
+
+            return {unit: unitIn}
         }
 
         const stats = ref(vehicleStore.value.stats);
 
         watch(vehicleStore, () => {
             vehicleStore.value.stats.forEach((item, index) => {
-                const gaugeVals = getGaugeVals(item.name);
-                if (gaugeVals.imperialConverter && gaugeVals.imperialUnit && !settingsStore.value.metricUnits) {
-                    stats.value[index].value.quantity = gaugeVals.imperialConverter(item.value.quantity);
-                    stats.value[index].value.units = gaugeVals.imperialUnit;
+                const converter = getGaugeConverter(item.value.unit)
+                if (converter.converter) {
+                    stats.value[index].value.quantity = converter.converter(item.value.quantity);
+                    stats.value[index].value.unit = converter.unit;
                 } else {
                     stats.value[index].value.quantity = item.value.quantity;
                 }
@@ -73,7 +76,7 @@ export default defineComponent({
         },
         {deep: true})
 
-        return {vehicleStore, stats, getGaugeVals, noCarIcon}
+        return {vehicleStore, stats, noCarIcon}
     }
 })
 </script>

@@ -1,11 +1,25 @@
+// Likely a library that makes this easier somewhere. Conversions pulled from NIST:
+// https://www.nist.gov/pml/owm/approximate-conversions-us-customary-measures-metric
+
 export function kilometerToMile(kilometers: number) {
     return kilometers * 0.6213712
 }
 
-export function litreToGallon(litres: number) {
-    return litres / 4.5
+export function celsiusToFahrenheit(celsius: number) {
+    return (celsius * (9/5)) + 32
 }
 
+export function literToGallon(litres: number) {
+    return litres / 3.79
+}
+
+export function gramToOunce(grams: number) {
+    return grams / 28.35
+}
+
+export function kilogramToPound(kilograms: number) {
+    return kilograms / 0.45
+}
 
 // Does not accent hex shortcut strings, only 6 char.
 function hexToRgbA(hex: string){

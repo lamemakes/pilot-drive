@@ -3,7 +3,7 @@
         <div>
             <p class="name">{{ stats.name }}</p>
             <p class="quantity">{{ stats.value.quantity.toFixed(1) }}</p>
-            <p class="units">{{ stats.value.units.replaceAll('_', ' ') }}</p>
+            <p class="units">{{ stats.value.unit.replaceAll('_', ' ') }}</p>
         </div>
     </div>
 </template>
@@ -14,9 +14,6 @@ import { Stats } from '../../types/Vehicle.interface'
 
 export default defineComponent({
     props: {
-        min: Number,
-        max: Number,
-        warn: Array as PropType<number[][]>,
         stats: Object as PropType<Stats>
     },
     setup (props) {

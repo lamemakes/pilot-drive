@@ -22,7 +22,8 @@ absolute_path = (
 #
 
 STATIC_WEB_PORT = 8002
-STATIC_WEB_PATH = "web/files/"  # A relative filepath from the root project directory
+# A relative filepath from the root project directory
+STATIC_WEB_PATH = "web/files/"
 
 #
 # Constants for the websocket server
@@ -42,13 +43,15 @@ DEFAULT_LOG_SETTINGS = {
     "logPath": f"{LOG_PATH}{LOG_FILE_NAME}",
 }
 
+
 #
 # Constants for PILOT Drive Settings & it's defaults
 #
 
 SETTINGS_PATH = "/etc/pilot-drive/config/"
 SETTINGS_FILE_NAME = "settings.json"
-WEB_SETTINGS_ATTRIBUTE = "webSettings"  # The attribute of the webSettings in the JSON
+# The attribute of the webSettings in the JSON
+WEB_SETTINGS_ATTRIBUTE = "webSettings"
 
 DEFAULT_WEB_SETTINGS = {
     "tfHourTime": False,
@@ -76,30 +79,52 @@ DEFAULT_WEB_SETTINGS = {
     ],
 }
 
+DEFAULT_VEHICLE_STATS = [
+    {
+        "name": "Speed",
+        "command": "SPEED",
+        "interval": 0.5,
+        "unit": "MPH"
+    },
+    {
+        "name": "RPM",
+        "command": "RPM",
+        "interval": 0.5,
+        "unit": "RPMs"
+    },
+    {
+        "name": "Fuel Level",
+        "command": "FUEL_LEVEL",
+        "interval": 10,
+        "unit": "percent"
+    },
+    {
+        "name": "Voltage",
+        "command": "CONTROL_MODULE_VOLTAGE",
+        "interval": 3,
+        "unit": "V"
+    },
+]
+
 DEFAULT_BACKEND_SETTINGS = {
     "updates": {
         "projectUrl": "https://pypi.org/pypi/pilot-drive/json",
         "downloadPath": "/tmp/",
     },
-    "vehicle": {"enabled": False, "port": None},
-    "phone": {"enabled": False, "type": None},
-    "logging": {"logLevel": 20, "logToFile": True, "logPath": ""},
-    "camera": {"enabled": False, "buttonPin": 0},
+    "vehicle": {
+        "enabled": False,
+        "port": None,
+        "stats": DEFAULT_VEHICLE_STATS
+    },
+    "phone": {
+        "enabled": False,
+        "type": None
+    },
+    "logging": {
+        **DEFAULT_LOG_SETTINGS
+    },
+    "camera": {
+        "enabled": False,
+        "buttonPin": 0
+    },
 }
-
-#
-# Constants used for vehicle/OBD functionality
-#
-
-# Fields that are queried and pushed to the frontend.
-# In the format of:
-# {"name": "<name>", "command": "<python OBD command>", "interval": <int second query interval>}
-
-# command fields pulled from python-OBD docs:
-# https://python-obd.readthedocs.io/en/latest/Command%20Tables/
-QUERIED_FIELDS = (
-    {"name": "Speed", "command": "SPEED", "interval": 0.5},
-    {"name": "RPM", "command": "RPM", "interval": 0.5},
-    {"name": "Fuel Level", "command": "FUEL_LEVEL", "interval": 10},
-    {"name": "Voltage", "command": "CONTROL_MODULE_VOLTAGE", "interval": 3},
-)

@@ -9,7 +9,7 @@ export interface Stats {
     name: string,
     value: {
         quantity: number,
-        units: string,
+        unit: string,
         magnitude: number
     }
 }

@@ -78,9 +78,8 @@ class PilotDrive:
             )
 
         if self.settings.get_setting("vehicle")["enabled"]:
-            obd_port = self.settings.get_setting("vehicle")["port"]
             self.vehicle: Vehicle = self.service_factory(
-                service=Vehicle, obd_port=obd_port
+                service=Vehicle, settings=self.settings
             )
 
         if self.settings.get_setting("camera")["enabled"]:
