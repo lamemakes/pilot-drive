@@ -104,8 +104,7 @@ class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
         :return: a dict of the device's informational attributes.
         """
         # Attributes to removed as they aren't informational/serializable.
-        attrs_to_remove = {"bluez_device", "path",
-                           "props_changed_callback", "logger"}
+        attrs_to_remove = {"bluez_device", "path", "props_changed_callback", "logger"}
         device_dict = self.__dict__.copy()
         for attribute in attrs_to_remove:
             device_dict.pop(attribute)
@@ -326,8 +325,7 @@ class Bluetooth(AbstractService):
                 uuid = services[BluezGattCharacteristic.interface]["UUID"].unpack()
                 if uuid in ANCS_CHARS:
                     device_path = "/".join(path.split("/")[:-2])
-                    device = BluezDevice.connect(
-                        bus=self.bus, path=device_path)
+                    device = BluezDevice.connect(bus=self.bus, path=device_path)
                     if device.Connected and device.Address not in ancs_devices:
                         ancs_devices.append(device.Address)
 

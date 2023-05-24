@@ -279,8 +279,7 @@ class Installer:
 
         user_in = ""
         while re.search(regex_validator, user_in) is None:
-            user_in = input(
-                f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
 
             if re.search(regex_validator, user_in) is None:
                 print(
@@ -559,14 +558,12 @@ class Installer:
 
         # Enable & start the ANCS service
         try:
-            self.exec_cmd(
-                f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
+            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
         except FailedToExecuteCommandException:
             pass
 
         try:
-            self.exec_cmd(
-                f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
+            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
         except FailedToExecuteCommandException:
             pass
 
@@ -578,8 +575,7 @@ class Installer:
             pass
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-observer.service")
-        self.exec_cmd(
-            f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
+        self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
 
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
 
@@ -677,8 +673,7 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split(
-                    "\n") + [f"{autostart_string}"]
+                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
@@ -1005,7 +1000,8 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
             return PhoneTypes(type)
         except ValueError as exc:
             raise argparse.ArgumentTypeError(
-                f'Invalid phone type "{phone_type}"!') from exc
+                f'Invalid phone type "{phone_type}"!'
+            ) from exc
 
     parser.add_argument(
         "--phone",
@@ -1030,7 +1026,8 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
             return DistroManagers(man)
         except ValueError as exc:
             raise argparse.ArgumentTypeError(
-                f'Invalid distribution manger "{man}"!') from exc
+                f'Invalid distribution manger "{man}"!'
+            ) from exc
 
     parser.add_argument(
         "--distroman",
@@ -1055,7 +1052,8 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
             return CommonArchs(arch)
         except ValueError as exc:
             raise argparse.ArgumentTypeError(
-                f'Invalid distribution manger "{arch}"!') from exc
+                f'Invalid distribution manger "{arch}"!'
+            ) from exc
 
     parser.add_argument(
         "--arch",

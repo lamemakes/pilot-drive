@@ -17,5 +17,5 @@ QUERIED_FIELDS = (
     {"name": "Fuel Level", "command": "FUEL_LEVEL", "interval": 10},
     {"name": "Voltage", "command": "CONTROL_MODULE_VOLTAGE", "interval": 3},
     {"name": "Short Fuel Trim", "command": "SHORT_FUEL_TRIM_1", "interval": 1},
-    {"name": "Long Fuel Trim", "command": "LONG_FUEL_TRIM_1", "interval": 3}
+    {"name": "Long Fuel Trim", "command": "LONG_FUEL_TRIM_1", "interval": 3},
 )

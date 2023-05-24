@@ -24,6 +24,7 @@ class WSCommands(StrEnum):
     """
     Enum used to map different commands from the websocket
     """
+
     START_DISCOVERY = "start-discovery"
     STOP_DISCOVERY = "stop-discovery"
     POWER_OFF = "off-power"

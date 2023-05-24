@@ -84,12 +84,16 @@ export default defineComponent({
 <style scoped lang="scss">
 .vehicle-info {
     flex-direction: row;
-    display: flex;
-    justify-content: center
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    justify-content: center;
+    height: 70vh;
+    overflow: scroll;
 }
 
 .gauge {
     margin-inline: 1vw;
+    //flex: 0 0 0
 }
 
 #not-connected {

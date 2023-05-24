@@ -80,29 +80,14 @@ DEFAULT_WEB_SETTINGS = {
 }
 
 DEFAULT_VEHICLE_STATS = [
-    {
-        "name": "Speed",
-        "command": "SPEED",
-        "interval": 0.5,
-        "unit": "MPH"
-    },
-    {
-        "name": "RPM",
-        "command": "RPM",
-        "interval": 0.5,
-        "unit": "RPMs"
-    },
-    {
-        "name": "Fuel Level",
-        "command": "FUEL_LEVEL",
-        "interval": 10,
-        "unit": "percent"
-    },
+    {"name": "Speed", "command": "SPEED", "interval": 0.5, "unit": "MPH"},
+    {"name": "RPM", "command": "RPM", "interval": 0.5, "unit": "RPMs"},
+    {"name": "Fuel Level", "command": "FUEL_LEVEL", "interval": 10, "unit": "percent"},
     {
         "name": "Voltage",
         "command": "CONTROL_MODULE_VOLTAGE",
         "interval": 3,
-        "unit": "V"
+        "unit": "V",
     },
 ]
 
@@ -111,20 +96,8 @@ DEFAULT_BACKEND_SETTINGS = {
         "projectUrl": "https://pypi.org/pypi/pilot-drive/json",
         "downloadPath": "/tmp/",
     },
-    "vehicle": {
-        "enabled": False,
-        "port": None,
-        "stats": DEFAULT_VEHICLE_STATS
-    },
-    "phone": {
-        "enabled": False,
-        "type": None
-    },
-    "logging": {
-        **DEFAULT_LOG_SETTINGS
-    },
-    "camera": {
-        "enabled": False,
-        "buttonPin": 0
-    },
+    "vehicle": {"enabled": False, "port": None, "stats": DEFAULT_VEHICLE_STATS},
+    "phone": {"enabled": False, "type": None},
+    "logging": {**DEFAULT_LOG_SETTINGS},
+    "camera": {"enabled": False, "buttonPin": 0},
 }

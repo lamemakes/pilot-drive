@@ -84,8 +84,7 @@ class PilotDrive:
 
         if self.settings.get_setting("camera")["enabled"]:
             btn_pin = self.settings.get_setting("camera")["buttonPin"]
-            self.camera: Camera = self.service_factory(
-                service=Camera, btn_pin=btn_pin)
+            self.camera: Camera = self.service_factory(service=Camera, btn_pin=btn_pin)
 
         # Set message handlers for your services, ie. if there is a new "settings" type recieved
         # from the websocket, pass it to settings.set_web_settings as it is a settings change event.
@@ -209,8 +208,7 @@ class PilotDrive:
         :param websocket: the WebSocket the UI is connected to
         """
         await asyncio.gather(
-            self.consumer(websocket=websocket), self.producer(
-                websocket=websocket)
+            self.consumer(websocket=websocket), self.producer(websocket=websocket)
         )
 
     async def main(self) -> None:

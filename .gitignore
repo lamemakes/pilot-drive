@@ -174,3 +174,5 @@ cython_debug/
 backend/pilot_drive/web/files/
 .vscode/
 node_modules/
+# ELM327 emulator logs
+elm.log.*
