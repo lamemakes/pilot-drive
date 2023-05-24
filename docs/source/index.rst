@@ -1,8 +1,3 @@
-.. PILOT Drive documentation master file, created by
-   sphinx-quickstart on Tue Mar 28 12:11:54 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 PILOT Drive's documentation
 =======================================
 
@@ -39,5 +34,5 @@ PILOT Drive was built with tweaking and hacking in mind, via:
    tutorials/index
    how-to/index
    explanatory
-   API Reference <api/pilot_drive>
+   API Reference <api/modules>
    Roadmap/Contribution Ideas <roadmap>

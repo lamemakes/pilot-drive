@@ -57,7 +57,7 @@ Recieve notifications from my Android device
         #. Pull AAPT2 for the host machine's architecture in the `PILOT Drive bin directory <https://github.com/lamemakes/pilot-drive/tree/master/bin/aapt2>`_
         #. Copy AAPT2 to ``/usr/local/bin/aapt2`` and make it executable ``chmod +x /usr/local/bin/aapt2``
         #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
-        #. Under ``phone`` ensure ``enabled: true`` and ``type: "android"``
+        #. Under ``"phone"`` ensure ``"enabled": true`` and ``"type": "android"``
         #. Restart PILOT Drive
 #. Enable USB debugging on your Android device (paraphrased from `howtogeek's ADB article <https://www.howtogeek.com/125769/how-to-install-and-use-abd-the-android-debug-bridge-utility/>`_):
     #. Open your phone’s app drawer, tap the Settings icon, and select “About Phone”
@@ -91,7 +91,7 @@ Recieve notifications from my iOS device
     #. Manual Install:
         #. `Install ancs4linux <https://github.com/pzmarzly/ancs4linux#running>`_ on the PILOT Drive host machine
         #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
-        #. Under ``phone`` ensure ``enabled: true`` and ``type: "ios"``
+        #. Under ``"phone"`` ensure ``"enabled": true`` and ``"type": "ios"``
         #. Restart PILOT Drive
 #. If previously connected, forget the host machine on your iOS device and vice versa.
 #. Pair your iOS device to the PILOT Drive host machine
@@ -106,6 +106,8 @@ Recieve notifications from my iOS device
 
     Trust ANCS host device prompt on iOS
 
+
+.. _OBDII/ELM327 reader, and specified a path:
 
 Connect my ODBII/ELM327 reader
 -------------------------------
@@ -123,5 +125,52 @@ Get that juicy data from your vehicle!
 
     #. Manual install:
         #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
-        #. Under ``vehicle`` ensure ``enabled: true`` and ``port: "<path_to_obd>"``
+        #. Under ``"vehicle"`` ensure ``"enabled": true`` and ``"port": "<path_to_obd>"``
 #. Restart PILOT Drive
+
+
+Add a new OBDII/ELM327 stat to query
+------------------------------------
+
+This how-to assumes you've already configured your `OBDII/ELM327 reader, and specified a path`_
+
+#. Open PILOT Drive ``settings.json`` (default path is |settings_path|)
+#. Under ``"vehicle"``, locate ``"stats"``
+#. Each stat object needs to have the following attributes (an `example`_ can be seen below):
+    #. ``name``: The name that is displayed in the UI
+    #. ``command``: The command used by `python-obd <https://python-obd.readthedocs.io/en/latest/Command%20Tables/>`_ to get the specified data field
+    #. ``interval``: Seconds between each query
+#. Restart PILOT Drive
+
+**NOTE: Before raising a new issue, confirm your vehicle supports the specified data field!**
+
+.. _example:
+.. code-block:: json
+    :caption: Vehicle format (note: these are boilerplate stats & intervals, and the port should be replaced)
+
+    "vehicle": {
+        "enabled": true,
+        "port": "<path_to_obd>",
+        "stats": [
+            {
+             	"name": "Speed",
+                "command": "SPEED",
+                "interval": 0.5
+            },
+            {
+             	"name": "RPM",
+                "command": "RPM",
+                "interval": 0.5
+            },
+            {
+             	"name": "Throttle Position",
+                "command": "THROTTLE_POS",
+                "interval": 3
+            },
+            {
+             	"name": "Voltage",
+                "command": "CONTROL_MODULE_VOLTAGE",
+                "interval": 3
+            }
+        ]
+    }
