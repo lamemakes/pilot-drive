@@ -44,6 +44,7 @@ export default defineComponent({
 #btn-container {
     display: grid;
     justify-items: center;
+    cursor: pointer;
 }
 
 .active-theme {

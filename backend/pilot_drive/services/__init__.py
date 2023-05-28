@@ -9,3 +9,4 @@ from .vehicle import Vehicle
 from .phone import Phone
 from .camera import Camera
 from .media import Media
+from .updater import Updater

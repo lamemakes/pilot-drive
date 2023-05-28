@@ -45,9 +45,8 @@ To quick start your installation of PILOT Drive, you can use the included instal
 
 .. code-block:: sh
 
-   python3 -m pip install pilot-drive  # Install from PyPi
-   python3 -m pilot_drive --setup      # Run PILOT Drive installer
-   
+   sudo python3.11 -m pip install pilot-drive         # Install from PyPi
+   sudo python3.11 -m pilot_drive --setup             # Run PILOT Drive installer
 
 This will lead you through all the configuration steps to ensure PILOT Drive is configured quickly and properly based on the machine it's running on.
 
@@ -75,4 +74,12 @@ To manually build & install PILOT Drive:
    cd pilot-drive/                                      
    make                                                     # Run the Makefile to build the frontend & backend
    cd dist/
-   python3 -m pip install pilot-drive-<version>.whl         # Install the newly built wheel file
+   sudo python3.11 -m pip install pilot-drive-<ver>.whl     # Install the newly built wheel file
+
+
+*(Optional)* Install python-OBD:
+
+.. code-block:: sh
+
+   sudo python3.11 -m pip install \
+      git+https://github.com/brendan-w/python-OBD#egg=obd

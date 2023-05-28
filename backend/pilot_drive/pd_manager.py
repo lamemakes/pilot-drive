@@ -20,6 +20,7 @@ from pilot_drive.services import (
     AbstractService,
     Camera,
     Media,
+    Updater,
 )
 from pilot_drive.services.settings.exceptions import FailedToReadSettingsException
 
@@ -69,6 +70,9 @@ class PilotDrive:
         web_process.start()
 
         self.settings: Settings = self.service_factory(service=Settings)
+        self.updater: Updater = self.service_factory(
+            service=Updater, settings=self.settings
+        )
         self.bluetooth: Bluetooth = self.service_factory(service=Bluetooth)
         self.media: Media = self.service_factory(service=Media)
 
@@ -91,6 +95,7 @@ class PilotDrive:
         self.service_msg_handlers: Dict[str, Callable] = {
             EventType.SETTINGS: self.settings.set_web_settings,
             EventType.MEDIA: self.media.track_control,
+            EventType.UPDATER: self.updater.handler
             # EventType.BLUETOOTH: self.bluetooth.handler
         }
 
@@ -133,8 +138,10 @@ class PilotDrive:
             ) from exc
         except TypeError as exc:
             raise FailedToCreateServiceException(
-                f"""Failed to create service: "{service.__name__}",
-                are the accessory arguments correct?"""
+                (
+                    f'Failed to create service: "{service.__name__}" '
+                    "are the accessory arguments correct?"
+                )
             ) from exc
 
     def refresh(self) -> None:
@@ -144,6 +151,7 @@ class PilotDrive:
         """
         self.settings.refresh()
         self.bluetooth.refresh()
+        self.updater.refresh()
 
     def handle_message(self, message: str) -> None:
         """
@@ -155,21 +163,22 @@ class PilotDrive:
         if message:
             try:
                 message_in = json.loads(s=message)
-                try:
-                    handler = self.service_msg_handlers.get(
-                        message_in["type"]
-                    )  # Get the handler for the message type
-                    handler(
-                        message_in.get(message_in["type"])
-                    )  # Pass in the content of the websocket message
-                except KeyError:
-                    self.logging.error(
-                        msg=f"""Failed to find a service handler for message of type:
-                        {message_in["type"]}"""
-                    )
             except json.JSONDecodeError as err:
                 self.logging.error(
-                    msg=f"Failed to decode recieved websocket message: {err.msg} {message_in}"
+                    msg=f'Failed to decode recieved websocket message "{message}": {err}'
+                )
+                return
+            try:
+                handler = self.service_msg_handlers.get(
+                    message_in["type"]
+                )  # Get the handler for the message type
+                handler(
+                    message_in.get(message_in["type"])
+                )  # Pass in the content of the websocket message
+            except KeyError:
+                self.logging.error(
+                    msg=f"""Failed to find a service handler for message of type:
+                    {message_in["type"]}"""
                 )
 
     async def consumer(self, websocket) -> None:

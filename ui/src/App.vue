@@ -1,8 +1,10 @@
 <template>
-  <InfoBar />
-  <router-view />
-  <div id="nav-container">
-    <NavButtons />
+  <div>
+    <InfoBar />
+    <router-view />
+    <div id="nav-container">
+      <NavButtons />
+    </div>
   </div>
 </template>
 
@@ -12,6 +14,7 @@ import NavButtons from "./components/Navigation/NavButtons.vue";
 import InfoBar from "./components/InfoBar/InfoBar.vue";
 import { BluetoothStore } from "./stores/BluetoothStore";
 import { SettingsStore } from "./stores/SettingsStore";
+import { UpdateStore } from './stores/UpdateStore';
 import { setGlobalTheme } from "./utils/theme";
 import { MediaStore } from "./stores/MediaStore";
 import { initializeWebSocket } from "./utils/backend";
@@ -31,6 +34,7 @@ export default defineComponent({
     const mediaStore = ref(MediaStore);
     const vehicleStore = ref(VehicleStore)
     const phoneStore = ref(PhoneStore)
+    const updateStore = ref(UpdateStore)
 
     const websocket = initializeWebSocket();
     websocket.onmessage = (message) => {
@@ -59,6 +63,11 @@ export default defineComponent({
                     phoneStore.value = dataObj.phone
                   }
                   break;
+                case 'updater':
+                  if (dataObj.updater) {
+                    updateStore.value = dataObj.updater
+                  }
+                  break;
                 case 'settings':
                   if (dataObj.settings) {
                     settingsStore.value = dataObj.settings;
@@ -75,7 +84,8 @@ export default defineComponent({
     provide('settingsStore', settingsStore);
     provide('mediaStore', mediaStore);
     provide('vehicleStore', vehicleStore);
-    provide('phoneStore', phoneStore)
+    provide('phoneStore', phoneStore);
+    provide('updateStore', updateStore);
     provide('websocket', ref(websocket));
 
     onMounted(() => {

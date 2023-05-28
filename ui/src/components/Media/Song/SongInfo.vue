@@ -51,7 +51,7 @@ export default defineComponent({
         const formatTitleAlbum = (titleOrAlbum: string | undefined): string | undefined => {
             // if a track is too long, remove the features in the title using common characteristics of titles
             const MAX_LEN = 40 // Max length of song title, ideally this will be dynamic in the future
-            const feature_regex = /((\(|\[|\{)(feat|prod|ft).*(\)|\]|\}))/gi
+            const feature_regex = /((\(|\[|\{)(feat|prod|ft|with).*(\)|\]|\}))/gi
             if (titleOrAlbum && titleOrAlbum.length > MAX_LEN) {
                 return titleOrAlbum.replace(feature_regex, '')
             }

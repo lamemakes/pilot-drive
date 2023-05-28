@@ -37,6 +37,7 @@ Frontend/UI
 | ☐ Support for dark/tinted mode. Allowing setting for automatic detection (using PILOT Drive HAT headlight detection), and manual enabling.
 | ☐ Better state management/stores, implementing Vuex
 | ☐ Documentation & API reference. So far only the backend has gotten documentation love
+| ☐ "snackbar" notifications, small windows that pop up with informational messages/prompts
 
 Backend
 ----------------------
@@ -46,7 +47,7 @@ Backend
 | ☐ Full implementation of typing via mypy, along with github actions implementation
 | ☑ Implement dasbus to replace the depreciated python-dbus
 | ☐ Optimization of multiprocessing Processes. Currently processes are not neccesarily exiting properly or cleaning up when done.
-| ☐ Remote updates. When connected to wifi, PILOT Drive should be able to self-update. This was previously supported in earlier PILOT versions, but not reliably.
+| ☑ Remote updates. When connected to wifi, PILOT Drive should be able to self-update. This was previously supported in earlier PILOT versions, but not reliably.
 
 | **Have a specific feature/improvement in mind that you don't see here? Not sure how to get started on an existing roadmap item?**
 |

@@ -24,14 +24,14 @@ PILOT Drive is a fully open-source head unit/infotainment system built in Python
 
 ## Why PILOT Drive?
 
-### Consider yourself a hacker?
+### Built to be hacked
 
-PILOT Drive is for you! Designed to be hackable, through means of:
+PILOT Drive designed to be hackable through means of:
 - **Common languages/frameworks**: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html). Both of these make all current functionality easily tweakable.
 - **Modularity**: The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
 - **Fully open source codebase**: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.
 
-### Privacy! 
+### Privacy
 
 "Big Data" has specifically been working to target the automotive industry lately. This is _gross_ to say the least
 - In a stock Android Auto/Apple CarPlay headunit, a plethora of data is collected and sold such as:
@@ -65,6 +65,31 @@ The project can always use an assist! You can contribute via...
 3. **Contribute code**: Put your name on PILOT Drive and get your beautiful code merged into the codebase! For ideas on what to work on, check out the [issues](https://github.com/lamemakes/pilot-drive/issues) or [roadmap](https://pilot-drive.readthedocs.io/en/latest/roadmap.html)!
 
 **_For more info on contributing, see the [contribution guidelines](https://github.com/lamemakes/pilot-drive/blob/master/.github/CONTRIBUTING.md)_**
+
+
+## What's it look like?
+
+Here's a taste of PILOT Drive, with the default *sherbet* theme:
+
+![media.png](docs/source/images/ui_screenshots/media.png)
+*A connected bluetooth device (here "Wes's iPhone") playing "Drones Over Bklyn" - classic*
+
+![car_stats.png](docs/source/images/ui_screenshots/car_stats.png)
+*Live vehicle data stream from a bluetooth connect OBDII reader*
+
+![ios_notif.png](docs/source/images/ui_screenshots/ios_notif.png)
+*A notification from the IOS device connected via Bluetooth*
+
+![settings.png](docs/source/images/ui_screenshots/settings.png)
+*The simple settings of PILOT Drive - soon to be more customizable*
+
+
+## Is PILOT Drive stable?
+
+PILOT Drive is certainly not fully stable. So far, it's been a passion project with limited diversity of developer opinions/expertise. Unit/E2E testing is very little at the time of writing, and it hasn't been tried on many different machines and environments. If you're looking for something that will "just work", check out these alternatives:
+
+1. [OpenAuto](https://github.com/f1xpl/openauto)
+1. [crankshaft](http://getcrankshaft.com/)
 
 
 ## Notes

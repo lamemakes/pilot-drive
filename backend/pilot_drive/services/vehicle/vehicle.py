@@ -3,13 +3,22 @@ The module that manages the connected vehicle
 """
 import os
 import time
-import obd
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 from ..abstract_service import AbstractService
-from ..settings import Settings
+from ..settings import Settings, FailedToReadSettingsException
+
+# This is done due to the latest version of Python OBD not being in PyPI, thus it's install
+# needs to happen via "pip3 install git+https://github.com/brendan-w/python-OBD#egg=obd",
+# which PyPI doesn't allow to exist in the setup.py. It's a mess.
+try:
+    if Settings.get_raw_settings()["vehicle"]["enabled"]:
+        import obd
+except (KeyError, FailedToReadSettingsException):
+    # We tried our best - if settings isn't properly initalized OBD will not be imported.
+    pass
 
 
 class InvalidPortException(Exception):

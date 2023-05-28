@@ -23,6 +23,7 @@ class EventType(StrEnum):
     VEHICLE = "vehicle"
     MEDIA = "media"
     WEB = "web"
+    UPDATER = "updater"
 
 
 class MasterEventQueue:

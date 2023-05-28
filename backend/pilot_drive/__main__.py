@@ -10,6 +10,7 @@ from pilot_drive.installer import (  # pylint: disable=import-outside-toplevel
     Installer,
     installer_arguments,
 )
+from pilot_drive import __version__ as version
 
 
 def start() -> None:
@@ -20,6 +21,13 @@ def start() -> None:
         prog="pilot-drive", description="An open source vehicle headunit"
     )
 
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        help=("Get the current version of PILOT Drive"),
+    )
+
     installer_arguments(parser=parser)
 
     if os.geteuid() != 0:
@@ -28,6 +36,10 @@ def start() -> None:
             \nPlease try again, this time using 'sudo'. Exiting.\n"""
         )
     args = parser.parse_args()
+    if args.version is True:
+        print(f"PILOT Drive {version}")
+        return
+
     if args.setup is True:
         pilot_drive_install = Installer(use_default=args.default)
         pilot_drive_install.main(args=args)

@@ -27,8 +27,8 @@ Install PILOT Drive & Friends
 
     .. code-block:: sh
 
-        sudo python3 -m pip install backend/ pylint black pytest
-        sudo python3 -m pip install ELM327-emulator  # emulates OBD functionality
+        sudo python3.11 -m pip install backend/ pylint black pytest
+        sudo python3.11 -m pip install ELM327-emulator  # emulates OBD functionality
 
 #. Install the needed Node packages:
 
@@ -100,8 +100,8 @@ Ready to merge your changes?
     .. code-block:: sh
 
         cd pilot-drive
-        python3 -m black backend/pilot_drive
-        python3 -m pylint backend/pilot_drive
+        python3.11 -m black backend/pilot_drive
+        python3.11 -m pylint backend/pilot_drive
         sphinx-apidoc ./backend/pilot_drive -o ./docs/source/api/
 
 #. Put up a `Pull Request <https://github.com/lamemakes/pilot-drive/pulls>`_ referencing the issue/feature being fixed

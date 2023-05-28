@@ -13,6 +13,7 @@ Subpackages
    pilot_drive.services.phone
    pilot_drive.services.settings
    pilot_drive.services.shared
+   pilot_drive.services.updater
    pilot_drive.services.vehicle
 
 Submodules

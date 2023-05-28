@@ -80,21 +80,16 @@ DEFAULT_WEB_SETTINGS = {
 }
 
 DEFAULT_VEHICLE_STATS = [
-    {"name": "Speed", "command": "SPEED", "interval": 0.5, "unit": "MPH"},
-    {"name": "RPM", "command": "RPM", "interval": 0.5, "unit": "RPMs"},
-    {"name": "Fuel Level", "command": "FUEL_LEVEL", "interval": 10, "unit": "percent"},
-    {
-        "name": "Voltage",
-        "command": "CONTROL_MODULE_VOLTAGE",
-        "interval": 3,
-        "unit": "V",
-    },
+    {"name": "Speed", "command": "SPEED", "interval": 0.5},
+    {"name": "RPM", "command": "RPM", "interval": 0.5},
+    {"name": "Fuel Level", "command": "FUEL_LEVEL", "interval": 10},
+    {"name": "Voltage", "command": "CONTROL_MODULE_VOLTAGE", "interval": 3},
 ]
 
 DEFAULT_BACKEND_SETTINGS = {
     "updates": {
-        "projectUrl": "https://pypi.org/pypi/pilot-drive/json",
-        "downloadPath": "/tmp/",
+        "projectUrl": "https://pypi.org/pypi/pilot-drive/",
+        "indexUrl": "https://pypi.org/simple/",
     },
     "vehicle": {"enabled": False, "port": None, "stats": DEFAULT_VEHICLE_STATS},
     "phone": {"enabled": False, "type": None},

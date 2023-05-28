@@ -594,8 +594,15 @@ class Installer:
         """
         settings["vehicle"]["enabled"] = True
         settings["vehicle"]["port"] = port
+        self.exec_cmd(
+            (
+                f"{sys.executable} -m pip install "
+                "git+https://github.com/brendan-w/python-OBD#egg=obd"
+            )
+        )
+
         print(
-            f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, "
+            f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled, installed "
             f'and port set to "{port}"{Colors.ENDC}'
         )
 
