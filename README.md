@@ -67,6 +67,14 @@ The project can always use an assist! You can contribute via...
 **_For more info on contributing, see the [contribution guidelines](https://github.com/lamemakes/pilot-drive/blob/master/.github/CONTRIBUTING.md)_**
 
 
+## Is PILOT Drive stable?
+
+PILOT Drive is certainly not fully stable. So far, it's been a passion project with limited diversity of developer opinions/expertise. Unit/E2E testing is very little at the time of writing, and it hasn't been tried on many different machines and environments. If you're looking for something that will "just work", check out these alternatives:
+
+1. [OpenAuto](https://github.com/f1xpl/openauto)
+1. [crankshaft](http://getcrankshaft.com/)
+
+
 ## What's it look like?
 
 Here's a taste of PILOT Drive, with the default *sherbet* theme:
@@ -82,14 +90,6 @@ Here's a taste of PILOT Drive, with the default *sherbet* theme:
 
 ![settings.png](docs/source/images/ui_screenshots/settings.png)
 *The simple settings of PILOT Drive - soon to be more customizable*
-
-
-## Is PILOT Drive stable?
-
-PILOT Drive is certainly not fully stable. So far, it's been a passion project with limited diversity of developer opinions/expertise. Unit/E2E testing is very little at the time of writing, and it hasn't been tried on many different machines and environments. If you're looking for something that will "just work", check out these alternatives:
-
-1. [OpenAuto](https://github.com/f1xpl/openauto)
-1. [crankshaft](http://getcrankshaft.com/)
 
 
 ## Notes
