@@ -1,7 +1,7 @@
-Who, What & Why...
+Explanatory
 ====================
 
-Explanatory material for PILOT Drive
+The who, how, what, and why's of PILOT Drive
 
 Why does PILOT Drive have "services"?
 -------------------------------------

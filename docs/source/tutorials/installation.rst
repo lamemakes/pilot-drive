@@ -14,7 +14,8 @@ Install dependencies for...
    sudo apt-get -y install build-essential gdb lcov pkg-config \
       libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
       libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
-      lzma lzma-dev tk-dev uuid-dev zlib1g-dev
+      lzma lzma-dev tk-dev uuid-dev zlib1g-dev libdbus-glib-1-dev \
+      libgirepository1.0-dev libcairo2-dev
 
 
 **Fedora/CentOS**
@@ -50,6 +51,7 @@ To quick start your installation of PILOT Drive, you can use the included instal
 
 This will lead you through all the configuration steps to ensure PILOT Drive is configured quickly and properly based on the machine it's running on.
 
+
 Manual install
 ----------------------
 Requirements
@@ -59,7 +61,6 @@ Requirements
 - node   >= v16.16.0
 - npm    >= v8.11.0
 - yarn   >= v1.22.19
-- (Optional) `lukasjapan's bt-speaker <https://github.com/lukasjapan/bt-speaker>`_ -> For bluetooth audio
 - (Optional) `python-OBD <https://github.com/brendan-w/python-OBD>`_               -> To use OBD connectivity features
 - (Optional) `ancs4linux <https://github.com/pzmarzly/ancs4linux>`_                -> For iOS notification integration
 - (Optional) `ADB <https://developer.android.com/studio/command-line/adb>`_        -> For Android notification integration

@@ -62,8 +62,7 @@ class Updater(AbstractService):
             case UpdateCommands.CHECK:
                 self.__check_for_updates()
             case _:
-                self.logger.warning(
-                    f'Unrecognized UpdateCommand from UI: "{command}"')
+                self.logger.warning(f'Unrecognized UpdateCommand from UI: "{command}"')
 
     def get_json(self) -> dict:
         """
@@ -122,8 +121,7 @@ class Updater(AbstractService):
                     f"issues: {exc}"
                 )
             )
-            self.push_to_queue(
-                event={"error": "network error getting update info"})
+            self.push_to_queue(event={"error": "network error getting update info"})
             return
         except json.JSONDecodeError as exc:
             self.logger.warning(
@@ -238,8 +236,7 @@ class Updater(AbstractService):
                 try:
                     update_record = json.load(fp=pd_update_record)
                 except json.JSONDecodeError:
-                    self.logger.error(
-                        "Failed to decode the update record JSON!")
+                    self.logger.error("Failed to decode the update record JSON!")
             if not update_record:
                 self.logger.error("Failed to read the update record!")
                 return

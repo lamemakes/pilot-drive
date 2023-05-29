@@ -43,12 +43,12 @@ PILOT Drive designed to be hackable through means of:
 
 ### Features
 
-Utilizing PILOT Drive, a user can:
+In it's current implementation, PILOT Drive can:
 - Play, display, and control audio from sources like bluetooth
-- Display live data from their vehicle
+- Display live data from a connected vehicle
 - Show notifications from connected iOS & Android devices
 - Control and display connected backup cameras
-- Tailor the UI to their own tastes with fully customizable themes and display settings.
+- Tailor the UI to the user's tastes with customizable themes and display settings
 - Integrate with the [PILOT Drive HAT](https://github.com/lamemakes/pilot-drive-HAT) for a seamless in-vehicle experience.
 
 

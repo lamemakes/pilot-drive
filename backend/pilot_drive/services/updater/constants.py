@@ -9,14 +9,16 @@ class UpdateCommands(StrEnum):
     """
     The update commands that the UI sends to update
     """
+
     UPDATE = "update"
     CHECK = "check"
 
 
 class PipRegex(StrEnum):
     """
-    ReGex enum for pip outputs  
+    ReGex enum for pip outputs
     """
+
     # RegEx string used to check if stderr if just a pip update notification
     PIP_UPDATE_REGEX = (
         r"^\\n\[notice\] A new release of pip is available: "

@@ -66,7 +66,8 @@ class BluetoothMedia(BaseMediaSource):
             return self.bluetooth.bluez_media_player.Position
         except DBusError as exc:
             default = 0
-            self.__get_track_property_failed(prop="position", exc=exc, default=default)
+            self.__get_track_property_failed(
+                prop="position", exc=exc, default=default)
             return default
 
     @property
@@ -79,8 +80,10 @@ class BluetoothMedia(BaseMediaSource):
         try:
             track = self.bluetooth.bluez_media_player.Track
         except DBusError as exc:
-            default = {"Title": None, "Artist": None, "Album": None, "Duration": None}
-            self.__get_track_property_failed(prop="track", exc=exc, default=default)
+            default = {"Title": None, "Artist": None,
+                       "Album": None, "Duration": None}
+            self.__get_track_property_failed(
+                prop="track", exc=exc, default=default)
             return default
 
         # Convert the dasbus variant types to normal types (probably better ways to do this)
@@ -112,7 +115,8 @@ class BluetoothMedia(BaseMediaSource):
             return self.bluetooth.bluez_media_player.Status == TrackStatus.PLAYING
         except DBusError as exc:
             default = False
-            self.__get_track_property_failed(prop="playing", exc=exc, default=default)
+            self.__get_track_property_failed(
+                prop="playing", exc=exc, default=default)
             return default
 
     @property
@@ -157,7 +161,8 @@ class BluetoothMedia(BaseMediaSource):
                 path=path, props_changed_callback=self.__properties_changed
             )
             self.__devices.append(bt_device)
-            bt_device.bluez_device.PropertiesChanged.connect(bt_device.prop_changed)
+            bt_device.bluez_device.PropertiesChanged.connect(
+                bt_device.prop_changed)
 
     def __interfaces_removed(
         self, path: ObjPath, interfaces: List[Str]
@@ -201,8 +206,10 @@ class BluetoothMedia(BaseMediaSource):
         for path, services in self.bluetooth.bluez_root.GetManagedObjects().items():
             self.__interfaces_added(path, services)
 
-        self.bluetooth.bluez_root.InterfacesAdded.connect(self.__interfaces_added)
-        self.bluetooth.bluez_root.InterfacesRemoved.connect(self.__interfaces_removed)
+        self.bluetooth.bluez_root.InterfacesAdded.connect(
+            self.__interfaces_added)
+        self.bluetooth.bluez_root.InterfacesRemoved.connect(
+            self.__interfaces_removed)
         self.adapter.PropertiesChanged.connect(self.__properties_changed)
 
     def main(self) -> None:

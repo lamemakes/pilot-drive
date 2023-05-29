@@ -3,6 +3,23 @@ as a user...
 
 User How-To's for PILOT Drive
 
+Configure Bluetooth Audio for the Raspberry Pi
+----------------------------------------------
+
+While the later versions of Raspberry Pi OS seem to have Bluetooth audio w/ USB soundcard support out of the box, older versions may require `lukasjapan's bt-speaker <https://github.com/lukasjapan/bt-speaker>`_.
+
+This can be installed utilizing the lamemakes fork of the repo:
+
+    .. code-block:: sh
+        
+        sudo -i
+        bash <(curl -s https://raw.githubusercontent.com/lamemakes/bt-speaker/master/install.sh)
+
+
+Depending on your audio configuration, further ALSA hacking may be neccesary:
+    - `Using a USB soundcard and setting it as default <https://raspberrypi.stackexchange.com/questions/80072/how-can-i-use-an-external-usb-sound-card-and-set-it-as-default>`_
+    - `More ALSA config, filling in some cracks of the previous configuration tutorial <https://raspberrypi.stackexchange.com/questions/95193/setting-up-config-for-alsa-at-etc-asound-conf>`_
+
 Add new themes
 ----------------------
 
@@ -48,9 +65,9 @@ Recieve notifications from my Android device
 #. If Android notifications weren't enabled & installed with the PILOT Drive installer:
     #. Quick Install:
 
-    .. code-block:: sh
-        
-        python3.11 -m pilot_drive --setup --phone=android
+        .. code-block:: sh
+            
+            python3.11 -m pilot_drive --setup --phone=android
 
     #. Manual Install: 
         #. Install ADB on the PILOT Drive host machine
@@ -84,9 +101,9 @@ Recieve notifications from my iOS device
 #. If iOS notifications weren't enabled & installed with the PILOT Drive installer:
     #. Quick Install:
     
-    .. code-block:: sh
+        .. code-block:: sh
 
-        python3.11 -m pilot_drive --setup --phone=ios
+            python3.11 -m pilot_drive --setup --phone=ios
 
     #. Manual Install:
         #. `Install ancs4linux <https://github.com/pzmarzly/ancs4linux#running>`_ on the PILOT Drive host machine
@@ -119,9 +136,9 @@ Get that juicy data from your vehicle!
 #. Configure PILOT Drive to work with your connected reader:
     #. Quick install:
 
-    .. code-block:: sh
+        .. code-block:: sh
 
-        python3.11 -m pilot_drive --setup --obd="<path_to_obd>" # Replace with serial port path fromn step 1
+            python3.11 -m pilot_drive --setup --obd="<path_to_obd>" # Replace with serial port path fromn step 1
 
     #. Manual install:
         #. Open PILOT Drive ``settings.json`` (default path is |settings_path|)

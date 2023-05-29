@@ -16,7 +16,7 @@ https://github.com/signalapp/Signal-Desktop/blob/main/.github/PULL_REQUEST_TEMPL
     - [ ] ```python3.11 -m pylint backend/pilot-drive```
     - [ ] ```python3.11 -m pytest backend/```
     <!-- Frontend linting/tests will be added soon but please confirm all looks good there too ;) -->
-- [ ] A skim-through of the [documentation](https://pilot-drive.rtfd.org) has been completed, and any neccesary changes have been made 
+- [ ] A skim-through of the [documentation](https://pilot-drive.rtfd.org) has been completed and any neccesary changes have been made 
 - [ ] Neccesary [pytest](https://docs.pytest.org/en/7.3.x/) (Python) and/or [vitest](https://vitest.dev/) (Vue) tests have been added <!-- Again, UI testing will be implemented soon -->
 
 ### Description

@@ -17,7 +17,7 @@ import { defineComponent, inject, onMounted, ref, watch } from 'vue'
 import { Media } from '../../../types/Media.interface';
 import { Settings } from '../../../types/Settings.interface';
 import { ColorVars, handleIconLumin } from '../../../utils/theme';
-import playIcon from '../../../assets/icons/pause.svg'
+import playIcon from '../../../assets/icons/play.svg'
 import pauseIcon from '../../../assets/icons/pause.svg'
 import skipPrevIcon from '../../../assets/icons/skip_prev.svg'
 import skipNextIcon from '../../../assets/icons/skip_next.svg'
