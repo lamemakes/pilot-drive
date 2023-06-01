@@ -612,7 +612,7 @@ class Installer:
 
         return settings
 
-    def for_production(self):
+    def for_production(self):  # pylint: disable=too-many-branches
         """
         Run PILOT Drive for production, configure the systemctl service, auto-start mozilla, etc.
         """
