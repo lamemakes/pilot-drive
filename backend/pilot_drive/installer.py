@@ -1009,7 +1009,7 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         """
         phone_type = phone_type.lower()
         try:
-            return PhoneTypes(type)
+            return PhoneTypes(phone_type)
         except ValueError as exc:
             raise argparse.ArgumentTypeError(
                 f'Invalid phone type "{phone_type}"!'
