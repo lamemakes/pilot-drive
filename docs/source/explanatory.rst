@@ -27,8 +27,8 @@ Examples of services are:
  - **Media**: Manages the A/V of the head unit
 
 
-What type of host should I run PILOT Drive on?
-----------------------------------------------
+What is the ideal PILOT Drive setup?
+------------------------------------
 
 The original vision for PILOT Drive back in 2018 was to be fully ran and built around the Raspberry 
 Pi, so much of this functionality is catered toward usage on the Pi. Though, the long term goal is 
@@ -36,10 +36,20 @@ to extend compatibility for a wide array of Single Board Computers and other lin
 As it stands, PILOT Drive can run (and has been tested) on Debian (Ubuntu, Raspberry Pi OS), and 
 Fedora.
 
-The UI is also currently built with the assumption that the user will be using a touchscreen.
+The UI is also currently built with the assumption that the user will be using a touchscreen, and while it can respond 
+well to different sizes, it is primarily catered to a width of ~800px-1000px and a height of 600px-800px. Moving forward,
+it will be more reponsive.
 
-So, the TDLR here is **PILOT Drive can run on any host that runs Debian/Fedora, has a (touch) display, 
-Python 3.11 and a reasonable amount of memory**.
+
+So, the TDLR here is **PILOT Drive should run on any host that runs desktop versions of Debian/Fedora, has a (touch) 
+display, Python 3.11 and a reasonable amount of memory**.
+
+
+What browsers does PILOT Drive support?
+---------------------------------------
+
+PILOT Drive was built around **Mozilla Firefox**, but has also been mildly tested on **Chromium**. It should work well on both.
+More are likely supported, but this is all that has been tested.
 
 
 .. _the basic data flow diagram:

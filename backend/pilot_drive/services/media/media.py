@@ -1,6 +1,7 @@
 """
 The module that manages the media of PILOT Drive, ie. A/V metadata
 """
+import json
 from typing import Dict
 
 from pilot_drive.master_logging.master_logger import MasterLogger
@@ -33,9 +34,14 @@ class Media(AbstractService):
         super().__init__(master_event_queue, service_type, logger)
         self.source = MediaSources.BLUETOOTH
 
+        # var used to prevent excessive pushing of info to the queue
+        self.__last_event = ""
+
     def __push_media_to_queue(self, track_data: Dict[str, str]) -> None:
         media_event = {"source": self.source, "song": {**track_data}}
-        self.push_to_queue(event=media_event)
+        if json.dumps(media_event) != self.__last_event:
+            self.push_to_queue(event=media_event)
+            self.__last_event = json.dumps(media_event)
 
     def track_control(self, action: TrackControl) -> None:
         """

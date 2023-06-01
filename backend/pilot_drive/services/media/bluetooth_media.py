@@ -40,6 +40,10 @@ class BluetoothMedia(BaseMediaSource):
         self.media_player: Union[BluezMediaPlayer, NoneType] = None
         self.__devices: List[BluetoothDevice] = []
 
+        # on iOS sometimes only a duration comes in for an associated track.
+        # It's important to store track info in this case
+        self.__current_track = {}
+
     def __get_track_property_failed(
         self, prop: str, exc: DBusError, default: Any
     ) -> None:
@@ -79,20 +83,33 @@ class BluetoothMedia(BaseMediaSource):
         """
         try:
             track = self.bluetooth.bluez_media_player.Track
+            print(track)
         except DBusError as exc:
+            print("GETTING TRACK FAILED")
             default = {"Title": None, "Artist": None,
                        "Album": None, "Duration": None}
             self.__get_track_property_failed(
                 prop="track", exc=exc, default=default)
             return default
 
-        # Convert the dasbus variant types to normal types (probably better ways to do this)
-        media_dict = {
-            "Title": track.get("Title"),
-            "Artist": track.get("Artist"),
-            "Album": track.get("Album"),
-            "Duration": track.get("Duration"),
-        }
+        is_empty_track = not bool(
+            track.get("Title") or track.get("Album") or track.get("Artist")
+        )
+        if is_empty_track and (track.get("Duration") and self.__current_track):
+            media_dict = {
+                **self.__current_track,
+                "Duration": track.get("Duration"),
+            }
+        else:
+            # Convert the dasbus variant types to normal types (probably better ways to do this)
+            media_dict = {
+                "Title": track.get("Title"),
+                "Artist": track.get("Artist"),
+                "Album": track.get("Album"),
+                "Duration": track.get("Duration"),
+            }
+
+            self.__current_track = media_dict
 
         # Convert dasbus Variants to native objects
         converted_dict = {}

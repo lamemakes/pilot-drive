@@ -42,15 +42,15 @@ Quick Start
 Install
 ^^^^^^^^^^^^^^^^^^^^
 
-To quick start your installation of PILOT Drive, you can use the included installer, via:
+To quick start your installation of PILOT Drive, you can pip via:
 
 .. code-block:: sh
 
    sudo python3.11 -m pip install pilot-drive         # Install from PyPi
-   sudo python3.11 -m pilot_drive --setup             # Run PILOT Drive installer
+   sudo python3.11 -m pilot_drive                     # Start PILOT Drive
 
-This will lead you through all the configuration steps to ensure PILOT Drive is configured quickly and properly based on the machine it's running on.
 
+From here, you can navigate to ``http://localhost:8002`` in your browser to access the UI.
 
 Manual install
 ----------------------

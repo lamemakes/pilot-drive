@@ -3,6 +3,21 @@ as a user...
 
 User How-To's for PILOT Drive
 
+How to do a quick setup of PILOT Drive
+--------------------------------------
+
+This how-to assumes PILOT Drive has been installed via pip.
+
+An interactive installer comes packaged with PILOT Drive, and can be utilized with:
+
+    .. code-block:: sh
+        
+        sudo python3.11 -m pilot_drive --setup
+
+
+This installer will guide the user through setting up iOS/Android notifications, an OBD connection, creation of a systemctl service, and more!
+
+
 Configure Bluetooth Audio for the Raspberry Pi
 ----------------------------------------------
 
@@ -19,6 +34,7 @@ This can be installed utilizing the lamemakes fork of the repo:
 Depending on your audio configuration, further ALSA hacking may be neccesary:
     - `Using a USB soundcard and setting it as default <https://raspberrypi.stackexchange.com/questions/80072/how-can-i-use-an-external-usb-sound-card-and-set-it-as-default>`_
     - `More ALSA config, filling in some cracks of the previous configuration tutorial <https://raspberrypi.stackexchange.com/questions/95193/setting-up-config-for-alsa-at-etc-asound-conf>`_
+
 
 Add new themes
 ----------------------
@@ -77,7 +93,7 @@ Recieve notifications from my Android device
         #. Under ``"phone"`` ensure ``"enabled": true`` and ``"type": "android"``
         #. Restart PILOT Drive
 #. Enable USB debugging on your Android device (paraphrased from `howtogeek's ADB article <https://www.howtogeek.com/125769/how-to-install-and-use-abd-the-android-debug-bridge-utility/>`_):
-    #. Open your phone’s app drawer, tap the Settings icon, and select “About Phone”
+    #. Open your phone's app drawer, tap the Settings icon, and select “About Phone”
     #. Scroll all the way down and tap the “Build Number” item seven times. You should get a message saying you are now a developer.
     #. Head back to the main Settings page, and you should see a new option in the “System” section called “Developer Options.”
     #. Once in Developer Options, enable “USB Debugging”

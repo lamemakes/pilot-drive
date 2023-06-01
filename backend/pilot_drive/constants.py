@@ -88,7 +88,7 @@ DEFAULT_VEHICLE_STATS = [
 
 DEFAULT_BACKEND_SETTINGS = {
     "updates": {
-        "projectUrl": "https://pypi.org/pypi/pilot-drive/",
+        "projectUrl": "https://pypi.org/pypi/pilot-drive/json",
         "indexUrl": "https://pypi.org/simple/",
     },
     "vehicle": {"enabled": False, "port": None, "stats": DEFAULT_VEHICLE_STATS},

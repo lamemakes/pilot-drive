@@ -86,8 +86,10 @@ class BluetoothDevice:  # pylint: disable=too-many-instance-attributes
             if self.connected != prev_state:
                 if self.connected is True:
                     self.logger.info(
-                        msg=f"""Bluetooth Device "{self.name}"
-                         with address {self.address} has connected."""
+                        msg=(
+                            f'Bluetooth Device "{self.name}" with '
+                            "address {self.address} has connected."
+                        )
                     )
                 elif self.connected is False:
                     self.logger.info(

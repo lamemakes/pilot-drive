@@ -279,7 +279,8 @@ class Installer:
 
         user_in = ""
         while re.search(regex_validator, user_in) is None:
-            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+            user_in = input(
+                f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
 
             if re.search(regex_validator, user_in) is None:
                 print(
@@ -558,12 +559,14 @@ class Installer:
 
         # Enable & start the ANCS service
         try:
-            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
         except FailedToExecuteCommandException:
             pass
 
         try:
-            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
         except FailedToExecuteCommandException:
             pass
 
@@ -575,7 +578,8 @@ class Installer:
             pass
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-observer.service")
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
+        self.exec_cmd(
+            f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
 
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
 
@@ -632,22 +636,22 @@ class Installer:
             # systemctl doesn't conform to Unix "standards" and outputs to stderr for some reason.
             pass
 
-        # Configure firefox kiosk mode
         configure_firefox = False
-        try:
-            firefox_ver = self.exec_cmd("firefox --version")
-            if "Mozilla Firefox" in firefox_ver:
-                configure_firefox = True
-            else:
+        if self.is_rpi:
+            try:
+                firefox_ver = self.exec_cmd("firefox --version")
+                if "Mozilla Firefox" in firefox_ver:
+                    configure_firefox = True
+                else:
+                    print(
+                        f"{Colors.WARNING}{Colors.BOLD}Firefox was not detected, "
+                        f"autostart in kiosk mode will not be configured!{Colors.ENDC}"
+                    )
+            except FailedToExecuteCommandException:
                 print(
                     f"{Colors.WARNING}{Colors.BOLD}Firefox was not detected, "
                     f"autostart in kiosk mode will not be configured!{Colors.ENDC}"
                 )
-        except FailedToExecuteCommandException:
-            print(
-                f"{Colors.WARNING}{Colors.BOLD}Firefox was not detected, "
-                f"autostart in kiosk mode will not be configured!{Colors.ENDC}"
-            )
 
         if configure_firefox:
             autostart_path = "/etc/xdg/lxsession/LXDE-pi/autostart"
@@ -680,7 +684,8 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
+                new_lxde_contents = lxde_contents.split(
+                    "\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
@@ -790,12 +795,12 @@ class Installer:
         """
         settings = self.get_settings()
 
-        self.is_production = self.prompt_yes_no(
+        self.is_production = not self.prompt_yes_no(
             prompt=(
                 "Setup for production (create system process "
-                "auto-start firefox in kiosk mode, etc)?"
+                "auto-start firefox in kiosk mode [RPi], etc)?"
             ),
-            default_in="y",
+            default_in="n",
         )
         print()
 
