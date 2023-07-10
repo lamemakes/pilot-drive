@@ -12,7 +12,7 @@ import platform
 import sys
 import argparse
 from enum import StrEnum
-from typing import List, Dict, Optional
+from typing import List, Dict, Literal, Optional
 import requests
 
 from pilot_drive.constants import (
@@ -279,8 +279,7 @@ class Installer:
 
         user_in = ""
         while re.search(regex_validator, user_in) is None:
-            user_in = input(
-                f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
 
             if re.search(regex_validator, user_in) is None:
                 print(
@@ -289,7 +288,7 @@ class Installer:
 
         return user_in
 
-    def detect_distro_manager(self) -> DistroManagers:
+    def detect_distro_manager(self) -> Literal["yum", "apt"]:
         """
         Detect the distribution manager used by the host
 
@@ -559,14 +558,12 @@ class Installer:
 
         # Enable & start the ANCS service
         try:
-            self.exec_cmd(
-                f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
+            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
         except FailedToExecuteCommandException:
             pass
 
         try:
-            self.exec_cmd(
-                f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
+            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
         except FailedToExecuteCommandException:
             pass
 
@@ -578,8 +575,7 @@ class Installer:
             pass
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-observer.service")
-        self.exec_cmd(
-            f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
+        self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
 
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
 
@@ -678,8 +674,7 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split(
-                    "\n") + [f"{autostart_string}"]
+                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
