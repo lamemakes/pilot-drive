@@ -163,8 +163,7 @@ class Vehicle(AbstractService):
                             "magnitude": resp_tuple[1][0][1],
                         }
                         if len(self.stats) == field_index:
-                            self.stats.append(
-                                {"name": field_name, "value": value})
+                            self.stats.append({"name": field_name, "value": value})
                         else:
                             self.stats[field_index] = {
                                 "name": field_name,
@@ -173,37 +172,36 @@ class Vehicle(AbstractService):
 
                         field_index += 1
                     else:
-                        self.logger.error(
-                            msg=f'Failed to query for "{field_name}"')
+                        self.logger.error(msg=f'Failed to query for "{field_name}"')
                         continue
 
             if self.stats:
                 self.__push_info()
 
     def main(self):
-        MAX_ATTEMPTS = 4
+        max_attempts = 4
         connection_attempts = 0
         queries_made = 0
         connection_error_logged = False
         while True:
-            if not self.is_connected and connection_attempts != MAX_ATTEMPTS:
+            if not self.is_connected and connection_attempts != max_attempts:
                 try:
                     self.__handle_connect()
                 except InvalidPortException as err:
                     if not connection_error_logged:  # Don't spam the log
                         self.logger.warning(
                             msg=f'Invalid serial port specified: "{err}",'
-                                f'{MAX_ATTEMPTS-connection_attempts} connection attempts remaining.'
+                            f"{max_attempts-connection_attempts} connection attempts remaining."
                         )
                         connection_error_logged = True
                     connection_attempts += 1
                     time.sleep(
                         0.5
                     )  # Busy wait then continue to try and connect in case it happens to show up
-            elif not self.is_connected and connection_attempts >= MAX_ATTEMPTS:
+            elif not self.is_connected and connection_attempts >= max_attempts:
                 self.logger.error(
-                    msg=f"Failed to connect to serial port in {MAX_ATTEMPTS} attempts."
-                        "The vehicle service is exiting."
+                    msg=f"Failed to connect to serial port in {max_attempts} attempts."
+                    "The vehicle service is exiting."
                 )
                 return
 
