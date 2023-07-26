@@ -3,36 +3,15 @@ The module that manages the connected vehicle
 """
 import os
 import time
+import obd
 
 from pilot_drive.master_logging.master_logger import MasterLogger
 from pilot_drive.master_queue.master_event_queue import MasterEventQueue, EventType
 
 from ..abstract_service import AbstractService
-from ..settings import Settings, FailedToReadSettingsException
-
-# This is done due to the latest version of Python OBD not being in PyPI, thus it's install
-# needs to happen via "pip3 install git+https://github.com/brendan-w/python-OBD#egg=obd",
-# which PyPI doesn't allow to exist in the setup.py. It's a mess.
-try:
-    if Settings.get_raw_settings()["vehicle"]["enabled"]:
-        import obd
-except (KeyError, FailedToReadSettingsException):
-    # We tried our best - if settings isn't properly initalized OBD will not be imported.
-    pass
-
-
-class InvalidPortException(Exception):
-    """
-    Exception raised when an invalid connection is detected, either from an invalid port string, or
-    a Python OBD connection failure.
-    """
-
-
-class InvalidQueryException(Exception):
-    """
-    Exception raised when an query field is detected as specified in the QUERIED_FIELDS
-    constants.py.
-    """
+from ..settings import Settings
+from .constants import MAX_ATTEMPTS
+from .exceptions import InvalidQueryException, FailedObdConnectionException
 
 
 class Vehicle(AbstractService):
@@ -106,21 +85,34 @@ class Vehicle(AbstractService):
         if self.obd_port:
             if os.path.exists(self.obd_port):
                 connection = obd.OBD(self.obd_port)
+                if not connection.is_connected():
+                    self.__handle_failed_connect()
+                    raise FailedObdConnectionException(
+                        "OBD Connection was unsuccessful!"
+                    )
                 self.__failed = False
                 if connection != self.__connection:
                     self.__push_info()
                 self.__connection = connection
                 self.logger.info(f"OBD connection made to {self.obd_port}.")
             else:
-                if not self.__failed:
-                    self.__push_info()
-                    self.__failed = True
+                self.__handle_failed_connect()
 
-                raise InvalidPortException(
+                raise FailedObdConnectionException(
                     f'Specified path: "{self.obd_port}" does not exist!'
                 )
         else:
-            self.__connection = obd.OBD()
+            # obd.OBD has support for automatic port detection but for
+            # reliability, this port needs to be explicity stated in config.
+            self.__handle_failed_connect()
+            raise FailedObdConnectionException("No serial port was provided!")
+
+    def __handle_failed_connect(self):
+        """
+        Check if a failure exists, then push the status
+        """
+        if not self.__failed:
+            self.__failed = True
 
         self.__push_info()
 
@@ -188,22 +180,31 @@ class Vehicle(AbstractService):
                 self.__push_info()
 
     def main(self):
+        # The number of times a connection to the vehicle has been attempted
+        connection_attempts = 0
+
+        # The number of queries made within the specified time interval
         queries_made = 0
-        connection_error_logged = False
         while True:
-            if not self.is_connected:
+            if not self.is_connected and connection_attempts != MAX_ATTEMPTS:
                 try:
                     self.__handle_connect()
-                except InvalidPortException as err:
-                    if not connection_error_logged:  # Don't spam the log
-                        self.logger.error(
-                            msg=f"""Invalid serial port specified: "{err}",
-                             will continue to attempt a connection."""
-                        )
-                        connection_error_logged = True
+                except FailedObdConnectionException as err:
+                    self.logger.warning(
+                        msg=f'Invalid serial port specified: "{err}", '
+                        f"{MAX_ATTEMPTS-connection_attempts} connection attempts remaining."
+                    )
+                    connection_attempts += 1
                     time.sleep(
                         0.5
                     )  # Busy wait then continue to try and connect in case it happens to show up
+            elif not self.is_connected and connection_attempts >= MAX_ATTEMPTS:
+                self.logger.error(
+                    msg=f"Failed to connect to serial port in {MAX_ATTEMPTS} attempts. "
+                    "The vehicle service is exiting."
+                )
+                # Exit the service if the connection has been tried MAX_ATTEMPTS
+                return
 
             if self.is_connected:
                 self.__query_fields(queries_made=queries_made)

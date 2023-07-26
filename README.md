@@ -26,7 +26,7 @@ PILOT Drive is a fully open-source head unit/infotainment system built in Python
 
 ### Built to be hacked
 
-PILOT Drive designed to be hackable through means of:
+PILOT Drive designed to be hackable/customizable/moddable through means of:
 - **Common languages/frameworks**: Python is one of the most common & easy to learn languages, while the UI uses easy to read Vue [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html). Both of these make all current functionality easily tweakable.
 - **Modularity**: The main features of PILOT Drive are contained as modular "services" that can be almost plug-and-play.
 - **Fully open source codebase**: While some alternatives claim openness, most don't actually deliver after a certain threshold. PILOT Drive will always be open and free to use.

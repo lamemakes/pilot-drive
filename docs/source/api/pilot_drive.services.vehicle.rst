@@ -12,6 +12,14 @@ pilot\_drive.services.vehicle.constants module
    :undoc-members:
    :show-inheritance:
 
+pilot\_drive.services.vehicle.exceptions module
+-----------------------------------------------
+
+.. automodule:: pilot_drive.services.vehicle.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pilot\_drive.services.vehicle.vehicle module
 --------------------------------------------
 
