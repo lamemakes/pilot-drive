@@ -37,7 +37,8 @@ class PhoneStates(Enum):
     CONNECTED = "connected"
     DISCONNECTED = "disconnected"
     LOCKED = "locked"  # For ADB, device cannot be accessed if locked
-    UNTRUSTED = "untrusted"  # For ADB, when the device hasn't trusted the host.
+    # For ADB, when the device hasn't trusted the host.
+    UNTRUSTED = "untrusted"
     BLUETOOTH_DISABLED = "bluetooth-disabled"
 
 

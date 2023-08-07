@@ -66,4 +66,4 @@ html_theme = "sphinx_rtd_theme"
 
 # Variables to use within docs
 full_settings_path = "/etc/pilot-drive/config/settings.json"
-rst_epilog = '.. |settings_path| replace:: %s' % full_settings_path
+rst_epilog = ".. |settings_path| replace:: %s" % full_settings_path
