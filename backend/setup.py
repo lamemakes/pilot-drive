@@ -19,10 +19,8 @@ setup(
         "Bug Tracker": "https://github.com/lamemakes/pilot-drive/issues",
     },
     install_requires=["websockets", "requests", "dasbus", "PyGObject", "obd"],
-    entry_points={"console_scripts": [
-        "pilot-drive = pilot_drive.__main__:run"]},
-    packages=find_packages(
-        exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    entry_points={"console_scripts": ["pilot-drive = pilot_drive.__main__:run"]},
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     python_requires=">=3.11",
     classifiers=[

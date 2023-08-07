@@ -116,7 +116,7 @@ class FailedToDetectSysArchException(Exception):
     """
 
 
-class Installer:
+class Installer:  # pylint: disable=too-many-public-methods
     """
     The installer used to install and configure PILOT Drive
     """
@@ -279,7 +279,8 @@ class Installer:
 
         user_in = ""
         while re.search(regex_validator, user_in) is None:
-            user_in = input(f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
+            user_in = input(
+                f"{Colors.BLUE}{Colors.BOLD}{prompt_str}: {Colors.ENDC}")
 
             if re.search(regex_validator, user_in) is None:
                 print(
@@ -558,12 +559,14 @@ class Installer:
 
         # Enable & start the ANCS service
         try:
-            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-observer.service")
         except FailedToExecuteCommandException:
             pass
 
         try:
-            self.exec_cmd(f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
+            self.exec_cmd(
+                f"{Cmd.SYSTEMCTL} enable ancs4linux-advertising.service")
         except FailedToExecuteCommandException:
             pass
 
@@ -575,7 +578,8 @@ class Installer:
             pass
 
         self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-observer.service")
-        self.exec_cmd(f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
+        self.exec_cmd(
+            f"{Cmd.SYSTEMCTL} restart ancs4linux-advertising.service")
 
         print(f"{Colors.GREEN}Completed ANCS4Linux install!{Colors.ENDC}")
 
@@ -584,21 +588,31 @@ class Installer:
 
         return settings
 
-    def configure_obd(self, settings: Dict, port: str) -> Dict:
+    def disable_phone(self, settings: Dict) -> Dict:
         """
-        Configure an OBD port in settings
+        Disable the phone functionality in PILOT Drive
 
-        :param port: A validated port in string
         :param settings: A dict of the settings to be written to
         :return: a modified settings dict
         """
-        settings["vehicle"]["enabled"] = True
-        settings["vehicle"]["port"] = port
+        settings["phone"]["enabled"] = False
+        settings["phone"]["type"] = None
 
-        print(
-            f"{Colors.GREEN}{Colors.BOLD}OBDII functionality enabled "
-            f'and port set to "{port}"{Colors.ENDC}'
-        )
+        return settings
+
+    def configure_obd(
+        self, settings: Dict, state: Optional[bool] = True, port: Optional[str] = None
+    ) -> Dict:
+        """
+        Configure an OBD port in settings
+
+        :param settings: A dict of the settings to be written to
+        :param state: A boolean of enabled or disabled
+        :param port: A validated port in string, defaults to None
+        :return: a modified settings dict
+        """
+        settings["vehicle"]["enabled"] = state
+        settings["vehicle"]["port"] = port
 
         return settings
 
@@ -674,7 +688,8 @@ class Installer:
                         new_lxde_contents.append(line)
                     write_contents = True
             else:
-                new_lxde_contents = lxde_contents.split("\n") + [f"{autostart_string}"]
+                new_lxde_contents = lxde_contents.split(
+                    "\n") + [f"{autostart_string}"]
                 write_contents = True
 
             if write_contents and len(new_lxde_contents) > 0:
@@ -778,7 +793,20 @@ class Installer:
 
         return user_in
 
-    def interactive_install(self) -> None:  # pylint: disable=too-many-statements
+    def disable_rpi_camera(self, settings: Dict) -> Dict:
+        """
+        Disable the Raspberry Pi camera settings in PILOT Drive
+
+        :param settings: A dict of the settings to be written to
+        :return: a modified settings dict
+        """
+
+        settings["camera"]["enabled"] = False
+        settings["camera"]["buttonPin"] = 0
+
+        return settings
+
+    def interactive_install(self) -> None:  # pylint: disable=too-many-statements, too-many-branches
         """
         Run the PILOT Drive installer/config
         """
@@ -844,7 +872,7 @@ class Installer:
         )
         match phone_prompt:
             case 0:
-                pass  # Don't configure the phone
+                settings = self.disable_phone(settings=settings)
             case 1:
                 settings = self.install_ancs(settings=settings)
             case 2:
@@ -867,6 +895,8 @@ class Installer:
                 example="/dev/ttyUSB0",
             )
             settings = self.configure_obd(settings=settings, port=port)
+        else:
+            settings = self.configure_obd(settings=settings, state=False)
 
         if self.is_rpi:
             camera_prompt = self.prompt_yes_no(
@@ -880,6 +910,8 @@ class Installer:
                     print(
                         f"{Colors.FAIL}{Colors.BOLD}Cancelling RPi Camera Setup!{Colors.ENDC}"
                     )
+            else:
+                self.disable_rpi_camera(settings=settings)
 
         print()
         print(
@@ -911,9 +943,13 @@ class Installer:
         """
         settings = self.get_settings()
 
-        if args.obd:
+        if args.disable_obd:
+            settings = self.configure_obd(settings=settings, state=False)
+        elif args.obd:
             settings = self.configure_obd(settings=settings, port=args.obd)
 
+        if args.disable_phone:
+            settings = self.disable_phone(settings=settings)
         if args.phone:
             match args.phone:
                 case PhoneTypes.IOS:
@@ -934,7 +970,7 @@ class Installer:
         )
         self.current_arch = args.arch if args.arch else self.detect_current_arch()
 
-        if args.phone or args.obd:
+        if args.phone or args.obd or args.disable_phone or args.disable_obd:
             self.non_interactive_install(args=args)
         else:
             # The interactive install doesn't currently take arg input.
@@ -979,12 +1015,29 @@ def installer_arguments(parser: argparse.ArgumentParser) -> None:
         return port
 
     parser.add_argument(
-        "-o",
         "--obd",
         type=validate_obd,
         help=(
             "When used alongside the -s/--setup argument, "
             "runs a non-interactive installer to only setup the OBD port in PILOT Drive"
+        ),
+    )
+
+    parser.add_argument(
+        "--disable-obd",
+        action="store_true",
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "runs a non-interactive installer to disable the OBD functionality in PILOT Drive"
+        ),
+    )
+
+    parser.add_argument(
+        "--disable-phone",
+        action="store_true",
+        help=(
+            "When used alongside the -s/--setup argument, "
+            "runs a non-interactive installer to disable the phone functionality in PILOT Drive"
         ),
     )
 
