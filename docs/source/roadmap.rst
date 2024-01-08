@@ -26,6 +26,7 @@ Roadmap
 |    ☐ Implement more documentation that follows the `Diátaxis framework <https://diataxis.fr/>`_, such as better tutorials and how-to's
 | ☐ Support Android Debug Bridge (ADB) over Wi-Fi rather than purely USB
 | ☐ Potentially remove StrEnums to allow for Python 3.10 compatibility?
+| ☐ Refactor to not need `sudo` as a pip install step! pip + sudo aren't friends.
 
 Frontend/UI
 ----------------------
