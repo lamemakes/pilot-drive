@@ -17,6 +17,8 @@
 </p>
 <p align="center">A free and open source vehicle headunit</p>
 
+**⚠️ NOTE: Development of this project will continue on it's Codeberg repo, [check it out!](https://codeberg.org/lamemakes/pilot-drive) ⚠️**
+
 ## What is PILOT Drive?
 
 PILOT Drive is a fully open-source head unit/infotainment system built in Python 3.11 + Vue 3. It is intended to be ran on a Single Board Computer (SBC), such as the Raspberry Pi 4.
